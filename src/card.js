@@ -1,0 +1,206 @@
+// Procedural silver card: geometry from a rounded rectangle, PBR maps generated from the SVG artwork.
+// Height map: engraved, blackened lettering, shallow matte engraving for the logo pattern,
+// fine grain and horizontal brushing everywhere. Normal and roughness maps are derived from it.
+import * as THREE from 'three';
+
+const SVG_W = 343, SVG_H = 213, SVG_R = 24; // card.svg viewBox and corner radius
+const PATTERN_W = 42, PATTERN_H = 47;       // pattern.svg tile
+const WIDTH = 85.6;                          // mm, ISO ID-1 card width
+const HEIGHT = WIDTH * SVG_H / SVG_W;
+const RADIUS = SVG_R * WIDTH / SVG_W;
+const THICKNESS = 0.8, BEVEL = 0.12;
+
+async function svgImage(url, transform = text => text) {
+  const text = transform(await (await fetch(url)).text());
+  const image = new Image();
+  image.src = URL.createObjectURL(new Blob([text], { type: 'image/svg+xml' }));
+  await image.decode();
+  return image;
+}
+
+function canvas(w, h) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return [c, c.getContext('2d', { willReadFrequently: true })];
+}
+
+function alphaOf(ctx, w, h) {
+  const data = ctx.getImageData(0, 0, w, h).data, out = new Float32Array(w * h);
+  for (let i = 0; i < out.length; i++) out[i] = data[i * 4 + 3] / 255;
+  return out;
+}
+
+// Deterministic noise so the card looks the same on every load.
+function random(seed) {
+  return () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+}
+
+// Artwork masks are expensive to rasterise, so they are built once; the metal surface is rebuilt from them.
+function buildMasks(w, h, artwork, pattern) {
+  const px = w / SVG_W; // texture pixels per SVG unit
+  // Logo pattern mask, tiled over the whole card.
+  const [pc, pctx] = canvas(w, h);
+  pctx.filter = `blur(${px * 0.12}px)`;
+  for (let y = -PATTERN_H / 2; y < SVG_H; y += PATTERN_H)
+    for (let x = -PATTERN_W / 3; x < SVG_W; x += PATTERN_W)
+      if (pattern) pctx.drawImage(pattern, x * px, y * px, PATTERN_W * px, PATTERN_H * px);
+  const patternMask = alphaOf(pctx, w, h);
+
+  // Lettering mask from card.svg.
+  const [tc, tctx] = canvas(w, h);
+  if (artwork) tctx.drawImage(artwork, 0, 0, w, h);
+  const textMask = alphaOf(tctx, w, h);
+  // The pattern is cleared under the lettering with a small margin, so letters sit on clean metal.
+  const [kc, kctx] = canvas(w, h);
+  kctx.filter = `blur(${px * 0.6}px)`;
+  kctx.drawImage(tc, 0, 0);
+  const knockout = alphaOf(kctx, w, h).map(a => Math.min(1, a * 3));
+  for (let i = 0; i < patternMask.length; i++) patternMask[i] *= 1 - knockout[i];
+  // Slightly softened copy for the engraving depth, so the letter walls read as a thin bevel.
+  const [ec, ectx] = canvas(w, h);
+  ectx.filter = `blur(${px * 0.12}px)`;
+  ectx.drawImage(tc, 0, 0);
+  const engrave = alphaOf(ectx, w, h);
+  return { w, h, patternMask, textMask, engrave };
+}
+
+// Smooth value noise with roughly `cell` pixels between random grid points.
+function valueNoise(w, h, cell, rnd) {
+  const gw = Math.ceil(w / cell) + 2, gh = Math.ceil(h / cell) + 2, grid = new Float32Array(gw * gh);
+  for (let i = 0; i < grid.length; i++) grid[i] = rnd() - 0.5;
+  const out = new Float32Array(w * h), smooth = t => t * t * (3 - 2 * t);
+  for (let y = 0; y < h; y++) {
+    const fy = y / cell, y0 = fy | 0, sy = smooth(fy - y0), row0 = y0 * gw, row1 = row0 + gw;
+    for (let x = 0; x < w; x++) {
+      const fx = x / cell, x0 = fx | 0, sx = smooth(fx - x0);
+      const top = grid[row0 + x0] + (grid[row0 + x0 + 1] - grid[row0 + x0]) * sx;
+      const bottom = grid[row1 + x0] + (grid[row1 + x0 + 1] - grid[row1 + x0]) * sx;
+      out[y * w + x] = top + (bottom - top) * sy;
+    }
+  }
+  return out;
+}
+
+// Height: engraved pattern and lettering, metal grain and brushing along the card's long side.
+// grain 0..1 — strength of the grain, grainSize — its scale in mm, brush 0..1 — brushing strength.
+function buildSurface({ w, h, patternMask, textMask, engrave }, { grain, grainSize, brush: brushing }) {
+  const rnd = random(12), heightMap = new Float32Array(w * h), brush = new Float32Array(h);
+  const cell = Math.max(1.5, grainSize / WIDTH * w);
+  const coarse = valueNoise(w, h, cell, rnd), fine = valueNoise(w, h, Math.max(1.2, cell / 2.4), rnd);
+  for (let y = 0, v = 0; y < h; y++) brush[y] = v = v * 0.6 + (rnd() - 0.5);
+  // Scaled by cell size so the slider controls slope (what the eye sees), not raw height.
+  const grainHeight = grain * 0.05 * cell;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      // The blackened lettering is smooth: no grain or brushing inside it.
+      const metal = 1 - engrave[i];
+      heightMap[i] = -0.15 * patternMask[i] - 0.6 * engrave[i] + metal * (0.12 * brushing * brush[y]
+        + grainHeight * (coarse[i] + 0.5 * fine[i]) + 0.02 * grain * (rnd() - 0.5));
+    }
+
+  const color = new ImageData(w, h), rough = new ImageData(w, h), normal = new ImageData(w, h);
+  const strength = 2.2;
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x, j = i * 4;
+      const l = heightMap[x > 0 ? i - 1 : i], r = heightMap[x < w - 1 ? i + 1 : i];
+      const u = heightMap[y > 0 ? i - w : i], d = heightMap[y < h - 1 ? i + w : i];
+      // Canvas rows go down while texture V goes up, hence the sign of ny.
+      const nx = (l - r) * strength, ny = (d - u) * strength, len = Math.hypot(nx, ny, 1);
+      normal.data[j] = (nx / len * 0.5 + 0.5) * 255;
+      normal.data[j + 1] = (ny / len * 0.5 + 0.5) * 255;
+      normal.data[j + 2] = (1 / len * 0.5 + 0.5) * 255;
+      normal.data[j + 3] = 255;
+      // Niello (blackening) fills the engraved lettering.
+      const p = patternMask[i], black = textMask[i];
+      // glTF convention: green = roughness, blue = metalness. Pattern is matte,
+      // the blackened oxide is matte and only partly metallic.
+      const bare = 0.45 + 0.3 * p + 0.1 * brushing * Math.abs(brush[y]) + grain * (0.2 + 0.3 * coarse[i]);
+      rough.data[j + 1] = Math.max(0, Math.min(1, bare * (1 - black) + 0.6 * black)) * 255;
+      rough.data[j + 2] = (1 - 0.5 * black) * 255;
+      rough.data[j + 3] = 255;
+      const shade = (1 - 0.04 * p) * (1 - 0.93 * black) * 255;
+      color.data[j] = color.data[j + 1] = color.data[j + 2] = shade;
+      color.data[j + 3] = 255;
+    }
+  return { color, rough, normal };
+}
+
+function texture(data, srgb, anisotropy) {
+  const t = new THREE.CanvasTexture(document.createElement('canvas'));
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = anisotropy;
+  t.userData.mimeType = 'image/jpeg'; // keeps the exported GLB small; the maps have no alpha
+  return fill(t, data);
+}
+
+function fill(t, data) {
+  const [c, ctx] = canvas(data.width, data.height);
+  ctx.putImageData(data, 0, 0);
+  t.image = c;
+  t.needsUpdate = true;
+  return t;
+}
+
+function geometry() {
+  const x = WIDTH / 2 - BEVEL, y = HEIGHT / 2 - BEVEL, r = RADIUS - BEVEL;
+  const shape = new THREE.Shape();
+  shape.moveTo(-x + r, -y);
+  shape.lineTo(x - r, -y); shape.absarc(x - r, -y + r, r, -Math.PI / 2, 0);
+  shape.lineTo(x, y - r); shape.absarc(x - r, y - r, r, 0, Math.PI / 2);
+  shape.lineTo(-x + r, y); shape.absarc(-x + r, y - r, r, Math.PI / 2, Math.PI);
+  shape.lineTo(-x, -y + r); shape.absarc(-x + r, -y + r, r, Math.PI, Math.PI * 1.5);
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth: THICKNESS - BEVEL * 2, bevelEnabled: true, bevelThickness: BEVEL, bevelSize: BEVEL,
+    bevelSegments: 4, curveSegments: 32,
+  });
+  g.translate(0, 0, -(THICKNESS - BEVEL * 2) / 2);
+  // Map the whole card face to 0..1 so the artwork covers it exactly.
+  const pos = g.attributes.position, uv = g.attributes.uv;
+  for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) / WIDTH + 0.5, pos.getY(i) / HEIGHT + 0.5);
+  // ExtrudeGeometry puts both lids in group 0 (back first, then front): split them into front/back.
+  const [lids, sides] = g.groups, half = lids.count / 2;
+  g.clearGroups();
+  g.addGroup(lids.start + half, half, 0); // front
+  g.addGroup(sides.start, sides.count, 1); // edge and bevel
+  g.addGroup(lids.start, half, 2);        // back
+  return g.scale(0.001, 0.001, 0.001);    // millimetres to glTF metres
+}
+
+// surface: { grain, grainSize, brush } — see buildSurface. The returned group has
+// userData.setSurface(surface) to rebuild the metal texture without rebuilding the card.
+export async function createCard(renderer, surface) {
+  const [artwork, pattern] = await Promise.all([
+    svgImage('./assets/card3d/card.svg', text => text.replace(/<rect[^>]*\/>/, '')),
+    svgImage('./assets/card3d/pattern.svg'),
+  ]);
+  const w = Math.min(innerWidth < 800 ? 2048 : 4096, renderer.capabilities.maxTextureSize);
+  const h = Math.round(w * SVG_H / SVG_W);
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
+  const frontMasks = buildMasks(w, h, artwork, pattern);
+  const backMasks = buildMasks(1024, Math.round(1024 * SVG_H / SVG_W), null, null); // same metal, no artwork
+  const metal = maps => {
+    const rough = texture(maps.rough, false, maxAniso);
+    return new THREE.MeshPhysicalMaterial({
+      color: 0xffffff, metalness: 1, roughness: 0.45, anisotropy: 0.35,
+      map: texture(maps.color, true, maxAniso), roughnessMap: rough, metalnessMap: rough,
+      normalMap: texture(maps.normal, false, maxAniso),
+    });
+  };
+  const face = metal(buildSurface(frontMasks, surface)), backFace = metal(buildSurface(backMasks, surface));
+  // No anisotropy on the edge: its straight walls have degenerate UVs, and anisotropy there renders black.
+  const edge = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 1, roughness: 0.18 });
+  const mesh = new THREE.Mesh(geometry(), [face, edge, backFace]);
+  mesh.name = 'Card';
+  const group = new THREE.Group();
+  group.add(mesh);
+  // Textures are updated in place, so material copies made by the panel pick up the change too.
+  group.userData.setSurface = next => {
+    for (const [material, masks] of [[face, frontMasks], [backFace, backMasks]]) {
+      const maps = buildSurface(masks, next);
+      fill(material.map, maps.color); fill(material.roughnessMap, maps.rough); fill(material.normalMap, maps.normal);
+    }
+  };
+  return group;
+}
