@@ -103,6 +103,29 @@ async function init() {
   let visible = true;
   new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(mount);
 
+  // Тень под карточкой (CSS-слой .card-scene::after) следует за поворотом:
+  // край, который приподнимается к зрителю, отбрасывает тень дальше и мягче,
+  // край, уходящий вглубь, — ближе и плотнее
+  let shadowKey = '';
+  function updateShadow() {
+    const { x: rx, y: ry, z: rz } = pivot.rotation;
+    const w = scene3d.clientWidth;
+    const lift = -Math.sin(rx);                       // >0 — низ карточки приподнят к зрителю
+    const vars = {
+      '--sh-x': (Math.sin(ry) * 0.22 * w).toFixed(1) + 'px',
+      '--sh-y': (lift * 0.16 * w).toFixed(1) + 'px',
+      '--sh-sx': (Math.cos(ry) * (1 + 0.15 * lift)).toFixed(3),
+      '--sh-sy': (1 + 0.9 * lift).toFixed(3),
+      '--sh-o': Math.max(0.35, 1 - 0.9 * Math.abs(lift) - 0.6 * Math.abs(Math.sin(ry))).toFixed(3),
+      '--sh-blur': (10 + 14 * Math.max(0, lift)).toFixed(1) + 'px',
+      '--sh-r': THREE.MathUtils.radToDeg(rz).toFixed(2) + 'deg',
+    };
+    const key = Object.values(vars).join();
+    if (key === shadowKey) return;
+    shadowKey = key;
+    for (const [name, value] of Object.entries(vars)) scene3d.style.setProperty(name, value);
+  }
+
   const clock = new THREE.Clock();
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.1);
@@ -117,6 +140,7 @@ async function init() {
     pivot.rotation.x += (targetX + floatX - pivot.rotation.x) * k;
     pivot.rotation.y += (targetY + floatY - pivot.rotation.y) * k;
     pivot.rotation.z += (floatZ - pivot.rotation.z) * k;
+    updateShadow();
     renderer.render(scene, camera);
   });
 

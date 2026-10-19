@@ -224,7 +224,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   height: 24%;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(20, 18, 28, .55), rgba(20, 18, 28, 0));
-  filter: blur(10px);
+  filter: blur(var(--sh-blur, 10px));
+  opacity: var(--sh-o, 1);
+  /* Положение, размер и плотность задаёт src/card3d.js по текущему повороту карточки */
+  transform: translate(var(--sh-x, 0px), var(--sh-y, 0px)) rotate(var(--sh-r, 0deg)) scale(var(--sh-sx, 1), var(--sh-sy, 1));
   z-index: 0;
 }
 
