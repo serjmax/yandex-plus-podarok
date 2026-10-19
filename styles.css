@@ -137,12 +137,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .intro__title { margin-top: 67px; width: 762px; font-size: 64px; }
   .intro__text { margin-top: 22px; width: 762px; font-size: 23px; line-height: 28px; color: var(--muted); }
   .intro__bow {
-    --bh: min(537px, 100%);
-    margin: -36px 0 0;
+    /* Бант на 25% крупнее макета (537 → 671 px), если хватает высоты окна.
+       Сам бант занимает 83.5% высоты картинки (сверху и снизу прозрачные поля) —
+       по нему и вписываем, с отступом 12 px до текста и кнопки */
+    --bh: min(671px, calc((100% - 24px) / .835));
+    margin: 0;
     -webkit-mask-image: linear-gradient(90deg, transparent 16.9%, #000 31.8%, #000 68.1%, transparent 84.8%);
     mask-image: linear-gradient(90deg, transparent 16.9%, #000 31.8%, #000 68.1%, transparent 84.8%);
   }
-  .intro__half { translate: calc(-50% + 10.55px) -50%; }
+  .intro__half { translate: calc(-50% + 13.2px) -52.15%; } /* по центру — видимая часть банта */
 }
 
 .intro__logo, .intro__title, .intro__text, .intro__btn { transition: opacity .35s ease, transform .5s ease; }
