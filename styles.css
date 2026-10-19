@@ -7,7 +7,7 @@
 /* ---------- Токены ---------- */
 :root {
   --bg: #44424d;
-  --surface: linear-gradient(180deg, #57565d 0%, #393740 100%);
+  --surface: rgba(0, 0, 0, .1); /* фон карточек: чёрный 10% */
   --ink: #fff;
   --muted: rgba(255, 255, 255, .7);
   /* Узор из макета: картинка с непрозрачностью 40% поверх чёрного (десктоп) или #1a1a1a (телефон).
@@ -370,8 +370,27 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .banner__text p { font-size: 18px; line-height: 24px; color: var(--muted); }
 
 .banner--app { height: 306px; margin-top: 66px; }
-/* Картинка экспортирована вместе с краем карточки из Figma — выносим этот край за обрезку */
-.banner__phone--d { position: absolute; right: -4px; top: -1px; width: 847.5px; height: 306px; }
+/* Телефон собран из слоёв макета (корпус + экран под маской), фон у него прозрачный —
+   карточка под ним полупрозрачная. Координаты — как у группы iPhone в Figma, лишнее обрезает карточка. */
+.phone-mock { position: absolute; left: 112.79px; top: -84.19px; width: 1131.41px; height: 848.56px; }
+.phone-mock__body { position: absolute; inset: 0; width: 100%; height: 100%; }
+.phone-mock__screen {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: url("assets/phone/screen-mask.png") 0 0 / 100% 100% no-repeat;
+  mask: url("assets/phone/screen-mask.png") 0 0 / 100% 100% no-repeat;
+}
+.phone-mock__top { position: absolute; left: 503.98px; top: 114.27px; width: 258px; height: 110.24px; }
+.phone-mock__shot {
+  position: absolute;
+  left: 571.57px;
+  top: 386.35px;
+  width: 258.84px;
+  height: 460.4px;
+  object-fit: cover;
+  translate: -50% -50%;
+  rotate: 14.16deg;
+}
 .banner__phone--m { display: none; }
 
 .banner--invite { height: 292px; margin-top: 66px; }
