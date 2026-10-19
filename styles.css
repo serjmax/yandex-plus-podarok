@@ -6,15 +6,16 @@
 
 /* ---------- Токены ---------- */
 :root {
-  --bg: #000;
-  --surface: #2f2f30;
+  --bg: #44424d;
+  --surface: linear-gradient(180deg, #57565d 0%, #393740 100%);
   --ink: #fff;
-  --muted: rgba(255, 255, 255, .6);
+  --muted: rgba(255, 255, 255, .7);
   /* Узор из макета: картинка с непрозрачностью 40% поверх чёрного (десктоп) или #1a1a1a (телефон).
      Затемняющий слой 60% поверх картинки даёт тот же результат. */
-  --damask-img: url("assets/damask.png") 0 0 / 396px 703px repeat;
-  --damask: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, .6)), var(--damask-img);
-  --damask-m: linear-gradient(rgba(26, 26, 26, .6), rgba(26, 26, 26, .6)), var(--damask-img);
+  /* Фон: градиент из светлого правого верхнего угла в тёмный левый нижний + цветной шум 15% */
+  --backdrop-gradient: linear-gradient(to bottom left, #e4dfe3 0%, #978f9c 26%, #6b6971 43%, #53505b 59%, #4b4853 77%, #44424d 100%);
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.15'/%3E%3C/svg%3E") 0 0 / 240px 240px repeat;
+  --backdrop: var(--noise), var(--backdrop-gradient);
   --plus-gradient: linear-gradient(90deg, #ff5c4d 0%, #eb469f 25%, #8341ef 72%, #3f68f9 100%);
   --text: "YS Text", "Helvetica Neue", Arial, sans-serif;
   --display: "YS Display", "YS Text", "Helvetica Neue", Arial, sans-serif;
@@ -24,7 +25,6 @@
 html { -webkit-text-size-adjust: 100%; background: var(--bg); scrollbar-gutter: stable; }
 body {
   margin: 0;
-  background: var(--damask), var(--bg);
   color: var(--ink);
   font-family: var(--text);
   font-feature-settings: "lnum" 1, "pnum" 1;
@@ -32,6 +32,15 @@ body {
   overflow-x: hidden;
 }
 body.is-locked { overflow: hidden; height: 100vh; height: 100dvh; }
+/* Фон растянут на экран и прилеплен к нему: прокручивается только контент */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--backdrop);
+  pointer-events: none;
+}
 h1, h2, h3, p { margin: 0; font-weight: inherit; }
 img { display: block; max-width: none; }
 a { color: inherit; text-decoration: none; }
@@ -78,7 +87,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--damask), var(--bg);
+  background: var(--backdrop);
   transition: opacity .5s ease;
 }
 .intro__stage { position: relative; }
@@ -101,26 +110,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .intro__text { margin-top: 10px; width: 293.2px; font-size: 16px; line-height: 20px; }
 .intro__bow {
-  --bh: min(292px, 100%); /* высота банта */
+  --bh: min(361px, 100%); /* высота банта */
   position: relative;
   flex: 1 1 auto;
   width: 100%;
   min-height: 120px;
-  margin: 25px 0 15px;
+  margin: -15px 0 32px;
 }
-/* Продолжение ленты до краёв окна — повторяющийся срез той же ленты */
-.intro__bow::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: var(--bh);
-  translate: 0 -50%;
-  background: url("assets/ribbon-slice.png") 0 0 / auto 100% repeat-x;
-  transition: opacity .5s ease;
-}
-.is-opening .intro__bow::before { opacity: 0; }
 .intro__half {
   position: absolute;
   left: 50%;
@@ -130,25 +126,22 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   translate: -50% -50%;
   transform-origin: 50% 45%;
 }
-.intro__half img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Концы ленты на картинке растворяются в продолжении ленты — без шва */
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
-}
+.intro__half img { width: 100%; height: 100%; object-fit: cover; }
 .intro__half--l { clip-path: inset(0 50% 0 0); }
 .intro__half--r { clip-path: inset(0 0 0 50%); }
 .intro__btn { width: 306px; flex: none; }
 
-/* Десктоп (макет 1440×902): тексты как на основной странице, длинная лента банта на всю ширину */
+/* Десктоп (макет 1440×902): тексты как на основной странице, концы ленты растворяются к краям */
 @media (min-width: 1000px) {
   .intro__stage { padding-bottom: 88px; }
   .intro__title { margin-top: 67px; width: 762px; font-size: 64px; }
   .intro__text { margin-top: 22px; width: 762px; font-size: 23px; line-height: 28px; color: var(--muted); }
-  .intro__bow { margin: -36px 0 0; }
-  .intro__bow { --bh: min(537px, 100%); }
+  .intro__bow {
+    --bh: min(537px, 100%);
+    margin: -36px 0 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent 16.9%, #000 31.8%, #000 68.1%, transparent 84.8%);
+    mask-image: linear-gradient(90deg, transparent 16.9%, #000 31.8%, #000 68.1%, transparent 84.8%);
+  }
   .intro__half { translate: calc(-50% + 10.55px) -50%; }
 }
 
@@ -230,7 +223,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   bottom: -12%;
   height: 24%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(0, 0, 0, .7), rgba(0, 0, 0, 0));
+  background: radial-gradient(closest-side, rgba(20, 18, 28, .55), rgba(20, 18, 28, 0));
   filter: blur(10px);
   z-index: 0;
 }
@@ -339,7 +332,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   z-index: 3;
 }
 .promo__info { display: flex; flex-direction: column; gap: 8px; width: 100%; text-align: center; line-height: 1.25; }
-.promo__label { font-size: 16px; opacity: .5; }
+.promo__label { font-size: 16px; opacity: .7; }
 .promo__code { font-weight: 500; font-size: 24px; line-height: 1.25; letter-spacing: -.18px; border-radius: 8px; }
 .promo__code:hover { color: #c9a8ff; }
 .promo__btn { width: 306px; }
@@ -360,7 +353,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .service__text { position: absolute; left: 22.8px; top: 22.8px; display: flex; flex-direction: column; gap: 9.6px; z-index: 1; }
 .service h3 { font-family: var(--display); font-weight: 500; font-size: 24px; line-height: .95; }
-.service p { font-size: 16px; line-height: 24px; opacity: .6; }
+.service p { font-size: 16px; line-height: 24px; opacity: .7; }
 .service__img { position: absolute; }
 .service--kp .service__img    { left: -2.52px; bottom: -31.56px; width: 291.19px; height: 263.23px; }
 .service--music .service__img { left: calc(50% - 2.08px); bottom: -56.92px; width: 347.15px; height: 315.46px; transform: translateX(-50%); }
@@ -375,7 +368,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 .banner--app { height: 306px; margin-top: 66px; }
 /* Картинка экспортирована вместе с краем карточки из Figma — выносим этот край за обрезку */
-.banner__phone--d { position: absolute; right: -4px; top: -2px; width: 847.5px; height: 306px; }
+.banner__phone--d { position: absolute; right: -4px; top: -1px; width: 847.5px; height: 306px; }
 .banner__phone--m { display: none; }
 
 .banner--invite { height: 292px; margin-top: 66px; }
@@ -451,8 +444,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .m-only { display: initial; }
   .d-only { display: none; }
 
-  body { background: var(--damask-m), #1a1a1a; }
-  .intro::before { background: var(--damask-m), #1a1a1a; }
   .page { padding: 25px 0 10px; }
 
   .gift { margin-top: 26px; }
@@ -480,7 +471,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .service--books { height: 300px; }
   .service__text { left: 24px; top: 24px; gap: 8px; }
   .service h3 { font-family: var(--text); font-weight: 400; color: rgba(255, 255, 255, .9); }
-  .service p { font-size: 14px; line-height: 20px; opacity: .5; }
+  .service p { font-size: 14px; line-height: 20px; opacity: .7; }
   .service--kp .service__img    { left: -2.91px; top: 136.98px; bottom: auto; width: 208.29px; height: 195.11px; }
   .service--music .service__img { left: -20.88px; top: 113.92px; bottom: auto; width: 267.4px; height: 243.09px; transform: none; }
   .service--books .service__img { left: 1.48px; top: 129.21px; bottom: auto; width: 220.66px; height: 200.6px; transform: none; }
@@ -497,7 +488,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .banner--app .banner__text p { max-width: 305px; }
   .banner--app .btn { position: absolute; top: 451px; left: 0; right: 0; margin: 0 auto; width: 306px; }
   .banner__phone--d { display: none; }
-  .banner__phone--m { display: block; position: absolute; right: -4px; bottom: -4px; width: 312.5px; height: 480.5px; }
+  .banner__phone--m { display: block; position: absolute; left: 50%; top: 250px; width: 241px; height: 497px; translate: -50% 0; }
 
   .banner--invite {
     height: auto;
