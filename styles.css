@@ -79,10 +79,10 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   background: linear-gradient(249.2deg, #b2aec7 18%, #f0f0f0 50%, #b2aec7 82%) 0 0 / 220% 100%;
   color: var(--ink);
   width: 267px;
-  box-shadow: 0 24px 32px -30px rgba(131, 125, 157, .8); /* тень из макета */
+  box-shadow: 0 24px 32px -30px rgba(131, 125, 157, 0); /* тень из макета — только при наведении */
   animation: btn-reflex 4.5s ease-in-out infinite alternate;
 }
-.btn--light:hover { box-shadow: 0 30px 52px -30px rgba(131, 125, 157, .5); } /* мягче: светлее и сильнее размыта */
+.btn--light:hover { box-shadow: 0 24px 32px -30px rgba(131, 125, 157, .8); }
 .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -12px rgba(27, 19, 30, .55); filter: brightness(1.06); }
 .btn:active { transform: translateY(0) scale(.98); }
 .btn:focus-visible, .promo__code:focus-visible { outline: 3px solid #8341ef; outline-offset: 3px; }
