@@ -1,21 +1,42 @@
-// 3D-карточка из card-3d-playground: серебряная карта (src/card.js) со светом пресета «Металл».
+// 3D-карточка из card-3d-playground (src/card.js): металлическая карта с сиреневым переливом.
 // Поворачивается за курсором или пальцем, в покое слегка покачивается.
+// Цвет надписей и оттенок металла настраиваются: откройте страницу с ?tune — появится панель.
 // Если WebGL недоступен, остаётся CSS-карточка (.gift-card).
 import * as THREE from 'three';
 import { RoomEnvironment } from '../vendor/RoomEnvironment.js';
-import { createCard } from './card.js?v=2';
+import { createCard } from './card.js?v=4';
 
 const scene3d = document.getElementById('card-scene');
 const mount = document.getElementById('card3d');
 
-// Пресет «Металл» из плейграунда
+// Свет и материал: металл с перламутровым (сиреневым) переливом
 const LOOK = {
-  color: '#bec6d3', metalness: 1, roughness: 0.22,
-  keyPower: 1, keyColor: '#fff4e5', key: [-3, 5, 4],
-  fillPower: 0.4, fillColor: '#dbe8ff', fill: [4, 2, -3],
-  ambient: 0.15, envPower: 1.8, exposure: 1,
+  metalness: 1,
+  keyPower: 1.4, keyColor: '#ffd9ee', key: [-3, 5, 4],     // тёплый розоватый
+  fillPower: 0.9, fillColor: '#c3c2ff', fill: [4, 2, -3],   // холодный сиреневый
+  ambient: 0.2, envPower: 1.6, exposure: 1.15,
   grain: 0.5, grainSize: 0.15, brush: 0.3,
+  blacken: 0, // надписи красятся отдельным слоем ниже
+  // Пастельные разводы по диагонали: сиренево-голубой → белый → розоватый → серо-сиреневый
+  tint: ['#c9cbee', '#f6f2fa', '#efd6ea', '#c6c0dc'],
 };
+// Настраиваемое (панель ?tune и параметры ссылки)
+const TUNE_DEFAULTS = {
+  lc: '#2e2944', // цвет надписей
+  mt: '#f2ecf8', // оттенок металла
+  ir: 0.85,      // сила перелива (iridescence)
+  sh: 0.6,       // сиреневый отблеск по краям (sheen)
+  ro: 0.28,      // шероховатость: меньше — зеркальнее
+  pa: 0.45,      // заметность паттерна из плюсов
+};
+const tune = { ...TUNE_DEFAULTS };
+const query = new URLSearchParams(location.search);
+for (const k of Object.keys(tune)) {
+  const v = query.get(k);
+  if (v == null) continue;
+  if (typeof tune[k] === 'number') { if (Number.isFinite(+v)) tune[k] = +v; }
+  else if (/^[0-9a-f]{6}$/i.test(v)) tune[k] = '#' + v;
+}
 const TILT = THREE.MathUtils.degToRad(18);
 // Холст больше самой карточки, чтобы при наклоне углы не обрезались
 const PAD_X = 1.4;
@@ -45,15 +66,62 @@ async function init() {
   const pivot = new THREE.Group();
   scene.add(pivot);
 
-  const card = await createCard(renderer, LOOK);
+  const card = await createCard(renderer, { ...LOOK, pattern: tune.pa });
+  const metals = [];
   card.traverse(mesh => {
     if (!mesh.isMesh) return;
     for (const m of [mesh.material].flat()) {
-      m.color.set(LOOK.color);
       m.metalness = LOOK.metalness;
-      m.roughness = LOOK.roughness;
+      // Тонкоплёночный перелив: цвет блика меняется с углом наклона — сиреневый, розовый, голубой
+      m.iridescenceIOR = 1.3;
+      m.iridescenceThicknessRange = [120, 480];
+      m.sheenColor = new THREE.Color('#e3c4ff');
+      m.sheenRoughness = 0.45;
+      metals.push(m);
     }
   });
+
+  // Надписи «12» и «месяцев» — отдельный слой поверх лицевой стороны, чтобы цвет менялся мгновенно
+  const WIDTH = 0.0856, HEIGHT = WIDTH * 213 / 343, FRONT = 0.0004; // метры, как в card.js
+  const svg = (await (await fetch('./assets/card3d/card.svg?v=2')).text()).replace(/<rect[^>]*\/>/, '');
+  const art = new Image();
+  art.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  await art.decode();
+  const letters = document.createElement('canvas');
+  letters.width = innerWidth < 800 ? 1536 : 3072;
+  letters.height = Math.round(letters.width * 213 / 343);
+  letters.getContext('2d').drawImage(art, 0, 0, letters.width, letters.height);
+  const lettersTex = new THREE.CanvasTexture(letters);
+  lettersTex.colorSpace = THREE.SRGBColorSpace;
+  lettersTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const ink = new THREE.MeshPhysicalMaterial({
+    map: lettersTex, transparent: true, depthWrite: false,
+    metalness: 0.15, roughness: 0.55, clearcoat: 0.4, clearcoatRoughness: 0.3,
+    polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+  });
+  const inkPlane = new THREE.Mesh(new THREE.PlaneGeometry(WIDTH, HEIGHT), ink);
+  inkPlane.position.z = FRONT + 0.00002;
+  card.add(inkPlane);
+
+  function applyTune() {
+    for (const m of metals) {
+      m.color.set(tune.mt);
+      m.roughness = tune.ro;
+      m.iridescence = tune.ir;
+      m.sheen = tune.sh;
+    }
+    ink.color.set(tune.lc);
+  }
+  applyTune();
+  // Паттерн запечён в текстуры — пересобираем их, когда ползунок остановился
+  let patternTimer = 0, patternNow = tune.pa;
+  const applyAll = () => {
+    applyTune();
+    if (tune.pa === patternNow) return;
+    clearTimeout(patternTimer);
+    patternTimer = setTimeout(() => { patternNow = tune.pa; card.userData.setSurface({ ...LOOK, pattern: tune.pa }); }, 300);
+  };
+  if (query.has('tune')) tunePanel(tune, applyAll);
   const box = new THREE.Box3().setFromObject(card);
   const size = box.getSize(new THREE.Vector3());
   card.position.sub(box.getCenter(new THREE.Vector3()));
@@ -145,6 +213,51 @@ async function init() {
   });
 
   scene3d.classList.add('has-3d');
+}
+
+// Панель настройки (только при ?tune): значения пишутся в ссылку, её можно переслать
+function tunePanel(tune, apply) {
+  const rows = [
+    ['lc', 'Цвет надписей', 'color'],
+    ['mt', 'Оттенок металла', 'color'],
+    ['ir', 'Перелив', 'range', 0, 1, 0.01],
+    ['sh', 'Сиреневый отблеск', 'range', 0, 1, 0.01],
+    ['ro', 'Матовость', 'range', 0.05, 0.6, 0.01],
+    ['pa', 'Паттерн', 'range', 0, 1, 0.01],
+  ];
+  const panel = document.createElement('div');
+  panel.className = 'tune';
+  panel.innerHTML = '<p class="tune__title">Карточка</p>' + rows.map(([k, label, type, min, max, step]) =>
+    `<label class="tune__row"><span>${label}</span><input data-k="${k}" type="${type}"` +
+    (type === 'range' ? ` min="${min}" max="${max}" step="${step}"` : '') + ` value="${tune[k]}"><output></output></label>`
+  ).join('') + '<div class="tune__actions"><button type="button" data-act="reset">Сбросить</button><button type="button" data-act="copy">Скопировать ссылку</button></div>';
+  document.body.appendChild(panel);
+  const sync = () => {
+    const q = new URLSearchParams(location.search);
+    for (const [k] of rows) q.set(k, String(tune[k]).replace('#', ''));
+    history.replaceState(null, '', '?' + q.toString());
+    panel.querySelectorAll('input').forEach(i => { i.nextElementSibling.textContent = i.type === 'color' ? i.value : (+i.value).toFixed(2); });
+  };
+  panel.addEventListener('input', e => {
+    const k = e.target.dataset.k;
+    if (!k) return;
+    tune[k] = e.target.type === 'range' ? +e.target.value : e.target.value;
+    apply(); sync();
+  });
+  panel.addEventListener('click', async e => {
+    const act = e.target.dataset.act;
+    if (act === 'reset') {
+      Object.assign(tune, TUNE_DEFAULTS);
+      panel.querySelectorAll('input').forEach(i => { i.value = tune[i.dataset.k]; });
+      apply(); sync();
+    }
+    if (act === 'copy') {
+      try { await navigator.clipboard.writeText(location.href); e.target.textContent = 'Скопировано'; }
+      catch { e.target.textContent = 'Не удалось'; }
+      setTimeout(() => { e.target.textContent = 'Скопировать ссылку'; }, 1500);
+    }
+  });
+  sync();
 }
 
 init().catch(error => {

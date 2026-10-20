@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 
 const SVG_W = 343, SVG_H = 213, SVG_R = 24; // card.svg viewBox and corner radius
-const PATTERN_W = 42, PATTERN_H = 47;       // pattern.svg tile
+const PATTERN_W = 40, PATTERN_H = 40;       // pattern.svg tile
 const WIDTH = 85.6;                          // mm, ISO ID-1 card width
 const HEIGHT = WIDTH * SVG_H / SVG_W;
 const RADIUS = SVG_R * WIDTH / SVG_W;
@@ -41,8 +41,8 @@ function buildMasks(w, h, artwork, pattern) {
   // Logo pattern mask, tiled over the whole card.
   const [pc, pctx] = canvas(w, h);
   pctx.filter = `blur(${px * 0.12}px)`;
-  for (let y = -PATTERN_H / 2; y < SVG_H; y += PATTERN_H)
-    for (let x = -PATTERN_W / 3; x < SVG_W; x += PATTERN_W)
+  for (let y = 0; y < SVG_H; y += PATTERN_H)
+    for (let x = 0; x < SVG_W; x += PATTERN_W)
       if (pattern) pctx.drawImage(pattern, x * px, y * px, PATTERN_W * px, PATTERN_H * px);
   const patternMask = alphaOf(pctx, w, h);
 
@@ -83,7 +83,14 @@ function valueNoise(w, h, cell, rnd) {
 
 // Height: engraved pattern and lettering, metal grain and brushing along the card's long side.
 // grain 0..1 — strength of the grain, grainSize — its scale in mm, brush 0..1 — brushing strength.
-function buildSurface({ w, h, patternMask, textMask, engrave }, { grain, grainSize, brush: brushing }) {
+// blacken 0..1 — насколько затемнять гравировку надписей в карте цвета (поверх может лежать свой цвет надписей).
+// pattern 0..1 — заметность паттерна из плюсов. tint — пастельные цвета по диагонали карты
+// (из левого верхнего угла в правый нижний), массив hex-строк; без него карта серая.
+function hexStops(list) {
+  return list.map(hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255));
+}
+function buildSurface({ w, h, patternMask, textMask, engrave }, { grain, grainSize, brush: brushing, blacken = 0.93, pattern = 1, tint = null }) {
+  const stops = tint && tint.length ? hexStops(tint) : null;
   const rnd = random(12), heightMap = new Float32Array(w * h), brush = new Float32Array(h);
   const cell = Math.max(1.5, grainSize / WIDTH * w);
   const coarse = valueNoise(w, h, cell, rnd), fine = valueNoise(w, h, Math.max(1.2, cell / 2.4), rnd);
@@ -95,7 +102,7 @@ function buildSurface({ w, h, patternMask, textMask, engrave }, { grain, grainSi
       const i = y * w + x;
       // The blackened lettering is smooth: no grain or brushing inside it.
       const metal = 1 - engrave[i];
-      heightMap[i] = -0.15 * patternMask[i] - 0.6 * engrave[i] + metal * (0.12 * brushing * brush[y]
+      heightMap[i] = -0.15 * pattern * patternMask[i] - 0.6 * engrave[i] + metal * (0.12 * brushing * brush[y]
         + grainHeight * (coarse[i] + 0.5 * fine[i]) + 0.02 * grain * (rnd() - 0.5));
     }
 
@@ -113,15 +120,22 @@ function buildSurface({ w, h, patternMask, textMask, engrave }, { grain, grainSi
       normal.data[j + 2] = (1 / len * 0.5 + 0.5) * 255;
       normal.data[j + 3] = 255;
       // Niello (blackening) fills the engraved lettering.
-      const p = patternMask[i], black = textMask[i];
+      const p = pattern * patternMask[i], black = textMask[i];
       // glTF convention: green = roughness, blue = metalness. Pattern is matte,
       // the blackened oxide is matte and only partly metallic.
       const bare = 0.45 + 0.3 * p + 0.1 * brushing * Math.abs(brush[y]) + grain * (0.2 + 0.3 * coarse[i]);
       rough.data[j + 1] = Math.max(0, Math.min(1, bare * (1 - black) + 0.6 * black)) * 255;
       rough.data[j + 2] = (1 - 0.5 * black) * 255;
       rough.data[j + 3] = 255;
-      const shade = (1 - 0.04 * p) * (1 - 0.93 * black) * 255;
-      color.data[j] = color.data[j + 1] = color.data[j + 2] = shade;
+      const shade = (1 - 0.04 * p) * (1 - blacken * black) * 255;
+      if (stops) {
+        // Положение вдоль диагонали 0..1 и плавная интерполяция между соседними цветами
+        const t = Math.min(0.9999, (x / w + y / h) / 2) * (stops.length - 1), k = t | 0, f = t - k;
+        const a = stops[k], b = stops[k + 1];
+        color.data[j] = shade * (a[0] + (b[0] - a[0]) * f);
+        color.data[j + 1] = shade * (a[1] + (b[1] - a[1]) * f);
+        color.data[j + 2] = shade * (a[2] + (b[2] - a[2]) * f);
+      } else color.data[j] = color.data[j + 1] = color.data[j + 2] = shade;
       color.data[j + 3] = 255;
     }
   return { color, rough, normal };
@@ -172,8 +186,8 @@ function geometry() {
 // userData.setSurface(surface) to rebuild the metal texture without rebuilding the card.
 export async function createCard(renderer, surface) {
   const [artwork, pattern] = await Promise.all([
-    svgImage('./assets/card3d/card.svg', text => text.replace(/<rect[^>]*\/>/, '')),
-    svgImage('./assets/card3d/pattern.svg'),
+    svgImage('./assets/card3d/card.svg?v=2', text => text.replace(/<rect[^>]*\/>/, '')),
+    svgImage('./assets/card3d/pattern.svg?v=2'),
   ]);
   const w = Math.min(innerWidth < 800 ? 2048 : 4096, renderer.capabilities.maxTextureSize);
   const h = Math.round(w * SVG_H / SVG_W);
