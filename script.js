@@ -90,24 +90,28 @@
   scene.addEventListener('touchend', reset);
   scene.addEventListener('touchcancel', reset);
 
-  /* ---------- Перелив фона в блоке «Распаковка» за курсором ---------- */
+  /* ---------- Перелив фона в блоке «Распаковка» по скроллу ---------- */
+  // Пока блок проезжает через экран, светлая полоса идёт по диагонали из левого верхнего угла в правый нижний
   const block = document.querySelector('.block');
-  if (block && window.matchMedia('(hover: hover)').matches) {
-    let tx = 0.3, ty = 0.3, x = 0.3, y = 0.3, raf = 0;
+  if (block) {
+    let x = 0.1, y = 0.15, tx = x, ty = y, raf = 0;
+    const target = () => {
+      const r = block.getBoundingClientRect(), vh = window.innerHeight;
+      const p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+      tx = 0.1 + 0.8 * p;
+      ty = 0.15 + 0.7 * p;
+    };
     const step = () => {
-      x += (tx - x) * 0.08;
-      y += (ty - y) * 0.08;
+      x += (tx - x) * 0.12;
+      y += (ty - y) * 0.12;
       block.style.setProperty('--mx', x.toFixed(4));
       block.style.setProperty('--my', y.toFixed(4));
-      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(step) : 0;
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.0005 ? requestAnimationFrame(step) : 0;
     };
-    block.addEventListener('pointermove', e => {
-      const r = block.getBoundingClientRect();
-      tx = (e.clientX - r.left) / r.width;
-      ty = (e.clientY - r.top) / r.height;
-      if (!raf) raf = requestAnimationFrame(step);
-    });
-    block.addEventListener('pointerleave', () => { tx = 0.3; ty = 0.3; if (!raf) raf = requestAnimationFrame(step); });
+    const onScroll = () => { target(); if (!raf) raf = requestAnimationFrame(step); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
   }
 
   /* ---------- Копирование промокода ---------- */

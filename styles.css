@@ -295,8 +295,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   padding-top: 48px;
   border-radius: 80px;
   overflow: hidden;
-  /* Перелив за курсором: светлая полоса градиента из макета смещается вслед за мышью,
-     сверху мягкое светлое пятно. --mx/--my (0…1) задаёт script.js; без мыши — медленный дрейф */
+  /* Перелив по скроллу: светлая полоса градиента из макета и мягкое светлое пятно
+     смещаются, пока блок проезжает через экран. --mx/--my (0…1) задаёт script.js */
   --mx: .3;
   --my: .3;
   background:
@@ -304,16 +304,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
     linear-gradient(226.3deg, #b2aec7 6.5%, #f0f0f0 38%, #b2aec7 103.35%) calc(var(--mx) * 100%) calc(var(--my) * 100%) / 170% 170%;
   text-align: center;
 }
-@media not (hover: hover) {
-  .block { animation: block-drift 9s ease-in-out infinite alternate; }
-}
-@property --mx { syntax: "<number>"; inherits: true; initial-value: .3; }
-@property --my { syntax: "<number>"; inherits: true; initial-value: .3; }
-@keyframes block-drift {
-  0%   { --mx: .15; --my: .2; }
-  50%  { --mx: .7;  --my: .45; }
-  100% { --mx: .4;  --my: .85; }
-}
+
 .block__head { display: flex; flex-direction: column; align-items: center; gap: 20.4px; }
 
 .services { display: flex; justify-content: center; gap: 64px; margin-top: 172px; }
@@ -362,7 +353,13 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .app h3 { font-family: var(--display); font-weight: 500; font-size: 34.27px; line-height: .95; color: var(--ink); }
 .app p { width: 490px; font-size: 22.03px; line-height: 29.38px; color: var(--ink-soft); }
 /* Видимая часть телефона (картинка обрезана по нижнему краю карточки, как в макете) */
-.app__phone { position: absolute; left: 746.68px; bottom: 21px; width: 359px; height: 345px; }
+.app__phone {
+  position: absolute;
+  left: 746.68px;
+  bottom: 21px;
+  width: 359px;
+  height: 345px;
+}
 
 /* ----- Приглашение + футер ----- */
 .invite { padding: 114px 0 0; }
