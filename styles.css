@@ -273,10 +273,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .gift-card__num {
   position: absolute;
   left: 50%;
-  top: 26.37%;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   font-family: "Druzhok", serif;
-  font-size: 207.49em;
+  font-size: 249em; /* «12» по центру, на 20% крупнее — как на 3D-карте */
   line-height: 1.1;
   letter-spacing: -.0067em;
   color: #fff;

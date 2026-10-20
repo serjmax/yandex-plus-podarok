@@ -186,7 +186,7 @@ function geometry() {
 // userData.setSurface(surface) to rebuild the metal texture without rebuilding the card.
 export async function createCard(renderer, surface) {
   const [artwork, pattern] = await Promise.all([
-    svgImage('./assets/card3d/card.svg?v=2', text => text.replace(/<rect[^>]*\/>/, '')),
+    svgImage('./assets/card3d/card.svg?v=3', text => text.replace(/<rect[^>]*\/>/, '')),
     svgImage('./assets/card3d/pattern.svg?v=2'),
   ]);
   const w = Math.min(innerWidth < 800 ? 2048 : 4096, renderer.capabilities.maxTextureSize);

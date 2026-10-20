@@ -1,10 +1,10 @@
 // 3D-карточка из card-3d-playground (src/card.js): металлическая карта с сиреневым переливом.
 // Поворачивается за курсором или пальцем, в покое слегка покачивается.
-// Цвет надписей и оттенок металла настраиваются: откройте страницу с ?tune — появится панель.
+// Панель настройки (?tune) сейчас выключена — включается флагом TUNE_PANEL ниже.
 // Если WebGL недоступен, остаётся CSS-карточка (.gift-card).
 import * as THREE from 'three';
 import { RoomEnvironment } from '../vendor/RoomEnvironment.js';
-import { createCard } from './card.js?v=4';
+import { createCard } from './card.js?v=5';
 
 const scene3d = document.getElementById('card-scene');
 const mount = document.getElementById('card3d');
@@ -20,14 +20,15 @@ const LOOK = {
   // Пастельные разводы по диагонали: сиренево-голубой → белый → розоватый → серо-сиреневый
   tint: ['#c9cbee', '#f6f2fa', '#efd6ea', '#c6c0dc'],
 };
-// Настраиваемое (панель ?tune и параметры ссылки)
+// Настраиваемое (панель ?tune и параметры ссылки). Значения подобраны в панели 20.10.
+const TUNE_PANEL = false;
 const TUNE_DEFAULTS = {
-  lc: '#2e2944', // цвет надписей
+  lc: '#210b41', // цвет надписей
   mt: '#f2ecf8', // оттенок металла
-  ir: 0.85,      // сила перелива (iridescence)
-  sh: 0.6,       // сиреневый отблеск по краям (sheen)
-  ro: 0.28,      // шероховатость: меньше — зеркальнее
-  pa: 0.45,      // заметность паттерна из плюсов
+  ir: 0.63,      // сила перелива (iridescence)
+  sh: 0.05,      // сиреневый отблеск по краям (sheen)
+  ro: 0.35,      // шероховатость: меньше — зеркальнее
+  pa: 1,         // заметность паттерна из плюсов
 };
 const tune = { ...TUNE_DEFAULTS };
 const query = new URLSearchParams(location.search);
@@ -83,7 +84,7 @@ async function init() {
 
   // Надписи «12» и «месяцев» — отдельный слой поверх лицевой стороны, чтобы цвет менялся мгновенно
   const WIDTH = 0.0856, HEIGHT = WIDTH * 213 / 343, FRONT = 0.0004; // метры, как в card.js
-  const svg = (await (await fetch('./assets/card3d/card.svg?v=2')).text()).replace(/<rect[^>]*\/>/, '');
+  const svg = (await (await fetch('./assets/card3d/card.svg?v=3')).text()).replace(/<rect[^>]*\/>/, '');
   const art = new Image();
   art.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   await art.decode();
@@ -121,7 +122,7 @@ async function init() {
     clearTimeout(patternTimer);
     patternTimer = setTimeout(() => { patternNow = tune.pa; card.userData.setSurface({ ...LOOK, pattern: tune.pa }); }, 300);
   };
-  if (query.has('tune')) tunePanel(tune, applyAll);
+  if (TUNE_PANEL && query.has('tune')) tunePanel(tune, applyAll);
   const box = new THREE.Box3().setFromObject(card);
   const size = box.getSize(new THREE.Vector3());
   card.position.sub(box.getCenter(new THREE.Vector3()));
