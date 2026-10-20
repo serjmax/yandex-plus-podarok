@@ -63,33 +63,15 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   line-height: 1;
   white-space: nowrap;
   transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
 }
-/* Перелив по наведению: косая светлая полоса пробегает по кнопке слева направо */
-.btn::after {
-  content: "";
-  position: absolute;
-  top: -20%;
-  bottom: -20%;
-  left: 0;
-  width: 45%;
-  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, var(--sheen, .35)) 50%, rgba(255, 255, 255, 0) 100%);
-  transform: translateX(-130%) skewX(-18deg);
-  pointer-events: none;
-  z-index: 1;
-}
-.btn:hover::after { animation: btn-sheen .9s cubic-bezier(.3, 0, .2, 1); }
-@keyframes btn-sheen {
-  from { transform: translateX(-130%) skewX(-18deg); }
-  to   { transform: translateX(330%) skewX(-18deg); }
-}
-.btn--light { --sheen: .8; }
+/* Цвет блика рефлекса — плавно ярче при наведении */
+@property --hl { syntax: "<color>"; inherits: false; initial-value: #6c5976; }
 .btn--dark {
   /* Рефлекс: светлая полоса из макета плавно ходит вдоль кнопки туда и обратно */
-  background: linear-gradient(240.7deg, #1b131e 18%, #6c5976 50%, #1b131e 82%) 0 0 / 220% 100%;
+  --hl: #6c5976;
+  background: linear-gradient(240.7deg, #1b131e 18%, var(--hl) 50%, #1b131e 82%) 0 0 / 220% 100%;
   color: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, --hl .35s ease;
   animation: btn-reflex 4.5s ease-in-out infinite alternate;
 }
 @keyframes btn-reflex {
@@ -98,13 +80,17 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 }
 .btn--light {
   /* Тот же рефлекс, что у тёмных кнопок: светлая полоса из макета ходит вдоль кнопки */
-  background: linear-gradient(249.2deg, #b2aec7 18%, #f0f0f0 50%, #b2aec7 82%) 0 0 / 220% 100%;
+  --hl: #f0f0f0;
+  background: linear-gradient(249.2deg, #b2aec7 18%, var(--hl) 50%, #b2aec7 82%) 0 0 / 220% 100%;
   color: var(--ink);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, --hl .35s ease;
   width: 267px;
   box-shadow: 0 24px 32px -30px rgba(131, 125, 157, 0); /* тень из макета — только при наведении */
   animation: btn-reflex 4.5s ease-in-out infinite alternate;
 }
-.btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -12px rgba(27, 19, 30, .55); filter: brightness(1.06); }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -12px rgba(27, 19, 30, .55); }
+.btn--dark:hover { --hl: #a58fb6; }   /* блик ярче */
+.btn--light:hover { --hl: #ffffff; }
 /* Светлая кнопка: своя тень из макета (правило ниже общего, чтобы его перекрыть) */
 .btn--light:hover { box-shadow: 0 24px 32px -30px rgba(131, 125, 157, .8); }
 .btn:active { transform: translateY(0) scale(.98); }

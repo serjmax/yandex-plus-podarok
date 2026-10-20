@@ -117,6 +117,33 @@
     onScroll();
   }
 
+  /* ---------- Рефлекс кнопок: при наведении быстро пробегает туда-обратно ---------- */
+  // Ускоряем ту же CSS-анимацию btn-reflex: один проход туда и обратно, затем плавно
+  // возвращаем обычную скорость — рефлекс продолжает движение с того места, где оказался
+  const FAST = 8;          // во сколько раз быстрее при наведении
+  const PASS_MS = 4500;    // длительность одного прохода (как в styles.css)
+  document.querySelectorAll('.btn--dark, .btn--light').forEach(btn => {
+    let timer = 0, raf = 0;
+    const reflex = () => btn.getAnimations().find(a => a.animationName === 'btn-reflex');
+    btn.addEventListener('pointerenter', () => {
+      const anim = reflex();
+      if (!anim) return;
+      cancelAnimationFrame(raf);
+      clearTimeout(timer);
+      anim.updatePlaybackRate(FAST);
+      // два прохода (туда и обратно) на ускоренной скорости, потом плавное торможение
+      timer = setTimeout(() => {
+        const start = performance.now();
+        const ease = now => {
+          const k = Math.min(1, (now - start) / 400);
+          anim.updatePlaybackRate(FAST + (1 - FAST) * (1 - (1 - k) ** 3));
+          if (k < 1) raf = requestAnimationFrame(ease);
+        };
+        raf = requestAnimationFrame(ease);
+      }, (2 * PASS_MS) / FAST - 200);
+    });
+  });
+
   /* ---------- Копирование промокода ---------- */
   const code = document.getElementById('promo-code');
   const toast = document.getElementById('toast');
