@@ -297,12 +297,14 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   padding-top: 48px;
   border-radius: 80px;
   overflow: hidden;
-  /* Перелив по скроллу: светлая полоса градиента из макета и мягкое светлое пятно
-     смещаются, пока блок проезжает через экран. --mx/--my (0…1) задаёт script.js */
+  /* Перелив по скроллу и курсору: светлая полоса градиента из макета (--mx/--my) и мягкое
+     светлое пятно (--cx/--cy) двигает script.js */
+  --cx: .5;
+  --cy: .5;
   --mx: .3;
   --my: .3;
   background:
-    radial-gradient(circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(255, 255, 255, .7), rgba(255, 255, 255, 0) 40%),
+    radial-gradient(circle at calc(var(--cx) * 100%) calc(var(--cy) * 100%), rgba(255, 255, 255, .7), rgba(255, 255, 255, 0) 40%),
     linear-gradient(226.3deg, #b2aec7 6.5%, #f0f0f0 38%, #b2aec7 103.35%) calc(var(--mx) * 100%) calc(var(--my) * 100%) / 240% 240%;
   text-align: center;
 }

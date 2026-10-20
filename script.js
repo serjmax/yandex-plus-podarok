@@ -90,31 +90,51 @@
   scene.addEventListener('touchend', reset);
   scene.addEventListener('touchcancel', reset);
 
-  /* ---------- Перелив фона в блоке «Распаковка» по скроллу ---------- */
-  // Пока блок проезжает через экран, светлая полоса несколько раз проходит по диагонали
-  // туда и обратно (SWEEPS проходов за весь путь блока через экран)
+  /* ---------- Перелив фона в блоке «Распаковка»: по скроллу и по курсору ---------- */
+  // Скролл: пока блок проезжает через экран, светлая полоса несколько раз проходит по диагонали
+  // туда и обратно. Курсор: светлое пятно идёт за мышью и слегка сдвигает полосу в её сторону.
+  // --mx/--my — полоса, --cx/--cy — пятно (0…1 от размеров блока)
   const block = document.querySelector('.block');
   if (block) {
     const SWEEPS = 3;
-    let x = 0, y = 0, tx = x, ty = y, raf = 0;
-    const target = () => {
+    const cur = { mx: 0, my: 0, cx: 0.5, cy: 0.5 }, tgt = { ...cur };
+    let sx = 0, sy = 0, px = 0.5, py = 0.5, hover = false, raf = 0;
+    const fromScroll = () => {
       const r = block.getBoundingClientRect(), vh = window.innerHeight;
       const p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
       const t = (p * SWEEPS) % 1, tri = 1 - Math.abs(2 * t - 1); // 0 → 1 → 0 на каждый проход
-      tx = tri;
-      ty = 0.1 + 0.8 * tri;
+      sx = tri;
+      sy = 0.1 + 0.8 * tri;
+    };
+    const clamp = v => Math.min(1, Math.max(0, v));
+    const retarget = () => {
+      const pull = hover ? 0.35 : 0;          // насколько курсор тянет полосу к себе
+      tgt.mx = clamp(sx + pull * (px - sx));
+      tgt.my = clamp(sy + pull * (py - sy));
+      tgt.cx = hover ? px : sx;               // без курсора пятно идёт вместе с полосой
+      tgt.cy = hover ? py : sy;
+      if (!raf) raf = requestAnimationFrame(step);
     };
     const step = () => {
-      x += (tx - x) * 0.12;
-      y += (ty - y) * 0.12;
-      block.style.setProperty('--mx', x.toFixed(4));
-      block.style.setProperty('--my', y.toFixed(4));
-      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.0005 ? requestAnimationFrame(step) : 0;
+      let moving = 0;
+      for (const k in cur) { cur[k] += (tgt[k] - cur[k]) * 0.12; moving += Math.abs(tgt[k] - cur[k]); }
+      for (const k in cur) block.style.setProperty('--' + k, cur[k].toFixed(4));
+      raf = moving > 0.001 ? requestAnimationFrame(step) : 0;
     };
-    const onScroll = () => { target(); if (!raf) raf = requestAnimationFrame(step); };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    onScroll();
+    window.addEventListener('scroll', () => { fromScroll(); retarget(); }, { passive: true });
+    window.addEventListener('resize', () => { fromScroll(); retarget(); });
+    if (window.matchMedia('(hover: hover)').matches) {
+      block.addEventListener('pointermove', e => {
+        const r = block.getBoundingClientRect();
+        px = (e.clientX - r.left) / r.width;
+        py = (e.clientY - r.top) / r.height;
+        hover = true;
+        retarget();
+      });
+      block.addEventListener('pointerleave', () => { hover = false; retarget(); });
+    }
+    fromScroll();
+    retarget();
   }
 
   /* ---------- Рефлекс кнопок: при наведении быстро пробегает туда-обратно ---------- */
