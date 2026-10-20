@@ -91,15 +91,18 @@
   scene.addEventListener('touchcancel', reset);
 
   /* ---------- Перелив фона в блоке «Распаковка» по скроллу ---------- */
-  // Пока блок проезжает через экран, светлая полоса идёт по диагонали из левого верхнего угла в правый нижний
+  // Пока блок проезжает через экран, светлая полоса несколько раз проходит по диагонали
+  // туда и обратно (SWEEPS проходов за весь путь блока через экран)
   const block = document.querySelector('.block');
   if (block) {
-    let x = 0.1, y = 0.15, tx = x, ty = y, raf = 0;
+    const SWEEPS = 3;
+    let x = 0, y = 0, tx = x, ty = y, raf = 0;
     const target = () => {
       const r = block.getBoundingClientRect(), vh = window.innerHeight;
       const p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
-      tx = 0.1 + 0.8 * p;
-      ty = 0.15 + 0.7 * p;
+      const t = (p * SWEEPS) % 1, tri = 1 - Math.abs(2 * t - 1); // 0 → 1 → 0 на каждый проход
+      tx = tri;
+      ty = 0.1 + 0.8 * tri;
     };
     const step = () => {
       x += (tx - x) * 0.12;

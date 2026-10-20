@@ -145,17 +145,11 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .is-opening .intro__title,
 .is-opening .intro__text { opacity: 0; }
 .is-opening .intro__btn { opacity: 0; transform: translateY(16px) scale(.96); }
-.is-opening .intro__half--l { animation: untie-left 1.15s cubic-bezier(.55, 0, .3, 1) forwards; }
-.is-opening .intro__half--r { animation: untie-right 1.15s cubic-bezier(.55, 0, .3, 1) forwards; }
-@keyframes untie-left {
-  0%   { transform: none; }
-  22%  { transform: scale(1.05) rotate(2deg); }
-  100% { transform: translate(-45%, 18%) rotate(-28deg) scale(.9); opacity: 0; }
-}
-@keyframes untie-right {
-  0%   { transform: none; }
-  22%  { transform: scale(1.05) rotate(-2deg); }
-  100% { transform: translate(45%, 18%) rotate(28deg) scale(.9); opacity: 0; }
+.is-opening .intro__half { animation: bow-out .9s cubic-bezier(.3, 0, .2, 1) forwards; }
+/* Бант плавно исчезает, слегка увеличиваясь */
+@keyframes bow-out {
+  from { transform: none; opacity: 1; }
+  to   { transform: scale(1.12); opacity: 0; }
 }
 
 /* =========================================================
@@ -300,8 +294,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   --mx: .3;
   --my: .3;
   background:
-    radial-gradient(circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 38%),
-    linear-gradient(226.3deg, #b2aec7 6.5%, #f0f0f0 38%, #b2aec7 103.35%) calc(var(--mx) * 100%) calc(var(--my) * 100%) / 170% 170%;
+    radial-gradient(circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(255, 255, 255, .7), rgba(255, 255, 255, 0) 40%),
+    linear-gradient(226.3deg, #b2aec7 6.5%, #f0f0f0 38%, #b2aec7 103.35%) calc(var(--mx) * 100%) calc(var(--my) * 100%) / 240% 240%;
   text-align: center;
 }
 
