@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#6b6971">
+  <meta name="theme-color" content="#edecf2">
   <title>Будьте в Плюсе! — Яндекс Плюс</title>
-  <link rel="stylesheet" href="styles.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=32">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 </head>
 <body class="is-locked">
@@ -13,27 +13,31 @@
   <!-- ===== Стартовый экран с бантом ===== -->
   <section class="intro" id="intro" aria-label="Подарок">
     <div class="intro__stage">
-      <img class="intro__logo" src="assets/logo-white-v2.svg" alt="Яндекс Плюс">
-      <h1 class="intro__title"><span class="d-only">Будьте в&nbsp;Плюсе!</span><span class="m-only">Новый год <br>с Яндекс Плюсом</span></h1>
-      <p class="intro__text"><span class="d-only">Открывайте новое каждый день: <br>кино, музыку и книги</span><span class="m-only">Мы приготовили для вас подарок, <br>который уже можно открыть!</span></p>
+      <img class="intro__logo" src="assets/light/logo.svg" alt="Яндекс Плюс">
+      <h1 class="intro__title">Новый год <br>с Яндекс Плюсом</h1>
+      <p class="intro__text">Мы приготовили для вас подарок, <br>который уже можно открыть!</p>
 
       <div class="intro__bow" aria-hidden="true">
-        <div class="intro__half intro__half--l"><img src="assets/bow-v3.png" alt=""></div>
-        <div class="intro__half intro__half--r"><img src="assets/bow-v3.png" alt=""></div>
+        <div class="intro__half intro__half--l">
+          <div class="bow"><div class="bow__satin"></div><div class="bow__tint"></div></div>
+        </div>
+        <div class="intro__half intro__half--r">
+          <div class="bow"><div class="bow__satin"></div><div class="bow__tint"></div></div>
+        </div>
       </div>
 
-      <button class="btn intro__btn" id="open-gift" type="button">Забрать подарок</button>
+      <button class="btn btn--dark intro__btn" id="open-gift" type="button">Забрать подарок</button>
     </div>
   </section>
 
   <!-- ===== Основная страница ===== -->
   <main class="page" id="page">
-    <header class="logo"><img src="assets/logo-white-v2.svg" alt="Яндекс Плюс" width="182" height="27"></header>
+    <section class="hero gift">
+      <header class="logo"><img src="assets/light/logo.svg" alt="Яндекс Плюс" width="218" height="32"></header>
 
-    <section class="gift">
       <div class="gift__head">
-        <h1 class="gift__title">Будьте <br class="m-only">в&nbsp;Плюсе!</h1>
-        <p class="gift__sub">Открывайте новое каждый день: <br>кино, музыку и книги</p>
+        <h1 class="h-display gift__title">Будьте в&nbsp;Плюсе!</h1>
+        <p class="lead">Открывайте новое каждый день: <br>кино, музыку и книги</p>
       </div>
 
       <div class="card-scene" id="card-scene">
@@ -48,98 +52,90 @@
       <div class="promo">
         <div class="promo__info">
           <p class="promo__label">Промокод</p>
-          <button class="promo__code" id="promo-code" type="button" title="Скопировать">A1B2C3D4E5F6</button>
+          <button class="promo__code" id="promo-code" type="button" title="Скопировать">
+            <span>A1B2C3D4E5F6</span><img src="assets/light/copy.svg" alt="" width="24" height="24">
+          </button>
         </div>
-        <a class="btn promo__btn" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Активировать</a>
+        <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Забрать подарок</a>
       </div>
     </section>
 
-    <section class="services">
-      <div class="services__head">
-        <h2 class="services__title">Распаковка <br class="m-only">Яндекс Плюса</h2>
-        <p class="services__sub">Откройте мультиподписку на&nbsp;развлечения</p>
+    <section class="block">
+      <div class="block__head">
+        <h2 class="h-display">Распаковка <br>Яндекс Плюса</h2>
+        <p class="lead">Откройте мультиподписку на&nbsp;развлечения</p>
       </div>
-      <div class="services__row">
-        <article class="service service--kp">
-          <div class="service__text">
-            <h3>Кинопоиск</h3>
-            <p>Смотрите кино, сериалы <br>и спорт на Кинопоиске</p>
-          </div>
-          <img class="service__img" src="assets/kp.png" alt="">
-        </article>
+
+      <div class="services">
         <article class="service service--music">
+          <div class="service__art"><img src="assets/light/music.png" alt=""></div>
           <div class="service__text">
             <h3>Яндекс Музыка</h3>
-            <p>Открывайте новые любимые <br>треки в Яндекс Музыке</p>
+            <p>Открывайте новые любимые треки в Яндекс Музыке</p>
           </div>
-          <img class="service__img" src="assets/music.png" alt="">
+        </article>
+        <article class="service service--kp">
+          <div class="service__art"><img src="assets/light/kp.png" alt=""></div>
+          <div class="service__text">
+            <h3>Кинопоиск</h3>
+            <p>Смотрите кино, сериалы и спорт на Кинопоиске</p>
+          </div>
         </article>
         <article class="service service--books">
+          <div class="service__art"><img src="assets/light/books.png" alt=""></div>
           <div class="service__text">
             <h3>Яндекс Книги</h3>
-            <p>Читайте книги и комиксы <br>в Яндекс Книгах</p>
+            <p>Читайте книги и комиксы в Яндекс Книгах</p>
           </div>
-          <img class="service__img" src="assets/books.png" alt="">
         </article>
       </div>
+
+      <div class="app">
+        <div class="app__text">
+          <h3>Все сервисы — в&nbsp;одном приложении</h3>
+          <p>Они подстраиваются под ваши интересы в&nbsp;приложении Яндекс Плюс</p>
+        </div>
+        <a class="btn btn--light" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Скачать приложение</a>
+        <img class="app__phone" src="assets/light/phone.png" alt="Приложение Яндекс Плюс">
+      </div>
     </section>
 
-    <section class="banner banner--app">
-      <div class="banner__body">
-        <div class="banner__text">
-          <h2><span class="d-only">Все сервисы — <br>в одном приложении</span><span class="m-only">Праздник в ваших руках</span></h2>
-          <p>Кино, музыка и книги всегда рядом — они подстраиваются под ваши интересы в приложении Яндекс Плюс</p>
-        </div>
-        <a class="btn" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Скачать приложение</a>
-      </div>
-      <div class="banner__phone banner__phone--d phone-mock" role="img" aria-label="Приложение Яндекс Плюс">
-        <img class="phone-mock__body" src="assets/phone/body.png" alt="">
-        <div class="phone-mock__screen">
-          <img class="phone-mock__top" src="assets/phone/screen-top.svg" alt="">
-          <img class="phone-mock__shot" src="assets/phone/screen.png" alt="">
-        </div>
-      </div>
-      <img class="banner__phone banner__phone--m" src="assets/phone-mobile-v2.png" alt="Приложение Яндекс Плюс">
-    </section>
-
-    <section class="banner banner--invite">
-      <div class="banner__body">
-        <div class="banner__text">
-          <h2>Отмечайте новый <br>год с близкими</h2>
-          <p>Пригласите в Плюс тех, кого любите, <br>и делайте открытия вместе</p>
-        </div>
-        <a class="btn" href="https://plus.yandex.ru/" target="_blank" rel="noopener"><span class="d-only">Пригласить близких</span><span class="m-only">Пригласить</span></a>
+    <section class="hero invite">
+      <div class="invite__head">
+        <h2 class="h-display">Отмечайте новый год с&nbsp;близкими</h2>
+        <p class="lead">Пригласите в Плюс тех, кого любите, <br>и делайте открытия вместе</p>
       </div>
       <div class="friends" aria-hidden="true">
-        <div class="userpic userpic--woman">
-          <img class="userpic__photo" src="assets/userpic-woman.png" alt="">
-          <img class="userpic__stroke" src="assets/stroke-small.svg" alt="">
+        <div class="userpic userpic--small">
+          <img class="userpic__photo" src="assets/light/userpic-small.png" alt="">
+          <img class="userpic__stroke" src="assets/light/stroke-small.svg" alt="">
         </div>
-        <div class="userpic userpic--man">
-          <div class="userpic__clip"><img class="userpic__photo" src="assets/userpic-man.png" alt=""></div>
-          <img class="userpic__stroke" src="assets/stroke-big.svg" alt="">
+        <div class="userpic userpic--big">
+          <img class="userpic__photo" src="assets/light/userpic-big.png" alt="">
+          <img class="userpic__stroke" src="assets/light/stroke-big.svg" alt="">
         </div>
-        <div class="userpic userpic--add"><img src="assets/plus.svg" alt=""></div>
+        <div class="userpic userpic--add"><img src="assets/light/plus.svg" alt=""></div>
       </div>
-    </section>
+      <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Пригласить</a>
 
-    <footer class="footer">
-      <nav class="footer__links">
-        <a href="#">Условия подписки</a>
-        <a href="#">Условия использования промокодов</a>
-        <a href="#">Правила партнерской сети</a>
-        <a href="#">Политика обработки персональных данных</a>
-      </nav>
-      <div class="footer__bottom">
-        <p class="footer__copy"><span>© 2018–2026 ООО «Яндекс»</span><span>18+</span></p>
-        <p class="footer__mark">Проект компании <img src="assets/yandex-white.svg" alt="Яндекс" width="39" height="11"></p>
-      </div>
-    </footer>
+      <footer class="footer">
+        <nav class="footer__links">
+          <a href="#">Условия подписки</a>
+          <a href="#">Условия использования промокодов</a>
+          <a href="#">Правила партнерской сети</a>
+          <a href="#">Политика обработки персональных данных</a>
+        </nav>
+        <div class="footer__bottom">
+          <p class="footer__copy"><span>© 2018–2026 ООО «Яндекс»</span><span>18+</span></p>
+          <p class="footer__mark">Проект компании <img src="assets/light/yandex.svg" alt="Яндекс" width="39" height="11"></p>
+        </div>
+      </footer>
+    </section>
   </main>
 
   <div class="toast" id="toast" role="status">Промокод скопирован</div>
 
-  <script src="script.js?v=6"></script>
-  <script type="module" src="src/card3d.js?v=11"></script>
+  <script src="script.js?v=7"></script>
+  <script type="module" src="src/card3d.js?v=12"></script>
 </body>
 </html>

@@ -12,6 +12,16 @@
   alignIntro();
   window.addEventListener('resize', alignIntro);
 
+  // Бант вписывается в место между текстом и кнопкой; на узких экранах — по ширине
+  // (видимая часть ленты занимает примерно половину композиции 1255 px)
+  const bowArea = document.querySelector('.intro__bow');
+  const fitBow = () => {
+    const k = Math.min(1, bowArea.clientHeight / 418, window.innerWidth / 640);
+    bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
+  };
+  fitBow();
+  window.addEventListener('resize', fitBow);
+
   const open = () => {
     if (body.classList.contains('is-opening')) return;
     window.scrollTo(0, 0);
