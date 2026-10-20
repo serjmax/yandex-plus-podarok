@@ -12,11 +12,11 @@
   alignIntro();
   window.addEventListener('resize', alignIntro);
 
-  // Бант вписывается в место между текстом и кнопкой; на узких экранах — по ширине
-  // (видимая часть ленты занимает примерно половину композиции 1255 px)
+  // Бант заполняет место между текстом и кнопкой (до 1.6× от макета).
+  // Сам бант — около 372 px из 418 px высоты композиции; на узких экранах ограничиваем по ширине
   const bowArea = document.querySelector('.intro__bow');
   const fitBow = () => {
-    const k = Math.min(1, bowArea.clientHeight / 418, window.innerWidth / 640);
+    const k = Math.min(1.6, (bowArea.clientHeight - 24) / 372, window.innerWidth / 520);
     bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
   };
   fitBow();

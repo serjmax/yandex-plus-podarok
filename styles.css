@@ -99,14 +99,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .intro__btn { flex: none; }
 
 /* Бант: место между текстом и кнопкой; масштаб --bs считает script.js (бант уменьшается на низких экранах) */
-.intro__bow { --bs: 1; position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; margin: -10px 0 23px; }
+.intro__bow { --bs: 1; position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; margin: 16px 0; }
 .intro__half {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 1255.02px;
   height: 417.93px;
-  translate: -50% -50%;
+  translate: -50% calc(-50% - 14px * var(--bs)); /* по центру — видимая часть банта */
   scale: var(--bs);
   transform-origin: 50% 45%;
 }
@@ -430,7 +430,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .intro__logo, .logo img { width: 163.5px; height: 24px; }
   .intro__title { margin-top: 28px; width: 360px; font-size: 40px; }
   .intro__text { margin-top: 14px; font-size: 18px; line-height: 22px; }
-  .intro__bow { margin: 0 0 16px; }
+  .intro__bow { margin: 12px 0; }
 
   .gift { padding: 24px 0 48px; }
   .gift__head { width: 340px; gap: 14px; margin-top: 28px; }
