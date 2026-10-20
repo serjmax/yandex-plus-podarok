@@ -62,7 +62,16 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   white-space: nowrap;
   transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
 }
-.btn--dark { background: var(--btn-dark); color: #fff; }
+.btn--dark {
+  /* Рефлекс: светлая полоса из макета плавно ходит вдоль кнопки туда и обратно */
+  background: linear-gradient(240.7deg, #1b131e 18%, #6c5976 50%, #1b131e 82%) 0 0 / 220% 100%;
+  color: #fff;
+  animation: btn-reflex 4.5s ease-in-out infinite alternate;
+}
+@keyframes btn-reflex {
+  from { background-position: 100% 0; }
+  to   { background-position: 0% 0; }
+}
 .btn--light { background: var(--btn-light); color: var(--ink); width: 267px; }
 .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -12px rgba(27, 19, 30, .55); filter: brightness(1.06); }
 .btn:active { transform: translateY(0) scale(.98); }
