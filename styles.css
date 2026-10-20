@@ -82,7 +82,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   box-shadow: 0 24px 32px -30px rgba(131, 125, 157, .8); /* тень из макета */
   animation: btn-reflex 4.5s ease-in-out infinite alternate;
 }
-.btn--light:hover { box-shadow: 0 28px 36px -28px rgba(131, 125, 157, .9); }
+.btn--light:hover { box-shadow: 0 30px 52px -30px rgba(131, 125, 157, .5); } /* мягче: светлее и сильнее размыта */
 .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -12px rgba(27, 19, 30, .55); filter: brightness(1.06); }
 .btn:active { transform: translateY(0) scale(.98); }
 .btn:focus-visible, .promo__code:focus-visible { outline: 3px solid #8341ef; outline-offset: 3px; }
