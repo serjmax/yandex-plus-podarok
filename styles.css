@@ -202,13 +202,14 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .card-scene.has-3d::after {
   content: "";
   position: absolute;
-  left: 12%;
-  right: 8%;
-  bottom: -12%;
-  height: 24%;
+  left: 6%;
+  right: 4%;
+  bottom: -16%;
+  height: 32%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(72, 61, 93, .4), rgba(72, 61, 93, 0));
-  filter: blur(var(--sh-blur, 10px));
+  /* Мягкая тень: светлее и сильнее размыта */
+  background: radial-gradient(closest-side, rgba(72, 61, 93, .2), rgba(72, 61, 93, 0));
+  filter: blur(var(--sh-blur, 24px));
   opacity: var(--sh-o, 1);
   /* Положение, размер и плотность задаёт src/card3d.js по текущему повороту карточки */
   transform: translate(var(--sh-x, 0px), var(--sh-y, 0px)) rotate(var(--sh-r, 0deg)) scale(var(--sh-sx, 1), var(--sh-sy, 1));

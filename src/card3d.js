@@ -186,7 +186,7 @@ async function init() {
       '--sh-sx': (Math.cos(ry) * (1 + 0.15 * lift)).toFixed(3),
       '--sh-sy': (1 + 0.9 * lift).toFixed(3),
       '--sh-o': Math.max(0.35, 1 - 0.9 * Math.abs(lift) - 0.6 * Math.abs(Math.sin(ry))).toFixed(3),
-      '--sh-blur': (10 + 14 * Math.max(0, lift)).toFixed(1) + 'px',
+      '--sh-blur': (24 + 16 * Math.max(0, lift)).toFixed(1) + 'px',
       '--sh-r': THREE.MathUtils.radToDeg(rz).toFixed(2) + 'deg',
     };
     const key = Object.values(vars).join();
