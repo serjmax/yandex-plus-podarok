@@ -9,7 +9,7 @@
 :root {
   --ink: #322a40;                      /* основной текст */
   --ink-soft: rgba(50, 42, 64, .9);    /* подзаголовки */
-  --ink-card: #605279;                 /* текст в карточках сервисов */
+  --ink-card: #322a40;                 /* текст в карточках сервисов — как основной */
   /* Фон растянут на экран и прилеплен к нему (как в макете первого экрана) */
   --backdrop: linear-gradient(180deg, #edecf2 0%, #e3e2e9 50%, #d8d7df 100%);
   --btn-dark: linear-gradient(240.7deg, #1b131e 2.5%, #6c5976 43.4%, #1b131e 110.9%);
@@ -338,7 +338,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .service--books .service__art img { left: calc(50% + 4.41px); top: -15.04px; width: 247.11px; height: 224.3px; translate: -50% 0; }
 .service__text { display: flex; flex-direction: column; gap: 12.89px; width: 332.27px; height: 181.53px; padding: 34.37px 34.37px 17.19px; border-radius: 41.25px; }
 .service h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink-card); }
-.service p { font-size: 19.33px; line-height: 25.78px; color: rgba(96, 82, 121, .9); }
+.service p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
 
 .app {
   position: absolute;
