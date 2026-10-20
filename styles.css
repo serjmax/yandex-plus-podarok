@@ -319,8 +319,24 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   padding-top: 48px;
   border-radius: 80px;
   overflow: hidden;
-  background: linear-gradient(226.3deg, #b2aec7 6.5%, #f0f0f0 38%, #b2aec7 103.35%);
+  /* Перелив за курсором: светлая полоса градиента из макета смещается вслед за мышью,
+     сверху мягкое светлое пятно. --mx/--my (0…1) задаёт script.js; без мыши — медленный дрейф */
+  --mx: .3;
+  --my: .3;
+  background:
+    radial-gradient(circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 38%),
+    linear-gradient(226.3deg, #b2aec7 6.5%, #f0f0f0 38%, #b2aec7 103.35%) calc(var(--mx) * 100%) calc(var(--my) * 100%) / 170% 170%;
   text-align: center;
+}
+@media not (hover: hover) {
+  .block { animation: block-drift 9s ease-in-out infinite alternate; }
+}
+@property --mx { syntax: "<number>"; inherits: true; initial-value: .3; }
+@property --my { syntax: "<number>"; inherits: true; initial-value: .3; }
+@keyframes block-drift {
+  0%   { --mx: .15; --my: .2; }
+  50%  { --mx: .7;  --my: .45; }
+  100% { --mx: .4;  --my: .85; }
 }
 .block__head { display: flex; flex-direction: column; align-items: center; gap: 20.4px; }
 

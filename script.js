@@ -90,6 +90,26 @@
   scene.addEventListener('touchend', reset);
   scene.addEventListener('touchcancel', reset);
 
+  /* ---------- Перелив фона в блоке «Распаковка» за курсором ---------- */
+  const block = document.querySelector('.block');
+  if (block && window.matchMedia('(hover: hover)').matches) {
+    let tx = 0.3, ty = 0.3, x = 0.3, y = 0.3, raf = 0;
+    const step = () => {
+      x += (tx - x) * 0.08;
+      y += (ty - y) * 0.08;
+      block.style.setProperty('--mx', x.toFixed(4));
+      block.style.setProperty('--my', y.toFixed(4));
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(step) : 0;
+    };
+    block.addEventListener('pointermove', e => {
+      const r = block.getBoundingClientRect();
+      tx = (e.clientX - r.left) / r.width;
+      ty = (e.clientY - r.top) / r.height;
+      if (!raf) raf = requestAnimationFrame(step);
+    });
+    block.addEventListener('pointerleave', () => { tx = 0.3; ty = 0.3; if (!raf) raf = requestAnimationFrame(step); });
+  }
+
   /* ---------- Копирование промокода ---------- */
   const code = document.getElementById('promo-code');
   const toast = document.getElementById('toast');
