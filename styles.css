@@ -364,7 +364,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .service--music .service__art img { left: 30.86px; top: -22.56px; width: 260.84px; height: 237.85px; }
 .service--kp .service__art img    { left: 67.67px; top: -.38px; width: 213.91px; height: 218.93px; }
 .service--books .service__art img { left: calc(50% + 4.41px); top: -15.04px; width: 247.11px; height: 224.3px; translate: -50% 0; }
-.service__text { display: flex; flex-direction: column; gap: 12.89px; width: 332.27px; height: 181.53px; padding: 34.37px 34.37px 17.19px; border-radius: 41.25px; }
+.service__text { flex: none; /* не сжимать — иначе текст и иконка уезжают вниз относительно макета */ display: flex; flex-direction: column; gap: 12.89px; width: 332.27px; height: 181.53px; padding: 34.37px 34.37px 17.19px; border-radius: 41.25px; }
 .service h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink-card); }
 .service p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
 
