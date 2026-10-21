@@ -575,6 +575,15 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 [data-theme="dark"] .block {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.017' y1='-0.125' x2='-0.215' y2='0.838'%3E%3Cstop offset='0' stop-color='%23b2aec7'/%3E%3Cstop offset='0.844' stop-color='%23f0f0f0'/%3E%3Cstop offset='1' stop-color='%23b2aec7'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") calc(var(--mx) * 100%) calc(var(--my) * 100%) / 160% 160% no-repeat, #d6d3e0;
 }
+/* Те же блики, что на тёмном блоке (скролл + курсор), но ярче и с сиреневой тенью между ними — иначе на светлом фоне их не видно */
+[data-theme="dark"] .block::before {
+  background: repeating-linear-gradient(240deg,
+    rgba(140, 130, 172, .22) 0, rgba(140, 130, 172, .1) 175px,
+    rgba(255, 255, 255, .3) 330px,
+    rgba(255, 255, 255, .65) 500px,
+    rgba(255, 255, 255, .3) 670px,
+    rgba(140, 130, 172, .1) 825px, rgba(140, 130, 172, .22) 1000px);
+}
 [data-theme="dark"] .block__head .h-display, [data-theme="dark"] .app h3 { color: #322a40; }
 [data-theme="dark"] .block__head .lead, [data-theme="dark"] .app p { color: rgba(50, 42, 64, .9); }
 [data-theme="dark"] .service { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.172' y1='-0.402' x2='-0.472' y2='0.648'%3E%3Cstop offset='0' stop-color='%231b131e'/%3E%3Cstop offset='0.862' stop-color='%236c5976'/%3E%3Cstop offset='1' stop-color='%231b131e'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat, #3a2f41; }
