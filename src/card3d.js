@@ -154,6 +154,8 @@ async function init() {
 
   window.addEventListener('mousemove', e => {
     if (!fine.matches) return;
+    // Курсор на промокоде или кнопке под карточкой — карточка встаёт ровно, лицом к зрителю, без покачивания
+    if (e.target.closest && e.target.closest('.promo')) { active = true; targetX = targetY = 0; return; }
     const r = mount.getBoundingClientRect();
     const zone = { left: r.left - r.width * 0.3, top: r.top - r.height * 0.3, width: r.width * 1.6, height: r.height * 1.6 };
     const inside = e.clientX > zone.left && e.clientX < zone.left + zone.width && e.clientY > zone.top && e.clientY < zone.top + zone.height;
