@@ -463,7 +463,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .btn { width: 274px; height: 60px; font-size: 18px; }
   .btn--light { width: 240px; }
 
-  .intro__stage { padding: 24px 0 max(36px, env(safe-area-inset-bottom)); }
+  .intro__stage { padding: 24px 0 max(76px, calc(env(safe-area-inset-bottom) + 60px)); } /* снизу место под переключатель темы */
   .intro__logo, .logo img { width: 163.5px; height: 24px; }
   .intro__title { margin-top: 28px; width: 360px; font-size: 40px; }
   .intro__text { margin-top: 14px; font-size: 18px; line-height: 22px; }
@@ -511,13 +511,30 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .friends .userpic--add   { left: 243.2px; top: 14.6px; }
   .invite .btn { margin-top: 36px; }
 
-  .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px; gap: 20px; }
+  .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px 16px 72px; gap: 20px; }
   .footer__links { gap: 4px 20px; font-weight: 400; }
   .footer__bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 
-/* ----- Переключатель темы (в футере) ----- */
-.theme-switch { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; line-height: 1.3; color: inherit; }
+/* ----- Переключатель темы: закреплён внизу экрана, поверх стартового экрана тоже ----- */
+.theme-switch {
+  position: fixed;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(50, 42, 64, .12);
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--ink);
+}
 .theme-switch__track { position: relative; width: 34px; height: 20px; border-radius: 10px; background: rgba(50, 42, 64, .18); transition: background .25s ease; }
 .theme-switch__thumb { position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(27, 19, 30, .3); transition: transform .25s cubic-bezier(.3, .7, .2, 1); }
 .theme-switch[aria-checked="true"] .theme-switch__track { background: #6c5976; }
@@ -567,6 +584,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 [data-theme="dark"] .userpic--add img { content: url("assets/dark/plus.svg"); }
 
 [data-theme="dark"] .footer__bottom { color: rgba(255, 255, 255, .64); }
+[data-theme="dark"] .theme-switch { background: rgba(30, 27, 38, .55); box-shadow: 0 4px 16px rgba(0, 0, 0, .25); }
 [data-theme="dark"] .theme-switch__track { background: rgba(255, 255, 255, .2); }
 [data-theme="dark"] .theme-switch[aria-checked="true"] .theme-switch__track { background: #b2aec7; }
 
