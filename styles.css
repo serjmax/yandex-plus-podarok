@@ -355,10 +355,13 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   bottom: 0;
   left: -100%;
   width: 400%;
+  /* Широкие блики — около половины блока, мягкие края; период 1000 px */
   background: repeating-linear-gradient(240deg,
-    rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 220px,
-    rgba(255, 255, 255, .09) 290px,
-    rgba(255, 255, 255, 0) 360px, rgba(255, 255, 255, 0) 560px);
+    rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 175px,
+    rgba(255, 255, 255, .05) 330px,
+    rgba(255, 255, 255, .1) 500px,
+    rgba(255, 255, 255, .05) 670px,
+    rgba(255, 255, 255, 0) 825px, rgba(255, 255, 255, 0) 1000px);
   transform: translateX(var(--rx, 0px));
   pointer-events: none;
   z-index: 0;
