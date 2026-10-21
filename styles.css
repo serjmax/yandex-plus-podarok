@@ -145,39 +145,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .intro__half--l { clip-path: inset(0 50% 0 0); }
 .intro__half--r { clip-path: inset(0 0 0 50%); }
 
-/* Бант собран как в макете: атласный бант под тремя масками (радиальное исчезание ленты,
-   вырез вертикальной ленты, силуэт) и сиреневый тон поверх в режиме «цвет». Композиция 918×435 */
-.bow { position: relative; width: 918px; height: 435px; isolation: isolate; }
-.bow__satin, .bow__tint {
-  position: absolute;
-  -webkit-mask-image: url("assets/v4/bow-mask-fade.svg"), url("assets/v4/bow-mask-cut.svg"), url("assets/v4/bow-mask-shape.png");
-  mask-image: url("assets/v4/bow-mask-fade.svg"), url("assets/v4/bow-mask-cut.svg"), url("assets/v4/bow-mask-shape.png");
-  -webkit-mask-size: 918px 435px, 1120.824px 530.587px, 933.109px 933.11px;
-  mask-size: 918px 435px, 1120.824px 530.587px, 933.109px 933.11px;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-composite: source-in, source-in;
-  mask-composite: intersect;
-}
-.bow__satin {
-  left: -7.67px;
-  top: -294.34px;
-  width: 933.11px;
-  height: 933.11px;
-  background: url("assets/v4/bow-satin.png") center / cover no-repeat;
-  -webkit-mask-position: 7.672px 294.343px, -24.84px 211.444px, 0 0;
-  mask-position: 7.672px 294.343px, -24.84px 211.444px, 0 0;
-}
-.bow__tint {
-  left: -44.9px;
-  top: -.35px;
-  width: 1033.875px;
-  height: 435.821px;
-  background: linear-gradient(235.23deg, #aa8ea3 16.6%, #201a2a 57.27%, #2a1a2d 84.13%);
-  mix-blend-mode: color;
-  -webkit-mask-position: 44.898px .353px, 12.387px -82.546px, 37.227px -293.99px;
-  mask-position: 44.898px .353px, 12.387px -82.546px, 37.227px -293.99px;
-}
+/* Бант — готовая картинка 1836×870 (2×) с прозрачностью */
+.bow { width: 918px; height: 435px; background: url("assets/v4/bow.webp") center / 100% 100% no-repeat; }
 
 .intro__logo, .intro__title, .intro__text, .intro__btn { transition: opacity .35s ease, transform .5s ease; }
 
