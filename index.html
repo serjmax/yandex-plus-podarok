@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#edecf2">
   <title>Будьте в Плюсе! — Яндекс Плюс</title>
-  <link rel="stylesheet" href="styles.css?v=60">
+  <link rel="stylesheet" href="styles.css?v=70">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 </head>
 <body class="is-locked">
@@ -19,10 +19,10 @@
 
       <div class="intro__bow" aria-hidden="true">
         <div class="intro__half intro__half--l">
-          <div class="bow"><img src="assets/light/bow.png" alt=""></div>
+          <div class="bow"><div class="bow__satin"></div><div class="bow__tint"></div></div>
         </div>
         <div class="intro__half intro__half--r">
-          <div class="bow"><img src="assets/light/bow.png" alt=""></div>
+          <div class="bow"><div class="bow__satin"></div><div class="bow__tint"></div></div>
         </div>
       </div>
 
@@ -68,21 +68,21 @@
 
       <div class="services">
         <article class="service service--music">
-          <div class="service__art"><img src="assets/light/music.png" alt=""></div>
+          <div class="service__art"><img src="assets/v4/music.png" alt=""></div>
           <div class="service__text">
             <h3>Яндекс Музыка</h3>
             <p>Открывайте новые любимые треки в Яндекс Музыке</p>
           </div>
         </article>
         <article class="service service--kp">
-          <div class="service__art"><img src="assets/light/kp.png" alt=""></div>
+          <div class="service__art"><img src="assets/v4/kp.png" alt=""></div>
           <div class="service__text">
             <h3>Кинопоиск</h3>
             <p>Смотрите кино, сериалы и спорт на Кинопоиске</p>
           </div>
         </article>
         <article class="service service--books">
-          <div class="service__art"><img src="assets/light/books.png" alt=""></div>
+          <div class="service__art"><img src="assets/v4/books.png" alt=""></div>
           <div class="service__text">
             <h3>Яндекс Книги</h3>
             <p>Читайте книги и комиксы в Яндекс Книгах</p>
@@ -96,7 +96,7 @@
           <p>Они подстраиваются под ваши интересы в&nbsp;приложении Яндекс Плюс</p>
         </div>
         <a class="btn btn--light" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Скачать приложение</a>
-        <img class="app__phone" src="assets/light/phone.png?v=2" alt="Приложение Яндекс Плюс">
+        <div class="app__phone" role="img" aria-label="Приложение Яндекс Плюс"><img src="assets/v4/phone-hand.png" alt=""></div>
       </div>
     </section>
 
@@ -114,7 +114,7 @@
           <img class="userpic__photo" src="assets/light/userpic-big.png" alt="">
           <img class="userpic__stroke" src="assets/light/stroke-big.svg" alt="">
         </div>
-        <div class="userpic userpic--add"><img src="assets/light/plus.svg" alt=""></div>
+        <div class="userpic userpic--add"><img src="assets/v4/plus-white.svg" alt=""></div>
       </div>
       <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Пригласить</a>
 
@@ -135,7 +135,7 @@
 
   <div class="toast" id="toast" role="status">Промокод скопирован</div>
 
-  <script src="script.js?v=15"></script>
+  <script src="script.js?v=21"></script>
   <script type="module" src="src/card3d.js?v=15"></script>
 </body>
 </html>

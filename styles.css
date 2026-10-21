@@ -11,7 +11,11 @@
   --ink-soft: rgba(50, 42, 64, .9);    /* подзаголовки */
   --ink-card: #322a40;                 /* текст в карточках сервисов — как основной */
   /* Фон растянут на экран и прилеплен к нему (как в макете первого экрана) */
-  --backdrop: linear-gradient(180deg, #edecf2 0%, #e3e2e9 50%, #d8d7df 100%);
+  /* Фон из макета: светлая диагональ от левого верхнего угла, лавандовый правый верх.
+     Градиент задан в долях экрана (SVG с preserveAspectRatio=none), чтобы совпадать на любых пропорциях */
+  --backdrop-gradient: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='.5' y1='-.625' x2='-1.56' y2='1.14'%3E%3Cstop offset='0' stop-color='%23b2aec7'/%3E%3Cstop offset='.31' stop-color='%23f0f0f0'/%3E%3Cstop offset='1' stop-color='%23b2aec7'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E") 0 0 / 240px 240px repeat;
+  --backdrop: var(--noise), var(--backdrop-gradient), #e6e5ec;
   --btn-dark: linear-gradient(240.7deg, #1b131e 2.5%, #6c5976 43.4%, #1b131e 110.9%);
   --btn-light: linear-gradient(249.2deg, #b2aec7 .6%, #f0f0f0 45.5%, #b2aec7 113.2%);
   --text: "YS Text", "Helvetica Neue", Arial, sans-serif;
@@ -132,18 +136,48 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 1255.02px;
-  height: 417.93px;
-  translate: -50% calc(-50% - 14px * var(--bs)); /* по центру — видимая часть банта */
+  width: 918px;
+  height: 435px;
+  translate: -50% calc(-50% - 15px * var(--bs)); /* по центру — видимая часть банта */
   scale: var(--bs);
   transform-origin: 50% 45%;
 }
 .intro__half--l { clip-path: inset(0 50% 0 0); }
 .intro__half--r { clip-path: inset(0 0 0 50%); }
 
-/* Бант — картинка из макета (прозрачный фон, 1255×418 в масштабе 1) */
-.bow { width: 1255.02px; height: 417.93px; }
-.bow img { width: 100%; height: 100%; }
+/* Бант собран как в макете: атласный бант под тремя масками (радиальное исчезание ленты,
+   вырез вертикальной ленты, силуэт) и сиреневый тон поверх в режиме «цвет». Композиция 918×435 */
+.bow { position: relative; width: 918px; height: 435px; isolation: isolate; }
+.bow__satin, .bow__tint {
+  position: absolute;
+  -webkit-mask-image: url("assets/v4/bow-mask-fade.svg"), url("assets/v4/bow-mask-cut.svg"), url("assets/v4/bow-mask-shape.png");
+  mask-image: url("assets/v4/bow-mask-fade.svg"), url("assets/v4/bow-mask-cut.svg"), url("assets/v4/bow-mask-shape.png");
+  -webkit-mask-size: 918px 435px, 1120.824px 530.587px, 933.109px 933.11px;
+  mask-size: 918px 435px, 1120.824px 530.587px, 933.109px 933.11px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in, source-in;
+  mask-composite: intersect;
+}
+.bow__satin {
+  left: -7.67px;
+  top: -294.34px;
+  width: 933.11px;
+  height: 933.11px;
+  background: url("assets/v4/bow-satin.png") center / cover no-repeat;
+  -webkit-mask-position: 7.672px 294.343px, -24.84px 211.444px, 0 0;
+  mask-position: 7.672px 294.343px, -24.84px 211.444px, 0 0;
+}
+.bow__tint {
+  left: -44.9px;
+  top: -.35px;
+  width: 1033.875px;
+  height: 435.821px;
+  background: linear-gradient(235.23deg, #aa8ea3 16.6%, #201a2a 57.27%, #2a1a2d 84.13%);
+  mix-blend-mode: color;
+  -webkit-mask-position: 44.898px .353px, 12.387px -82.546px, 37.227px -293.99px;
+  mask-position: 44.898px .353px, 12.387px -82.546px, 37.227px -293.99px;
+}
 
 .intro__logo, .intro__title, .intro__text, .intro__btn { transition: opacity .35s ease, transform .5s ease; }
 
@@ -180,7 +214,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
 /* ----- 3D-карточка ----- */
 .card-scene {
-  --cw: 600px;
+  --cw: 525px;
   position: relative;
   width: var(--cw);
   margin-top: 36px;
@@ -303,13 +337,18 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   --cy: .5;
   --mx: .3;
   --my: .3;
+  /* Тёмный градиент из макета (в долях блока) + фиолетовая вуаль 20%; поверх — мягкое светлое пятно */
   background:
-    radial-gradient(circle at calc(var(--cx) * 100%) calc(var(--cy) * 100%), rgba(255, 255, 255, .7), rgba(255, 255, 255, 0) 40%),
-    linear-gradient(226.3deg, #b2aec7 6.5%, #f0f0f0 38%, #b2aec7 103.35%) calc(var(--mx) * 100%) calc(var(--my) * 100%) / 240% 240%;
+    linear-gradient(rgba(20, 3, 39, .2), rgba(20, 3, 39, .2)),
+    radial-gradient(circle at calc(var(--cx) * 100%) calc(var(--cy) * 100%), rgba(255, 255, 255, .1), rgba(255, 255, 255, 0) 40%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='.5' y1='-.2022' x2='.178' y2='.82'%3E%3Cstop offset='0' stop-color='%232e2c35'/%3E%3Cstop offset='.53' stop-color='%2353505b'/%3E%3Cstop offset='.73' stop-color='%2344424d'/%3E%3Cstop offset='1' stop-color='%232e2c35'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") calc(var(--mx) * 100%) calc(var(--my) * 100%) / 160% 160% no-repeat,
+    #33313b;
   text-align: center;
 }
 
 .block__head { display: flex; flex-direction: column; align-items: center; gap: 20.4px; }
+.block__head .h-display { color: #fff; }
+.block__head .lead { color: rgba(255, 255, 255, .7); }
 
 .services { display: flex; justify-content: center; gap: 64px; margin-top: 172px; }
 .service {
@@ -322,7 +361,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   width: 350px;
   height: 250px;
   border-radius: 40px;
-  background: rgba(255, 255, 255, .3);
+  background: linear-gradient(222.4deg, #b2aec7 6.4%, #f0f0f0 97%, #b2aec7 105%);
   /* Тень из макета появляется только при наведении */
   box-shadow: 0 54px 72px -30px rgba(167, 162, 188, 0);
   transition: box-shadow .35s ease;
@@ -354,16 +393,11 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   text-align: left;
 }
 .app__text { display: flex; flex-direction: column; gap: 12px; width: 600px; }
-.app h3 { font-family: var(--display); font-weight: 500; font-size: 34.27px; line-height: .95; color: var(--ink); }
-.app p { width: 490px; font-size: 22.03px; line-height: 29.38px; color: var(--ink-soft); }
-/* Видимая часть телефона (картинка обрезана по нижнему краю карточки, как в макете) */
-.app__phone {
-  position: absolute;
-  left: 746.68px;
-  bottom: 21px;
-  width: 359px;
-  height: 345px;
-}
+.app h3 { font-family: var(--display); font-weight: 500; font-size: 34.27px; line-height: .95; color: #fff; }
+.app p { width: 490px; font-size: 22.03px; line-height: 29.38px; color: rgba(255, 255, 255, .7); }
+/* Телефон в руке: рамка 816×418 с картинкой, как в макете; низ обрезает карточка */
+.app__phone { position: absolute; left: 390px; top: -110px; width: 816px; height: 418px; overflow: hidden; }
+.app__phone img { position: absolute; left: 74.9px; top: -32.5px; width: 945.25px; height: 1510.4px; }
 
 /* ----- Приглашение + футер ----- */
 .invite { padding: 114px 0 0; }
@@ -385,7 +419,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   align-items: center;
   justify-content: center;
   /* Градиент кнопки «Скачать приложение», без движения: светлый край слева */
-  background: linear-gradient(249.2deg, #b2aec7 18%, #f0f0f0 50%, #b2aec7 82%) 100% 0 / 220% 100%;
+  background: linear-gradient(226.3deg, #1b131e 6.7%, #6c5976 81.2%, #1b131e 138.3%); /* тёмный, как в макете */
 }
 .userpic--add img { width: 84.46px; height: 88.96px; }
 .friends .userpic { animation: bob 5s ease-in-out infinite; }
@@ -475,7 +509,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .app__text { width: 100%; align-items: center; }
   .app h3 { font-size: 28px; }
   .app p { width: auto; max-width: 320px; font-size: 17px; line-height: 22px; }
-  .app__phone { position: static; width: 300px; height: auto; margin-top: 8px; }
+  .app__phone { position: relative; left: auto; top: auto; width: 100%; height: 300px; margin-top: 8px; }
+  .app__phone img { left: calc(50% - 300px); top: -10px; width: 600px; height: 958px; }
 
   .invite { padding-top: 64px; }
   .invite__head { width: 340px; }

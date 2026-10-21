@@ -13,10 +13,10 @@
   window.addEventListener('resize', alignIntro);
 
   // Бант заполняет место между текстом и кнопкой (до 1.6× от макета).
-  // Сам бант — около 372 px из 418 px высоты композиции; на узких экранах ограничиваем по ширине
+  // Сам бант — около 387 px из 435 px высоты композиции; на узких экранах ограничиваем по ширине
   const bowArea = document.querySelector('.intro__bow');
   const fitBow = () => {
-    const k = Math.min(1.6, (bowArea.clientHeight - 24) / 372, window.innerWidth / 520);
+    const k = Math.min(1.6, (bowArea.clientHeight - 24) / 387, window.innerWidth / 500);
     bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
   };
   fitBow();
