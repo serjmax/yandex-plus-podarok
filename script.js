@@ -187,4 +187,26 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 1800);
   });
+
+  /* ---------- Переключатель темы ---------- */
+  const root = document.documentElement;
+  const themeSwitch = document.getElementById('theme-switch');
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  const syncTheme = () => {
+    const dark = root.dataset.theme === 'dark';
+    themeSwitch.setAttribute('aria-checked', String(dark));
+    themeColor.content = dark ? '#2f2d36' : '#edecf2';
+  };
+  syncTheme();
+  themeSwitch.addEventListener('click', () => {
+    const apply = () => {
+      if (root.dataset.theme === 'dark') delete root.dataset.theme;
+      else root.dataset.theme = 'dark';
+      try { localStorage.setItem('theme', root.dataset.theme || 'light'); } catch {}
+      syncTheme();
+    };
+    // Мягкая смена темы, где браузер умеет view transitions
+    if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(apply);
+    else apply();
+  });
 })();
