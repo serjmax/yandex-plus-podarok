@@ -202,9 +202,10 @@ async function init() {
     const t = clock.elapsedTime;
     // Покачивание в покое плавно нарастает после того, как карточку отпустили
     const idle = active ? 0 : Math.min(1, (performance.now() - idleSince) / 1500);
-    const floatX = idle * (0.1 * Math.sin(t * 1.05) + 0.05);
-    const floatY = idle * 0.16 * Math.sin(t * 0.8);
-    const floatZ = idle * (-0.04 + 0.02 * Math.sin(t * 0.6));
+    // Амплитуда примерно вдвое больше прежней, темп чуть быстрее; Z сдвинут по фазе — движение живее
+    const floatX = idle * (0.2 * Math.sin(t * 1.3) + 0.05);
+    const floatY = idle * 0.34 * Math.sin(t * 1.0);
+    const floatZ = idle * (-0.04 + 0.05 * Math.sin(t * 0.75 + 1));
     const k = 1 - Math.exp(-(active ? 9 : 4) * dt);
     pivot.rotation.x += (targetX + floatX - pivot.rotation.x) * k;
     pivot.rotation.y += (targetY + floatY - pivot.rotation.y) * k;
