@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#edecf2">
   <title>Будьте в Плюсе! — Яндекс Плюс</title>
-  <link rel="stylesheet" href="styles.css?v=85">
-  <!-- Тема ставится до отрисовки, чтобы не мигало: ?theme=dark|light или выбор из переключателя -->
+  <link rel="stylesheet" href="styles.css?v=86">
+  <!-- Тема ставится до отрисовки, чтобы не мигало: ?theme=light|dark|purple или выбор из переключателя -->
   <script>
     try {
       var t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("theme");
-      if (t === "dark") document.documentElement.dataset.theme = "dark";
+      if (t === "dark" || t === "purple") document.documentElement.dataset.theme = t;
     } catch (e) {}
   </script>
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
@@ -140,14 +140,16 @@
     </section>
   </main>
 
-  <!-- Переключатель темы — всегда виден внизу экрана -->
-  <button class="theme-switch" id="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Тёмная тема">
-    <span class="theme-switch__track"><span class="theme-switch__thumb"></span></span>
-  </button>
+  <!-- Выбор темы — всегда виден внизу экрана -->
+  <div class="theme-switch" id="theme-switch" role="radiogroup" aria-label="Тема">
+    <button class="theme-switch__opt theme-switch__opt--light" type="button" role="radio" data-set-theme="light" aria-label="Светлая тема"></button>
+    <button class="theme-switch__opt theme-switch__opt--dark" type="button" role="radio" data-set-theme="dark" aria-label="Тёмная тема"></button>
+    <button class="theme-switch__opt theme-switch__opt--purple" type="button" role="radio" data-set-theme="purple" aria-label="Фиолетовая тема"></button>
+  </div>
 
   <div class="toast" id="toast" role="status">Промокод скопирован</div>
 
-  <script src="script.js?v=23"></script>
+  <script src="script.js?v=24"></script>
   <script type="module" src="src/card3d.js?v=17"></script>
 </body>
 </html>
