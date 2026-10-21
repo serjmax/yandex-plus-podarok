@@ -16,7 +16,7 @@
   --backdrop-gradient: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='.5' y1='-.625' x2='-1.56' y2='1.14'%3E%3Cstop offset='0' stop-color='%23b2aec7'/%3E%3Cstop offset='.31' stop-color='%23f0f0f0'/%3E%3Cstop offset='1' stop-color='%23b2aec7'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
   --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E") 0 0 / 240px 240px repeat;
   --backdrop: var(--noise), var(--backdrop-gradient), #e6e5ec;
-  --btn-dark: linear-gradient(240.7deg, #1b131e 2.5%, #6c5976 43.4%, #1b131e 110.9%);
+  --btn-dark: linear-gradient(240.7deg, #2b2232 2.5%, #6c5976 43.4%, #2b2232 110.9%);
   --btn-light: linear-gradient(249.2deg, #b2aec7 .6%, #f0f0f0 45.5%, #b2aec7 113.2%);
   --text: "YS Text", "Helvetica Neue", Arial, sans-serif;
   --display: "YS Display", "YS Text", "Helvetica Neue", Arial, sans-serif;
@@ -73,7 +73,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .btn--dark {
   /* Рефлекс: светлая полоса из макета плавно ходит вдоль кнопки туда и обратно */
   --hl: #6c5976;
-  background: linear-gradient(240.7deg, #1b131e 18%, var(--hl) 50%, #1b131e 82%) 0 0 / 220% 100%;
+  background: linear-gradient(240.7deg, #2b2232 18%, var(--hl) 50%, #2b2232 82%) 0 0 / 220% 100%;
   color: #fff;
   transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, --hl .35s ease;
   animation: btn-reflex 4.5s ease-in-out infinite alternate;
