@@ -1,6 +1,6 @@
 // 3D-карточка из card-3d-playground (src/card.js): металлическая карта с сиреневым переливом.
 // Поворачивается за курсором или пальцем, в покое слегка покачивается.
-// Панель настройки (?tune) сейчас выключена — включается флагом TUNE_PANEL ниже.
+// Панель настройки цвета карты: откройте страницу с ?tune (флаг TUNE_PANEL ниже).
 // Если WebGL недоступен, остаётся CSS-карточка (.gift-card).
 import * as THREE from 'three';
 import { RoomEnvironment } from '../vendor/RoomEnvironment.js';
@@ -21,7 +21,7 @@ const LOOK = {
   tint: ['#c9cbee', '#f6f2fa', '#efd6ea', '#c6c0dc'],
 };
 // Настраиваемое (панель ?tune и параметры ссылки). Значения подобраны в панели 20.10.
-const TUNE_PANEL = false;
+const TUNE_PANEL = true;
 const TUNE_DEFAULTS = {
   lc: '#210b41', // цвет надписей
   mt: '#f2ecf8', // оттенок металла
