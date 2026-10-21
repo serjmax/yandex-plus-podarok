@@ -337,8 +337,10 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   --cy: .5;
   --mx: .3;
   --my: .3;
-  /* Тёмный градиент из макета (в долях блока) + фиолетовая вуаль 20%. Перелив — только сдвиг градиента */
+  /* Тёмный градиент из макета (в долях блока) + фиолетовая вуаль 20%.
+     Поверх — диагональный блик, как рефлекс на кнопках: светлая полоса ходит по скроллу и за курсором */
   background:
+    linear-gradient(240deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, .09) 50%, rgba(255, 255, 255, 0) 62%) calc(var(--mx) * 100%) 0 / 260% 100% no-repeat,
     linear-gradient(rgba(20, 3, 39, .2), rgba(20, 3, 39, .2)),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='.5' y1='-.2022' x2='.178' y2='.82'%3E%3Cstop offset='0' stop-color='%232e2c35'/%3E%3Cstop offset='.53' stop-color='%2353505b'/%3E%3Cstop offset='.73' stop-color='%2344424d'/%3E%3Cstop offset='1' stop-color='%232e2c35'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") calc(var(--mx) * 100%) calc(var(--my) * 100%) / 160% 160% no-repeat,
     #33313b;
