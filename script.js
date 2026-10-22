@@ -25,7 +25,7 @@
   /* ---------- Покадровая анимация банта + прелоудер ---------- */
   const FRAMES = 48;          // кадры видео (24 к/с, 2 с)
   const FRAMES_V = 4;         // версия кадров — меняем при замене анимации, чтобы не взялись старые из кэша
-  const ANIM_MS = 2000;       // родная длительность; между кадрами — плавное перетекание
+  const ANIM_MS = 2000;       // родная длительность (48 кадров × 1/24 с)
   const canvas = document.getElementById('bow-anim');
   const ctx = canvas.getContext('2d');
   const preloader = document.getElementById('preloader');
@@ -33,14 +33,15 @@
   const frames = [];
   let loaded = 0, broken = false;
 
-  const drawFrame = (pos) => {
-    const i = Math.min(FRAMES - 1, Math.floor(pos));
-    const f = pos - i;
+  // Кадр рисуем как есть, без смешивания соседних: смешивание полупрозрачных кадров
+  // давало провал прозрачности на каждой смене кадра — анимация мерцала
+  let shown = -1;
+  const drawFrame = (i) => {
+    i = Math.max(0, Math.min(FRAMES - 1, i));
+    if (i === shown) return;
+    shown = i;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.globalAlpha = 1 - f;
     ctx.drawImage(frames[i], 0, 0);
-    if (f > 0 && i + 1 < FRAMES) { ctx.globalAlpha = f; ctx.drawImage(frames[i + 1], 0, 0); }
-    ctx.globalAlpha = 1;
   };
   const hidePreloader = () => preloader.classList.add('is-done');
   Promise.all(Array.from({ length: FRAMES }, (_, i) => new Promise(resolve => {
@@ -81,7 +82,7 @@
     let revealed = false;
     const tick = (now) => {
       const k = Math.min(1, (now - t0) / ANIM_MS);
-      drawFrame(k * (FRAMES - 1));
+      drawFrame(Math.floor((now - t0) / (ANIM_MS / FRAMES))); // 24 к/с, как в плеере
       if (k > 0.82 && !revealed) { revealed = true; reveal(); } // растворение начинается чуть раньше конца
       if (k < 1) requestAnimationFrame(tick);
     };
