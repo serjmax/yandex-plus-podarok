@@ -23,8 +23,8 @@
   window.addEventListener('resize', fitBow);
 
   /* ---------- Покадровая анимация банта + прелоудер ---------- */
-  const FRAMES = 12;          // кадры видео (12 к/с, 1 с)
-  const ANIM_MS = 1200;       // длительность проигрывания; кадры плавно перетекают друг в друга
+  const FRAMES = 48;          // кадры видео (24 к/с, 2 с)
+  const ANIM_MS = 2000;       // родная длительность; между кадрами — плавное перетекание
   const canvas = document.getElementById('bow-anim');
   const ctx = canvas.getContext('2d');
   const preloader = document.getElementById('preloader');
