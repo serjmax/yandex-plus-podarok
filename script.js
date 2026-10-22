@@ -13,26 +13,79 @@
   window.addEventListener('resize', alignIntro);
 
   // Бант заполняет место между текстом и кнопкой (до 1.6× от макета).
-  // Сам бант — около 387 px из 435 px высоты композиции; на узких экранах ограничиваем по ширине
+  // Холст 918×459, сам бант по высоте около 400 px; на узких экранах ограничиваем по ширине
   const bowArea = document.querySelector('.intro__bow');
   const fitBow = () => {
-    const k = Math.min(1.6, (bowArea.clientHeight - 24) / 387, window.innerWidth / 500);
+    const k = Math.min(1.6, (bowArea.clientHeight - 24) / 400, window.innerWidth / 500);
     bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
   };
   fitBow();
   window.addEventListener('resize', fitBow);
 
+  /* ---------- Покадровая анимация банта + прелоудер ---------- */
+  const FRAMES = 12;          // кадры видео (12 к/с, 1 с)
+  const ANIM_MS = 1200;       // длительность проигрывания; кадры плавно перетекают друг в друга
+  const canvas = document.getElementById('bow-anim');
+  const ctx = canvas.getContext('2d');
+  const preloader = document.getElementById('preloader');
+  const fill = document.getElementById('preloader-fill');
+  const frames = [];
+  let loaded = 0, broken = false;
+
+  const drawFrame = (pos) => {
+    const i = Math.min(FRAMES - 1, Math.floor(pos));
+    const f = pos - i;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1 - f;
+    ctx.drawImage(frames[i], 0, 0);
+    if (f > 0 && i + 1 < FRAMES) { ctx.globalAlpha = f; ctx.drawImage(frames[i + 1], 0, 0); }
+    ctx.globalAlpha = 1;
+  };
+  const hidePreloader = () => preloader.classList.add('is-done');
+  Promise.all(Array.from({ length: FRAMES }, (_, i) => new Promise(resolve => {
+    const img = new Image();
+    img.onerror = () => { broken = true; };
+    const done = () => {
+      loaded++;
+      fill.style.transform = `scaleX(${loaded / FRAMES})`;
+      preloader.setAttribute('aria-valuenow', String(Math.round(loaded / FRAMES * 100)));
+      resolve();
+    };
+    img.addEventListener('load', done);
+    img.addEventListener('error', done);
+    img.src = `assets/bow-anim/f${String(i).padStart(2, '0')}.webp`;
+    frames[i] = img;
+  }))).then(() => {
+    if (!broken) drawFrame(0);
+    setTimeout(hidePreloader, 200); // дать полосе дойти до конца
+  });
+  setTimeout(hidePreloader, 8000); // на очень медленной сети не держим пользователя дольше
+
   const open = () => {
     if (body.classList.contains('is-opening')) return;
     window.scrollTo(0, 0);
     body.classList.add('is-opening');
-    // Бант разлетается поверх уже открытой страницы; убираем слой, когда анимация закончилась
-    setTimeout(() => {
-      intro.remove();
-      body.classList.add('is-opened');
-      body.classList.remove('is-locked');
-    }, 1200);
-    setTimeout(() => card.classList.add('is-idle'), 2300);
+    const reveal = () => {
+      // Бант растворяется, страница с карточкой появляется как раньше
+      body.classList.add('is-revealed');
+      setTimeout(() => {
+        intro.remove();
+        body.classList.add('is-opened');
+        body.classList.remove('is-locked');
+      }, 1200);
+      setTimeout(() => card.classList.add('is-idle'), 2300);
+    };
+    if (loaded < FRAMES || broken) { reveal(); return; } // кадры не загрузились — открываем без анимации
+    const t0 = performance.now();
+    let revealed = false;
+    const tick = (now) => {
+      const k = Math.min(1, (now - t0) / ANIM_MS);
+      drawFrame(k * (FRAMES - 1));
+      if (k > 0.82 && !revealed) { revealed = true; reveal(); } // растворение начинается чуть раньше конца
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    // небольшая пауза, пока уходят текст и кнопка
+    setTimeout(() => requestAnimationFrame(tick), 150);
   };
   openBtn.addEventListener('click', open);
 
