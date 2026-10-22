@@ -44,10 +44,16 @@
     ctx.drawImage(frames[i], 0, 0);
   };
   const hidePreloader = () => preloader.classList.add('is-done');
-  Promise.all(Array.from({ length: FRAMES }, (_, i) => new Promise(resolve => {
+  // Прелоудер ждёт кадры банта (загружены и раскодированы) и готовность 3D-карточки
+  const cardReady = new Promise(resolve => {
+    if (window.__card3dReady) resolve();
+    else window.addEventListener('card3d-ready', resolve, { once: true });
+  });
+  const framesLoaded = Promise.all(Array.from({ length: FRAMES }, (_, i) => new Promise(resolve => {
     const img = new Image();
     img.onerror = () => { broken = true; };
-    const done = () => {
+    const done = async () => {
+      try { await img.decode(); } catch { broken = true; }
       loaded++;
       fill.style.transform = `scaleX(${loaded / FRAMES})`;
       preloader.setAttribute('aria-valuenow', String(Math.round(loaded / FRAMES * 100)));
@@ -57,10 +63,8 @@
     img.addEventListener('error', done);
     img.src = `assets/bow-anim/f${String(i).padStart(2, '0')}.webp?v=${FRAMES_V}`;
     frames[i] = img;
-  }))).then(() => {
-    if (!broken) drawFrame(0);
-    setTimeout(hidePreloader, 200); // дать полосе дойти до конца
-  });
+  }))).then(() => { if (!broken) drawFrame(0); });
+  Promise.all([framesLoaded, cardReady]).then(() => setTimeout(hidePreloader, 150)); // дать полосе дойти до конца
   setTimeout(hidePreloader, 8000); // на очень медленной сети не держим пользователя дольше
 
   const open = () => {
@@ -86,8 +90,7 @@
       if (k > 0.82 && !revealed) { revealed = true; reveal(); } // растворение начинается чуть раньше конца
       if (k < 1) requestAnimationFrame(tick);
     };
-    // небольшая пауза, пока уходят текст и кнопка
-    setTimeout(() => requestAnimationFrame(tick), 150);
+    requestAnimationFrame(tick);
   };
   openBtn.addEventListener('click', open);
 

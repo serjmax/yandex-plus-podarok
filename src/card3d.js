@@ -197,10 +197,13 @@ async function init() {
     for (const [name, value] of Object.entries(vars)) scene3d.style.setProperty(name, value);
   }
 
+  // Пока карточка спрятана под стартовым экраном, не рисуем её каждый кадр:
+  // это нагружало страницу, кнопка «Забрать подарок» отвечала с задержкой, анимация банта подтормаживала
+  const hidden = () => document.body.classList.contains('is-locked') && !document.body.classList.contains('is-revealed');
   const clock = new THREE.Clock();
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.1);
-    if (!visible) return;
+    if (!visible || hidden()) return;
     const t = clock.elapsedTime;
     // Покачивание в покое плавно нарастает после того, как карточку отпустили
     const idle = active ? 0 : Math.min(1, (performance.now() - idleSince) / 1500);
@@ -217,6 +220,10 @@ async function init() {
   });
 
   scene3d.classList.add('has-3d');
+  // Тяжёлое (шейдеры, первый кадр) — сразу, пока виден прелоудер
+  resize();
+  renderer.compile(scene, camera);
+  renderer.render(scene, camera);
 }
 
 // Панель настройки (только при ?tune): значения пишутся в ссылку, её можно переслать
@@ -264,7 +271,9 @@ function tunePanel(tune, apply) {
   sync();
 }
 
-init().catch(error => {
+// Прелоудер (script.js) ждёт этого сигнала — и при успехе, и при ошибке
+const ready = () => { window.__card3dReady = true; window.dispatchEvent(new Event('card3d-ready')); };
+init().then(ready, error => { ready(); throw error; }).catch(error => {
   console.warn('3D-карточка недоступна, показываю обычную:', error);
   mount.remove();
 });
