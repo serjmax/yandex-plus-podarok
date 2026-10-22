@@ -24,6 +24,7 @@
 
   /* ---------- Покадровая анимация банта + прелоудер ---------- */
   const FRAMES = 48;          // кадры видео (24 к/с, 2 с)
+  const FRAMES_V = 3;         // версия кадров — меняем при замене анимации, чтобы не взялись старые из кэша
   const ANIM_MS = 2000;       // родная длительность; между кадрами — плавное перетекание
   const canvas = document.getElementById('bow-anim');
   const ctx = canvas.getContext('2d');
@@ -53,7 +54,7 @@
     };
     img.addEventListener('load', done);
     img.addEventListener('error', done);
-    img.src = `assets/bow-anim/f${String(i).padStart(2, '0')}.webp`;
+    img.src = `assets/bow-anim/f${String(i).padStart(2, '0')}.webp?v=${FRAMES_V}`;
     frames[i] = img;
   }))).then(() => {
     if (!broken) drawFrame(0);
