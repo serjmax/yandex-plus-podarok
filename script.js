@@ -12,67 +12,67 @@
   alignIntro();
   window.addEventListener('resize', alignIntro);
 
-  // Бант заполняет место между текстом и кнопкой (до 1.6× от макета).
-  // Холст 918×459, сам бант по высоте около 400 px; на узких экранах ограничиваем по ширине
-  const bowArea = document.querySelector('.intro__bow');
-  const fitBow = () => {
-    const k = Math.min(1.6, (bowArea.clientHeight - 24) / 400, window.innerWidth / 500);
-    bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
-  };
-  fitBow();
-  window.addEventListener('resize', fitBow);
-
-  /* ---------- Покадровая анимация банта + прелоудер ---------- */
-  const FRAMES = 48;          // кадры видео (24 к/с, 2 с)
-  const FRAMES_V = 4;         // версия кадров — меняем при замене анимации, чтобы не взялись старые из кэша
-  const ANIM_MS = 2000;       // родная длительность (48 кадров × 1/24 с)
-  const canvas = document.getElementById('bow-anim');
-  const ctx = canvas.getContext('2d');
+  /* ---------- Видео развязывания + прелоудер ---------- */
+  const REVEAL_AT = 3.0;      // секунда видео, на которой оно растворяется в картинку со снегом
+  const video = document.getElementById('intro-video');
   const preloader = document.getElementById('preloader');
   const fill = document.getElementById('preloader-fill');
-  const frames = [];
-  let loaded = 0, broken = false;
-
-  // Кадр рисуем как есть, без смешивания соседних: смешивание полупрозрачных кадров
-  // давало провал прозрачности на каждой смене кадра — анимация мерцала
-  let shown = -1;
-  const drawFrame = (i) => {
-    i = Math.max(0, Math.min(FRAMES - 1, i));
-    if (i === shown) return;
-    shown = i;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(frames[i], 0, 0);
-  };
   const hidePreloader = () => preloader.classList.add('is-done');
-  // Прелоудер ждёт кадры банта (загружены и раскодированы) и готовность 3D-карточки
+
+  // Прогресс: видео — основная часть, картинки и 3D-карточка — по чуть-чуть
+  const parts = { video: 0, start: 0, end: 0, card: 0 };
+  const WEIGHT = { video: 0.7, start: 0.1, end: 0.1, card: 0.1 };
+  const progress = () => {
+    const p = Object.keys(parts).reduce((sum, k) => sum + parts[k] * WEIGHT[k], 0);
+    fill.style.transform = `scaleX(${p})`;
+    preloader.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+  };
+  const loadImage = (key, src) => {
+    const img = new Image();
+    img.src = src;
+    return img.decode().catch(() => {}).then(() => { parts[key] = 1; progress(); });
+  };
+  // Видео скачиваем целиком заранее (с прогрессом), чтобы по клику оно играло без подгрузки
+  const VIDEO_SRC = 'assets/snow/unbox.mp4?v=1';
+  const loadVideo = async () => {
+    try {
+      const res = await fetch(VIDEO_SRC);
+      const total = +res.headers.get('content-length') || 0;
+      const reader = res.body.getReader();
+      const chunks = [];
+      let got = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        got += value.length;
+        if (total) { parts.video = got / total; progress(); }
+      }
+      video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+    } catch {
+      video.src = VIDEO_SRC; // не вышло — пусть браузер грузит сам
+    }
+    video.load();
+    parts.video = 1; progress();
+  };
   const cardReady = new Promise(resolve => {
     if (window.__card3dReady) resolve();
     else window.addEventListener('card3d-ready', resolve, { once: true });
-  });
-  const framesLoaded = Promise.all(Array.from({ length: FRAMES }, (_, i) => new Promise(resolve => {
-    const img = new Image();
-    img.onerror = () => { broken = true; };
-    const done = async () => {
-      try { await img.decode(); } catch { broken = true; }
-      loaded++;
-      fill.style.transform = `scaleX(${loaded / FRAMES})`;
-      preloader.setAttribute('aria-valuenow', String(Math.round(loaded / FRAMES * 100)));
-      resolve();
-    };
-    img.addEventListener('load', done);
-    img.addEventListener('error', done);
-    img.src = `assets/bow-anim/f${String(i).padStart(2, '0')}.webp?v=${FRAMES_V}`;
-    frames[i] = img;
-  }))).then(() => { if (!broken) drawFrame(0); });
-  Promise.all([framesLoaded, cardReady]).then(() => setTimeout(hidePreloader, 150)); // дать полосе дойти до конца
-  setTimeout(hidePreloader, 8000); // на очень медленной сети не держим пользователя дольше
+  }).then(() => { parts.card = 1; progress(); });
+
+  Promise.all([loadVideo(), loadImage('start', 'assets/snow/start.webp'), loadImage('end', 'assets/snow/end.webp'), cardReady])
+    .then(() => setTimeout(hidePreloader, 150)); // дать полосе дойти до конца
+  setTimeout(hidePreloader, 10000); // на очень медленной сети не держим пользователя дольше
 
   const open = () => {
     if (body.classList.contains('is-opening')) return;
     window.scrollTo(0, 0);
     body.classList.add('is-opening');
+    let revealed = false;
     const reveal = () => {
-      // Бант растворяется, страница с карточкой появляется как раньше
+      if (revealed) return;
+      revealed = true;
+      // Видео растворяется в снег без подарка, поверх появляется карточка — как раньше
       body.classList.add('is-revealed');
       setTimeout(() => {
         intro.remove();
@@ -81,16 +81,18 @@
       }, 1200);
       setTimeout(() => card.classList.add('is-idle'), 2300);
     };
-    if (loaded < FRAMES || broken) { reveal(); return; } // кадры не загрузились — открываем без анимации
-    const t0 = performance.now();
-    let revealed = false;
-    const tick = (now) => {
-      const k = Math.min(1, (now - t0) / ANIM_MS);
-      drawFrame(Math.floor((now - t0) / (ANIM_MS / FRAMES))); // 24 к/с, как в плеере
-      if (k > 0.82 && !revealed) { revealed = true; reveal(); } // растворение начинается чуть раньше конца
-      if (k < 1) requestAnimationFrame(tick);
+    // Видео показываем, когда пошёл первый кадр; на нужной секунде — растворение
+    const watch = () => {
+      if (revealed) return;
+      if (video.currentTime >= REVEAL_AT || video.ended) { reveal(); return; }
+      requestAnimationFrame(watch);
     };
-    requestAnimationFrame(tick);
+    video.addEventListener('playing', () => body.classList.add('is-playing'), { once: true });
+    video.addEventListener('ended', reveal, { once: true });
+    video.currentTime = 0;
+    const playing = video.play();
+    if (playing) playing.then(() => requestAnimationFrame(watch), reveal); // не дали проиграть — открываем сразу
+    else requestAnimationFrame(watch);
   };
   openBtn.addEventListener('click', open);
 

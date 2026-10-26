@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#edecf2">
   <title>Будьте в Плюсе! — Яндекс Плюс</title>
-  <link rel="stylesheet" href="styles.css?v=91">
+  <link rel="stylesheet" href="styles.css?v=100">
   <!-- Тема ставится до отрисовки, чтобы не мигало: ?theme=light|dark|purple или выбор из переключателя -->
   <script>
     try {
@@ -18,22 +18,24 @@
 </head>
 <body class="is-locked">
 
-  <!-- ===== Прелоудер: ждём кадры анимации банта ===== -->
+  <!-- ===== Прелоудер: ждём видео, обе картинки и 3D-карточку ===== -->
   <div class="preloader" id="preloader" role="progressbar" aria-label="Загрузка" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
     <div class="preloader__bar"><div class="preloader__fill" id="preloader-fill"></div></div>
   </div>
 
   <!-- ===== Стартовый экран с бантом ===== -->
   <section class="intro" id="intro" aria-label="Подарок">
+    <!-- Сцена на весь экран: картинка с подарком, по клику поверх неё играет видео развязывания -->
+    <div class="intro__scene" aria-hidden="true">
+      <img class="intro__poster" src="assets/snow/start.webp" alt="">
+      <video class="intro__video" id="intro-video" muted playsinline preload="none"></video>
+    </div>
     <div class="intro__stage">
       <img class="intro__logo" src="assets/light/logo.svg?v=2" alt="Яндекс Плюс">
       <h1 class="intro__title">Новый год <br>с Яндекс Плюсом</h1>
       <p class="intro__text">Мы приготовили для вас подарок, <br>который уже можно открыть!</p>
 
-      <!-- Бант — покадровая анимация развязывания (кадры с прозрачностью, рисуются в canvas) -->
-      <div class="intro__bow" aria-hidden="true">
-        <canvas class="bow-anim" id="bow-anim" width="1440" height="720"></canvas>
-      </div>
+      <div class="intro__bow" aria-hidden="true"></div> <!-- место под подарок на картинке -->
 
       <button class="btn btn--dark intro__btn" id="open-gift" type="button">Забрать подарок</button>
     </div>
@@ -41,6 +43,8 @@
 
   <!-- ===== Основная страница ===== -->
   <main class="page" id="page">
+    <!-- Фон первого экрана: снег без подарка — в него переходит видео -->
+    <div class="page__scene" aria-hidden="true"></div>
     <section class="hero gift">
       <header class="logo"><img src="assets/light/logo.svg?v=2" alt="Яндекс Плюс" width="218" height="32"></header>
 
@@ -151,7 +155,7 @@
 
   <div class="toast" id="toast" role="status">Промокод скопирован</div>
 
-  <script src="script.js?v=35"></script>
+  <script src="script.js?v=100"></script>
   <script type="module" src="src/card3d.js?v=18"></script>
 </body>
 </html>
