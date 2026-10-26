@@ -232,7 +232,8 @@
     };
     const step = () => {
       let moving = 0;
-      for (const k in cur) { cur[k] += (tgt[k] - cur[k]) * 0.08; // плавнее — блик «догоняет» курсор moving += Math.abs(tgt[k] - cur[k]) / (k === 'rx' ? 1000 : 1); }
+      // 0.08 — плавнее: блик «догоняет» курсор
+      for (const k in cur) { cur[k] += (tgt[k] - cur[k]) * 0.08; moving += Math.abs(tgt[k] - cur[k]) / (k === 'rx' ? 1000 : 1); }
       for (const k in cur) block.style.setProperty('--' + k, k === 'rx' ? cur[k].toFixed(1) + 'px' : cur[k].toFixed(4));
       raf = moving > 0.001 ? requestAnimationFrame(step) : 0;
     };
