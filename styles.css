@@ -1,9 +1,9 @@
 /* ---------- Шрифты ---------- */
-@font-face { font-family: "YS Text"; src: local("YS Text Regular"), url("fonts/YS Text-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "YS Text"; src: local("YS Text Medium"), url("fonts/YS Text-Medium.ttf") format("truetype"); font-weight: 500; font-display: swap; }
-@font-face { font-family: "YS Display"; src: local("YS Display Regular"), url("fonts/YS Display-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "YS Display"; src: local("YS Display Medium"), url("fonts/YS Display-Medium.ttf") format("truetype"); font-weight: 500; font-display: swap; }
-@font-face { font-family: "Druzhok"; src: url("fonts/DRUZHOK.otf") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "YS Text"; src: local("YS Text Regular"), url("fonts/YS Text-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "YS Text"; src: local("YS Text Medium"), url("fonts/YS Text-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "YS Display"; src: local("YS Display Regular"), url("fonts/YS Display-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "YS Display"; src: local("YS Display Medium"), url("fonts/YS Display-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Druzhok"; src: url("fonts/DRUZHOK.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 
 /* ---------- Токены ---------- */
 :root {
@@ -490,7 +490,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .btn { width: 274px; height: 60px; font-size: 18px; }
   .btn--light { width: 240px; }
 
-  .intro__stage { padding: 24px 0 max(76px, calc(env(safe-area-inset-bottom) + 60px)); } /* снизу место под переключатель темы */
+  .intro__stage { padding: 24px 0 max(36px, env(safe-area-inset-bottom)); }
   .intro__logo, .logo img { width: 163.5px; height: 24px; }
   .intro__title { margin-top: 28px; width: 360px; font-size: 40px; }
   .intro__text { margin-top: 14px; font-size: 18px; line-height: 22px; }
@@ -538,172 +538,10 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .friends .userpic--add   { left: 243.2px; top: 14.6px; }
   .invite .btn { margin-top: 36px; }
 
-  .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px 16px 72px; gap: 20px; }
+  .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px; gap: 20px; }
   .footer__links { gap: 4px 20px; font-weight: 400; }
   .footer__bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
-
-/* ----- Переключатель темы: закреплён внизу экрана, поверх стартового экрана тоже ----- */
-.theme-switch {
-  position: fixed;
-  right: 16px;
-  bottom: max(16px, env(safe-area-inset-bottom));
-  z-index: 15;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, .55);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px rgba(50, 42, 64, .12);
-  font-size: 12px;
-  line-height: 1.3;
-  color: var(--ink);
-}
-/* Три кружка-образца темы; выбранный обведён */
-.theme-switch { gap: 6px; }
-.theme-switch__opt {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(50, 42, 64, .15);
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  transition: outline-color .2s ease, transform .2s ease;
-}
-.theme-switch__opt:hover { transform: scale(1.1); }
-.theme-switch__opt[aria-checked="true"] { outline-color: var(--ink); }
-.theme-switch__opt:focus-visible { outline-color: #8341ef; }
-.theme-switch__opt--light  { background: linear-gradient(135deg, #f0f0f0, #b2aec7); }
-.theme-switch__opt--dark   { background: linear-gradient(135deg, #53505b, #2e2c35); }
-.theme-switch__opt--purple { background: linear-gradient(135deg, #ff9ccf, #8e3fc0 50%, #3c1d63); }
-
-/* =========================================================
-   Тёмная тема (макет 734-18448): тёмная страница, светлые кнопки,
-   светлый блок сервисов с тёмными карточками
-   ========================================================= */
-/* Общее для тёмной и фиолетовой тем: белый текст и белые логотип и иконки */
-[data-theme] {
-  --ink: #fff;
-  --ink-soft: rgba(255, 255, 255, .7);
-  --ink-card: #fff;
-}
-[data-theme="dark"] {
-  --backdrop: var(--noise), linear-gradient(rgba(20, 3, 39, .2), rgba(20, 3, 39, .2)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.062' y1='-0.019' x2='-1.353' y2='2.339'%3E%3Cstop offset='0' stop-color='%232e2c35'/%3E%3Cstop offset='0.525' stop-color='%2353505b'/%3E%3Cstop offset='0.73' stop-color='%2344424d'/%3E%3Cstop offset='1' stop-color='%232e2c35'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat, #2f2d36;
-  background: #2f2d36;
-}
-[data-theme] :is(.intro__logo, .logo img) { content: url("assets/dark/logo.svg"); }
-[data-theme] .promo__code img { content: url("assets/dark/copy.svg"); }
-[data-theme] .footer__mark img { content: url("assets/dark/yandex.svg"); }
-
-/* Кнопки меняются местами: на тёмной странице светлые, в светлом блоке — тёмная */
-[data-theme="dark"] .btn--dark {
-  --hl: #f0f0f0;
-  background: linear-gradient(249.2deg, #b2aec7 18%, var(--hl) 50%, #b2aec7 82%) 0 0 / 220% 100%;
-  color: #2c293f;
-}
-[data-theme="dark"] .btn--dark:hover { --hl: #ffffff; box-shadow: 0 24px 32px -30px rgba(0, 0, 0, .8); }
-[data-theme="dark"] .btn--light {
-  --hl: #6c5976;
-  background: linear-gradient(240.7deg, #2b2232 18%, var(--hl) 50%, #2b2232 82%) 0 0 / 220% 100%;
-  color: #fff;
-}
-[data-theme="dark"] .btn--light:hover { --hl: #a58fb6; box-shadow: 0 12px 28px -12px rgba(27, 19, 30, .55); }
-
-[data-theme] .card-scene.has-3d::after { background: radial-gradient(closest-side, rgba(10, 6, 16, .55), rgba(10, 6, 16, 0)); }
-
-[data-theme="dark"] .block {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.017' y1='-0.125' x2='-0.215' y2='0.838'%3E%3Cstop offset='0' stop-color='%23b2aec7'/%3E%3Cstop offset='0.844' stop-color='%23f0f0f0'/%3E%3Cstop offset='1' stop-color='%23b2aec7'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") calc(var(--mx) * 100%) calc(var(--my) * 100%) / 160% 160% no-repeat, #d6d3e0;
-}
-/* Те же блики, что на тёмном блоке (скролл + курсор), но ярче и с сиреневой тенью между ними — иначе на светлом фоне их не видно */
-[data-theme="dark"] .block::before {
-  background: repeating-linear-gradient(240deg,
-    rgba(140, 130, 172, .22) 0, rgba(140, 130, 172, .1) 175px,
-    rgba(255, 255, 255, .3) 330px,
-    rgba(255, 255, 255, .65) 500px,
-    rgba(255, 255, 255, .3) 670px,
-    rgba(140, 130, 172, .1) 825px, rgba(140, 130, 172, .22) 1000px);
-}
-[data-theme="dark"] .block__head .h-display, [data-theme="dark"] .app h3 { color: #322a40; }
-[data-theme="dark"] .block__head .lead, [data-theme="dark"] .app p { color: rgba(50, 42, 64, .9); }
-[data-theme="dark"] .service { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.172' y1='-0.402' x2='-0.472' y2='0.648'%3E%3Cstop offset='0' stop-color='%231b131e'/%3E%3Cstop offset='0.862' stop-color='%236c5976'/%3E%3Cstop offset='1' stop-color='%231b131e'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat, #3a2f41; }
-[data-theme="dark"] .service { box-shadow: 0 54px 72px -30px rgba(167, 162, 188, 0); }
-[data-theme="dark"] .service:hover { box-shadow: 0 54px 72px -30px rgba(167, 162, 188, .43); } /* светлая тень под тёмными карточками на светлом блоке */
-
-[data-theme="dark"] .userpic--add { background: linear-gradient(218deg, #dedede 0%, #cfcfcf 30%, #ebebeb 100%); }
-[data-theme="dark"] .userpic--add img { content: url("assets/dark/plus.svg"); }
-
-[data-theme] .footer__bottom { color: rgba(255, 255, 255, .64); }
-[data-theme] .theme-switch { background: rgba(30, 27, 38, .55); box-shadow: 0 4px 16px rgba(0, 0, 0, .25); }
-
-/* =========================================================
-   Фиолетовая тема (макет 734-18467): размытые фиолетово-розовые пятна,
-   тёмный стеклянный блок сервисов, полупрозрачные карточки.
-   Фоны — рендеры макета без контента (пятна из Figma с режимами наложения в CSS не повторить)
-   ========================================================= */
-[data-theme="purple"] {
-  --backdrop: var(--noise), url("assets/purple/bg.png") 0 0 / 100% 100% no-repeat, #4b2a7a;
-  background: #3c2163;
-}
-/* Кнопки на странице светлые; на стартовом экране кнопка остаётся тёмной, «Скачать приложение» — светлой */
-[data-theme="purple"] :is(.promo, .invite) .btn--dark {
-  --hl: #f0f0f0;
-  background: linear-gradient(249.2deg, #b2aec7 18%, var(--hl) 50%, #b2aec7 82%) 0 0 / 220% 100%;
-  color: #2c293f;
-}
-[data-theme="purple"] :is(.promo, .invite) .btn--dark:hover { --hl: #ffffff; box-shadow: 0 24px 32px -30px rgba(0, 0, 0, .8); }
-[data-theme="purple"] .app .btn--light { color: #2c293f; }
-[data-theme="purple"] .block {
-  background: url("assets/purple/block-bg.png") calc(var(--mx) * 100%) calc(var(--my) * 100%) / 120% 120% no-repeat, #341d4e;
-}
-[data-theme="purple"] .service {
-  background: rgba(230, 228, 235, .08);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-}
-[data-theme="purple"] .service:hover { box-shadow: 0 54px 72px -30px rgba(19, 14, 28, .3); } /* мягче, как в макете */
-[data-theme="purple"] .userpic--add {
-  background: linear-gradient(255deg, #b2aec7 0%, #f0f0f0 40%, #b2aec7 100%);
-  box-shadow: inset 0 0 0 1px rgba(238, 203, 225, .8);
-}
-[data-theme="purple"] .userpic--add img { content: url("assets/dark/plus.svg"); }
-
-/* На снегу текст и кнопки всегда как в светлой теме — иначе белый текст не читается */
-[data-theme] :is(.intro, .gift) { --ink: #322a40; --ink-soft: rgba(50, 42, 64, .9); }
-[data-theme] :is(.intro__logo, .gift .logo img) { content: url("assets/light/logo.svg?v=2"); }
-[data-theme] .gift .promo__code img { content: url("assets/light/copy.svg?v=2"); }
-[data-theme] :is(.intro, .gift) .btn--dark {
-  --hl: #6c5976;
-  background: linear-gradient(240.7deg, #2b2232 18%, var(--hl) 50%, #2b2232 82%) 0 0 / 220% 100%;
-  color: #fff;
-}
-[data-theme] :is(.intro, .gift) .btn--dark:hover { --hl: #a58fb6; box-shadow: 0 12px 28px -12px rgba(27, 19, 30, .55); }
-
-/* ----- Панель настройки карточки (открывается по ?tune) ----- */
-.tune {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 50;
-  width: 280px;
-  padding: 14px 16px;
-  border-radius: 20px;
-  background: rgba(24, 22, 32, .82);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  color: #fff;
-  font-size: 13px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, .35);
-}
-.tune__title { margin-bottom: 8px; font-weight: 500; font-size: 14px; }
-.tune__row { display: grid; grid-template-columns: 1fr 96px 44px; align-items: center; gap: 8px; padding: 4px 0; }
-.tune__row input[type="color"] { width: 96px; height: 26px; padding: 0; border: 0; border-radius: 6px; background: none; cursor: pointer; }
-.tune__row input[type="range"] { width: 96px; accent-color: #b98cff; }
-.tune__row output { font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .7); text-align: right; font-size: 11px; }
-.tune__actions { display: flex; gap: 8px; margin-top: 10px; }
-.tune__actions button { flex: 1; height: 32px; border-radius: 10px; background: rgba(255, 255, 255, .12); font-size: 12px; }
-.tune__actions button:hover { background: rgba(255, 255, 255, .2); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

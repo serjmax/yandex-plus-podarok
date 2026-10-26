@@ -6,15 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#edecf2">
   <title>Будьте в Плюсе! — Яндекс Плюс</title>
-  <link rel="stylesheet" href="styles.css?v=107">
-  <!-- Тема ставится до отрисовки, чтобы не мигало: ?theme=light|dark|purple или выбор из переключателя -->
-  <script>
-    try {
-      var t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("theme");
-      if (t === "dark" || t === "purple") document.documentElement.dataset.theme = t;
-    } catch (e) {}
-  </script>
-  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <!-- Шрифты первого экрана — заранее, чтобы текст не перерисовывался -->
+  <link rel="preload" href="fonts/YS%20Display-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/YS%20Text-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/YS%20Text-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=108">
 </head>
 <body class="is-locked">
 
@@ -81,21 +77,21 @@
 
       <div class="services">
         <article class="service service--music">
-          <div class="service__art"><img src="assets/v4/music.png" alt=""></div>
+          <div class="service__art"><img src="assets/v4/music.webp" alt="" loading="lazy" decoding="async"></div>
           <div class="service__text">
             <h3>Яндекс Музыка</h3>
             <p>Открывайте новые любимые треки в Яндекс Музыке</p>
           </div>
         </article>
         <article class="service service--kp">
-          <div class="service__art"><img src="assets/v4/kp.png" alt=""></div>
+          <div class="service__art"><img src="assets/v4/kp.webp" alt="" loading="lazy" decoding="async"></div>
           <div class="service__text">
             <h3>Кинопоиск</h3>
             <p>Смотрите кино, сериалы и спорт на Кинопоиске</p>
           </div>
         </article>
         <article class="service service--books">
-          <div class="service__art"><img src="assets/v4/books.png" alt=""></div>
+          <div class="service__art"><img src="assets/v4/books.webp" alt="" loading="lazy" decoding="async"></div>
           <div class="service__text">
             <h3>Яндекс Книги</h3>
             <p>Читайте книги и комиксы в Яндекс Книгах</p>
@@ -109,7 +105,7 @@
           <p>Они подстраиваются под ваши интересы в&nbsp;приложении Яндекс Плюс</p>
         </div>
         <a class="btn btn--light" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Скачать приложение</a>
-        <div class="app__phone" role="img" aria-label="Приложение Яндекс Плюс"><img src="assets/v4/phone-hand.png" alt=""></div>
+        <div class="app__phone" role="img" aria-label="Приложение Яндекс Плюс"><img src="assets/v4/phone-hand.webp" alt="" loading="lazy" decoding="async"></div>
       </div>
     </section>
 
@@ -120,14 +116,14 @@
       </div>
       <div class="friends" aria-hidden="true">
         <div class="userpic userpic--small">
-          <img class="userpic__photo" src="assets/light/userpic-small.png" alt="">
-          <img class="userpic__stroke" src="assets/light/stroke-small.svg" alt="">
+          <img class="userpic__photo" src="assets/light/userpic-small.webp" alt="" loading="lazy" decoding="async">
+          <img class="userpic__stroke" src="assets/light/stroke-small.svg" alt="" loading="lazy" decoding="async">
         </div>
         <div class="userpic userpic--big">
-          <img class="userpic__photo" src="assets/light/userpic-big.png" alt="">
-          <img class="userpic__stroke" src="assets/light/stroke-big.svg" alt="">
+          <img class="userpic__photo" src="assets/light/userpic-big.webp" alt="" loading="lazy" decoding="async">
+          <img class="userpic__stroke" src="assets/light/stroke-big.svg" alt="" loading="lazy" decoding="async">
         </div>
-        <div class="userpic userpic--add"><img src="assets/v4/plus-white.svg" alt=""></div>
+        <div class="userpic userpic--add"><img src="assets/v4/plus-white.svg" alt="" loading="lazy" decoding="async"></div>
       </div>
       <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Пригласить</a>
 
@@ -140,22 +136,15 @@
         </nav>
         <div class="footer__bottom">
           <p class="footer__copy"><span>© 2018–2026 ООО «Яндекс»</span><span>18+</span></p>
-          <p class="footer__mark">Проект компании <img src="assets/light/yandex.svg?v=2" alt="Яндекс" width="39" height="11"></p>
+          <p class="footer__mark">Проект компании <img src="assets/light/yandex.svg?v=2" alt="Яндекс" width="39" height="11" loading="lazy" decoding="async"></p>
         </div>
       </footer>
     </section>
   </main>
 
-  <!-- Выбор темы — всегда виден внизу экрана -->
-  <div class="theme-switch" id="theme-switch" role="radiogroup" aria-label="Тема">
-    <button class="theme-switch__opt theme-switch__opt--light" type="button" role="radio" data-set-theme="light" aria-label="Светлая тема"></button>
-    <button class="theme-switch__opt theme-switch__opt--dark" type="button" role="radio" data-set-theme="dark" aria-label="Тёмная тема"></button>
-    <button class="theme-switch__opt theme-switch__opt--purple" type="button" role="radio" data-set-theme="purple" aria-label="Фиолетовая тема"></button>
-  </div>
-
   <div class="toast" id="toast" role="status">Промокод скопирован</div>
 
-  <script src="script.js?v=103"></script>
-  <script type="module" src="src/card3d.js?v=18"></script>
+  <script src="script.js?v=104"></script>
+  <script type="module" src="src/card3d.min.js?v=1"></script>
 </body>
 </html>

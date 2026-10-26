@@ -4,7 +4,7 @@
 // Если WebGL недоступен, остаётся CSS-карточка (.gift-card).
 import * as THREE from 'three';
 import { RoomEnvironment } from '../vendor/RoomEnvironment.js';
-import { createCard } from './card.js?v=5';
+import { createCard } from './card.js';
 
 const scene3d = document.getElementById('card-scene');
 const mount = document.getElementById('card3d');

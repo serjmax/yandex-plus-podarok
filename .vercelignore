@@ -1,0 +1,5 @@
+# Исходники 3D-карточки и Three.js — на сайте используется собранный src/card3d.min.js (см. tools/build-card.sh)
+vendor
+tools
+src/card.js
+src/card3d.js

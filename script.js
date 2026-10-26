@@ -285,29 +285,4 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 1800);
   });
-
-  /* ---------- Выбор темы: светлая / тёмная / фиолетовая ---------- */
-  const root = document.documentElement;
-  const themeOpts = document.querySelectorAll('[data-set-theme]');
-  const themeColor = document.querySelector('meta[name="theme-color"]');
-  const THEME_COLORS = { light: '#edecf2', dark: '#2f2d36', purple: '#3c2163' };
-  const syncTheme = () => {
-    const cur = root.dataset.theme || 'light';
-    themeOpts.forEach(b => b.setAttribute('aria-checked', String(b.dataset.setTheme === cur)));
-    themeColor.content = THEME_COLORS[cur];
-  };
-  syncTheme();
-  themeOpts.forEach(btn => btn.addEventListener('click', () => {
-    const next = btn.dataset.setTheme;
-    if (next === (root.dataset.theme || 'light')) return;
-    const apply = () => {
-      if (next === 'light') delete root.dataset.theme;
-      else root.dataset.theme = next;
-      try { localStorage.setItem('theme', next); } catch {}
-      syncTheme();
-    };
-    // Мягкая смена темы, где браузер умеет view transitions
-    if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(apply);
-    else apply();
-  }));
 })();
