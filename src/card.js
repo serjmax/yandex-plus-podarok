@@ -213,8 +213,9 @@ export const LANDING_LIGHT = {
 // and userData.setShape(thickness, edgeRadius) for instant tweaks; both keep the panel's material copies in sync.
 export async function createCard(renderer, surface) {
   const look = { ...LANDING_LOOK, ...surface };
-  // assets — папка с card.svg и pattern.svg (на лендинге это ./assets/card3d/)
-  const asset = name => (look.assets ?? './assets/') + name;
+  // assets — папка с card.svg и pattern.svg (на лендинге это ./assets/card3d/);
+  // assetsVersion — добавляется к адресам как ?v=…, чтобы после замены графики браузер не взял старую из кэша
+  const asset = name => (look.assets ?? './assets/') + name + (look.assetsVersion ? `?v=${look.assetsVersion}` : '');
   const [artwork, pattern, lettering] = await Promise.all([
     svgImage(asset('card.svg'), text => text.replace(/<rect[^>]*\/>/, '')),
     svgImage(asset('pattern.svg')),

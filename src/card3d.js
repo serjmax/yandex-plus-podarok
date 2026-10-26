@@ -60,24 +60,29 @@ async function init() {
 
   // Карточка целиком (металл, перелив, слой надписей) строится в card.js
   const look = () => ({ ...LANDING_LOOK, ink: tune.lc, metal: tune.mt, iridescence: tune.ir, sheen: tune.sh, roughness: tune.ro, pattern: tune.pa });
-  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/' });
+  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 5 });
 
-  // Персональный промокод (script.js кладёт его в window.__promoCode) — на слое надписей, тем же «оттиском»,
-  // что и «12», в свободной полосе под цифрами. Размеры — в единицах макета карточки 343×213
-  if (window.__promoCode) {
+  // Промокод на плашке внизу карточки (макет 906-14774). Код — из ссылки (script.js кладёт его в window.__promoCode),
+  // иначе тот же, что в блоке «Промокод». Плашка — полупрозрачный «оттиск» (чуть темнее металла), код — полный.
+  // Размеры — в единицах карточки 343×213 (в макете карта 526×326)
+  {
+    const promo = window.__promoCode || document.querySelector('#promo-code span')?.textContent.trim() || '';
     const { canvas: letters, texture } = card.userData.lettering;
     const lctx = letters.getContext('2d');
-    const u = letters.width / 343;
-    const size = 13 * u;
+    const u = letters.width / 343, k = 343 / 526;
+    const size = 22 * k * u;
     await document.fonts.load(`500 ${size}px "YS Text"`).catch(() => {});
     lctx.font = `500 ${size}px "YS Text", "Helvetica Neue", Arial, sans-serif`;
-    const spacing = size * 0.12;
-    lctx.letterSpacing = `${spacing.toFixed(1)}px`;
+    const pad = 7.5 * k * u, h = 30 * k * u, cy = 287 * k * u, cx = letters.width / 2;
+    const w = Math.max(193 * k * u, lctx.measureText(promo).width + pad * 2);
+    lctx.fillStyle = 'rgba(255, 255, 255, .2)';
+    lctx.beginPath();
+    lctx.roundRect(cx - w / 2, cy - h / 2, w, h, 3 * k * u);
+    lctx.fill();
+    lctx.fillStyle = '#fff';
     lctx.textAlign = 'center';
     lctx.textBaseline = 'middle';
-    lctx.fillStyle = '#fff';
-    // разрядка добавляется и после последней буквы — сдвигаем на половину, чтобы текст стоял ровно по центру
-    lctx.fillText(window.__promoCode, letters.width / 2 + spacing / 2, 187 * u, 300 * u);
+    lctx.fillText(promo, cx, cy + size * 0.04);
     texture.needsUpdate = true;
   }
 

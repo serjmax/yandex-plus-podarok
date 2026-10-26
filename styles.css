@@ -3,7 +3,6 @@
 @font-face { font-family: "YS Text"; src: local("YS Text Medium"), url("fonts/YS Text-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
 @font-face { font-family: "YS Display"; src: local("YS Display Regular"), url("fonts/YS Display-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "YS Display"; src: local("YS Display Medium"), url("fonts/YS Display-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
-@font-face { font-family: "Druzhok"; src: url("fonts/DRUZHOK.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 
 /* ---------- Токены ---------- */
 :root {
@@ -270,31 +269,24 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 }
 .gift-card.is-tracking { transition: transform .08s linear; }
 .gift-card__pattern { position: absolute; inset: 0; background: url("assets/card3d/pattern.svg?v=2") 0 0 / 62.97em 62.97em repeat; opacity: .35; }
-.gift-card__num {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-family: "Druzhok", serif;
-  font-size: 249em;
-  line-height: 1.1;
-  color: #210b41;
-  white-space: nowrap;
-}
+/* Графика карточки (иконки и «12 месяцев Яндекс Плюса») — тот же card.svg, что у 3D: белое красим в цвет надписей */
+.gift-card__art { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(0) invert(9%) sepia(20%) saturate(2000%) hue-rotate(240deg); mix-blend-mode: multiply; }
 /* Промокод на плоской запасной карточке — там же, где на 3D: под «12» */
 .gift-card__code {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 87.8%;
-  transform: translateY(-50%);
+  left: 50%;
+  top: 88%;
+  transform: translate(-50%, -50%);
+  padding: 2em 7em;
+  border-radius: 4em;
+  background: rgba(33, 23, 48, .2);
   font-family: var(--text);
   font-weight: 500;
-  font-size: 21em;
-  letter-spacing: .12em;
-  color: #210b41;
-  text-align: center;
+  font-size: 22em;
+  color: #211730;
+  white-space: nowrap;
 }
+.gift-card__code:empty { display: none; }
 .gift-card__glare {
   position: absolute;
   inset: 0;
