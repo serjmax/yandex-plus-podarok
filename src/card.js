@@ -40,7 +40,7 @@ function random(seed) {
 //   { text, font: px => 'css font', size, cx, cy } — текст (промокод), выгравированный прямо в металле:
 //     буквы углублены, внутри — полированный, почти зеркальный металл, без краски; паттерн вокруг убран;
 //   polish: [{ cx, cy, r }] — шлифованные круги (например, под иконками): без паттерна и зерна, свой светлый тон;
-//   lettering: true — надписи и иконки из card.svg тоже гравируются полированным металлом, а не красятся.
+//   iconsRegion: [x, y, w, h] — часть card.svg в этой области (иконки) гравируется глубоко и темно полированным металлом, без краски.
 function drawEngraving(ctx, px, e) {
   ctx.save();
   ctx.font = e.font(e.size * px);
@@ -90,17 +90,26 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
     plate = alphaOf(qctx, w, h);
     for (let i = 0; i < patternMask.length; i++) patternMask[i] *= 1 - plate[i];
   }
-  // Гравировка кода: сами буквы (полировка) и чуть смягчённая копия для глубины; паттерн вокруг букв убран с запасом.
-  // engraving.lettering — так же гравируются и надписи/иконки из card.svg: без краски, полированным металлом
+  // Иконки (часть card.svg внутри engraving.iconsRegion = [x, y, w, h]) — глубокая тёмная гравировка полированным
+  // металлом вместо краски; в остальной области card.svg надписи остаются как были
+  let icon = null, iconDepth = null;
+  const region = engraving?.iconsRegion;
+  if (region) {
+    const [rx, ry, rw, rh] = region.map(v => v * px);
+    const [ic, ictx] = canvas(w, h);
+    ictx.drawImage(tc, rx, ry, rw, rh, rx, ry, rw, rh);
+    icon = alphaOf(ictx, w, h);
+    const [dc, dctx] = canvas(w, h);
+    dctx.filter = `blur(${px * 0.1}px)`;
+    dctx.drawImage(ic, 0, 0);
+    iconDepth = alphaOf(dctx, w, h);
+    for (let i = 0; i < icon.length; i++) { textMask[i] *= 1 - icon[i]; engrave[i] *= 1 - iconDepth[i]; }
+  }
+  // Гравировка кода: сами буквы (полировка) и чуть смягчённая копия для глубины; паттерн вокруг букв убран с запасом
   let code = null, codeDepth = null;
-  if (engraving?.text || engraving?.lettering) {
+  if (engraving?.text) {
     const [cc, cctx] = canvas(w, h);
-    if (engraving.text) drawEngraving(cctx, px, engraving);
-    if (engraving.lettering) {
-      cctx.drawImage(tc, 0, 0);
-      textMask.fill(0); // обычной «чернёной» гравировки у надписей больше нет — они в маске полировки
-      engrave.fill(0);
-    }
+    drawEngraving(cctx, px, engraving);
     code = alphaOf(cctx, w, h);
     const [dc, dctx] = canvas(w, h);
     dctx.filter = `blur(${px * 0.1}px)`;
@@ -112,7 +121,7 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
     const clear = alphaOf(zctx, w, h).map(a => Math.min(1, a * 4));
     for (let i = 0; i < patternMask.length; i++) patternMask[i] *= 1 - clear[i];
   }
-  return { w, h, patternMask, textMask, engrave, plate, code, codeDepth };
+  return { w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth };
 }
 
 // Smooth value noise with roughly `cell` pixels between random grid points.
@@ -140,7 +149,7 @@ function valueNoise(w, h, cell, rnd) {
 function hexStops(list) {
   return list.map(hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255));
 }
-function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeDepth }, { grain, grainSize, brush: brushing, blacken = 0.93, pattern = 1, tint = null }) {
+function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth }, { grain, grainSize, brush: brushing, blacken = 0.93, pattern = 1, tint = null }) {
   const stops = tint && tint.length ? hexStops(tint) : null;
   const rnd = random(12), heightMap = new Float32Array(w * h), brush = new Float32Array(h);
   const cell = Math.max(1.5, grainSize / WIDTH * w);
@@ -154,8 +163,9 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
       // The blackened lettering is smooth: no grain or brushing inside it.
       const q = plate ? plate[i] : 0;           // шлифованный круг: гладкий и чуть приподнят
       const c = code ? code[i] : 0, cd = codeDepth ? codeDepth[i] : 0; // гравировка кода: углублена и отполирована
-      const metal = (1 - engrave[i]) * (1 - q) * (1 - c);
-      heightMap[i] = -0.15 * pattern * patternMask[i] - 0.6 * engrave[i] + 0.12 * q - 0.45 * cd + metal * (0.12 * brushing * brush[y]
+      const g = icon ? icon[i] : 0, gd = iconDepth ? iconDepth[i] : 0;  // гравировка иконок: глубже и темнее
+      const metal = (1 - engrave[i]) * (1 - q) * (1 - c) * (1 - g);
+      heightMap[i] = -0.15 * pattern * patternMask[i] - 0.6 * engrave[i] + 0.12 * q - 0.45 * cd - 0.9 * gd + metal * (0.12 * brushing * brush[y]
         + grainHeight * (coarse[i] + 0.5 * fine[i]) + 0.02 * grain * (rnd() - 0.5));
     }
 
@@ -173,17 +183,17 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
       normal.data[j + 2] = (1 / len * 0.5 + 0.5) * 255;
       normal.data[j + 3] = 255;
       // Niello (blackening) fills the engraved lettering.
-      const p = pattern * patternMask[i], black = textMask[i], q = plate ? plate[i] : 0, c = code ? code[i] : 0;
+      const p = pattern * patternMask[i], black = textMask[i], q = plate ? plate[i] : 0, c = code ? code[i] : 0, g = icon ? icon[i] : 0;
       // glTF convention: green = roughness, blue = metalness. Pattern is matte,
       // the blackened oxide is matte and only partly metallic.
       const bare = 0.45 + 0.3 * p + 0.1 * brushing * Math.abs(brush[y]) + grain * (0.2 + 0.3 * coarse[i]);
       // Шлифованные круги: глаже металла вокруг, но не зеркало, и металличность ниже — свой светлый тон.
       // Гравировка кода — почти зеркало и полный металл: переливается и бликует на свету
-      const polished = (bare * (1 - q) + 0.4 * q) * (1 - c) + 0.12 * c;
+      const polished = ((bare * (1 - q) + 0.4 * q) * (1 - c) + 0.12 * c) * (1 - g) + 0.2 * g;
       rough.data[j + 1] = Math.max(0, Math.min(1, polished * (1 - black) + 0.6 * black)) * 255;
       rough.data[j + 2] = (1 - 0.5 * black) * (1 - 0.45 * q) * 255;
       rough.data[j + 3] = 255;
-      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.1 * c) * (1 - blacken * black) * 255;
+      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.1 * c) * (1 - 0.55 * g) * (1 - blacken * black) * 255;
       if (stops) {
         // Положение вдоль диагонали 0..1 и плавная интерполяция между соседними цветами
         const t = Math.min(0.9999, (x / w + y / h) / 2) * (stops.length - 1), k = t | 0, f = t - k;
@@ -280,7 +290,7 @@ export async function createCard(renderer, surface) {
   const w = Math.min(innerWidth < 800 ? 2048 : 4096, renderer.capabilities.maxTextureSize);
   const h = Math.round(w * SVG_H / SVG_W);
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
-  const engraving = look.engraving?.text || look.engraving?.polish?.length || look.engraving?.lettering ? look.engraving : null;
+  const engraving = look.engraving?.text || look.engraving?.polish?.length || look.engraving?.iconsRegion ? look.engraving : null;
   const frontMasks = buildMasks(w, h, artwork, pattern, engraving);
   const backMasks = buildMasks(1024, Math.round(1024 * SVG_H / SVG_W), null, null); // same metal, no artwork
   const metal = maps => {
@@ -304,7 +314,12 @@ export async function createCard(renderer, surface) {
   const letters = document.createElement('canvas');
   letters.width = innerWidth < 800 ? 1536 : 3072;
   letters.height = Math.round(letters.width * SVG_H / SVG_W);
-  if (!engraving?.lettering) letters.getContext('2d').drawImage(lettering, 0, 0, letters.width, letters.height); // при гравировке надписи не красим
+  const lctx = letters.getContext('2d');
+  lctx.drawImage(lettering, 0, 0, letters.width, letters.height);
+  if (engraving?.iconsRegion) { // иконки выгравированы — краской их не покрываем
+    const lu = letters.width / SVG_W, [rx, ry, rw, rh] = engraving.iconsRegion;
+    lctx.clearRect(rx * lu, ry * lu, rw * lu, rh * lu);
+  }
   const lettersTex = new THREE.CanvasTexture(letters);
   lettersTex.colorSpace = THREE.SRGBColorSpace;
   lettersTex.anisotropy = maxAniso;
