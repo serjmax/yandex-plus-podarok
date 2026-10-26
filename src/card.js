@@ -65,7 +65,7 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
   // Lettering mask from card.svg (+ engraved text on the plate).
   const [tc, tctx] = canvas(w, h);
   if (artwork) tctx.drawImage(artwork, 0, 0, w, h);
-  if (engraving) drawEngraving(tctx, px, engraving);
+  if (engraving?.text) drawEngraving(tctx, px, engraving);
   const textMask = alphaOf(tctx, w, h);
   // The pattern is cleared under the lettering with a small margin, so letters sit on clean metal.
   const [kc, kctx] = canvas(w, h);
@@ -79,14 +79,23 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
   ectx.drawImage(tc, 0, 0);
   const engrave = alphaOf(ectx, w, h);
   // Plate: polished, no pattern; slightly softened edge so the raised rim catches a thin highlight.
+  // Шлифованные участки: плашка под промокод и круги (polish: [{ cx, cy, r }] в единицах card.svg) — например, под иконками
   let plate = null;
-  if (engraving) {
+  const polish = engraving?.polish ?? [];
+  if (engraving || polish.length) {
     const [qc, qctx] = canvas(w, h);
     qctx.filter = `blur(${px * 0.25}px)`;
     qctx.fillStyle = '#fff';
-    qctx.beginPath();
-    qctx.roundRect(...plateRect(qctx, px, engraving), engraving.r * px);
-    qctx.fill();
+    if (engraving?.text) {
+      qctx.beginPath();
+      qctx.roundRect(...plateRect(qctx, px, engraving), engraving.r * px);
+      qctx.fill();
+    }
+    for (const c of polish) {
+      qctx.beginPath();
+      qctx.arc(c.cx * px, c.cy * px, c.r * px, 0, Math.PI * 2);
+      qctx.fill();
+    }
     plate = alphaOf(qctx, w, h);
     for (let i = 0; i < patternMask.length; i++) patternMask[i] *= 1 - plate[i];
   }
@@ -257,7 +266,7 @@ export async function createCard(renderer, surface) {
   const w = Math.min(innerWidth < 800 ? 2048 : 4096, renderer.capabilities.maxTextureSize);
   const h = Math.round(w * SVG_H / SVG_W);
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
-  const engraving = look.engraving?.text ? look.engraving : null;
+  const engraving = look.engraving?.text || look.engraving?.polish?.length ? look.engraving : null;
   const frontMasks = buildMasks(w, h, artwork, pattern, engraving);
   const backMasks = buildMasks(1024, Math.round(1024 * SVG_H / SVG_W), null, null); // same metal, no artwork
   const metal = maps => {
@@ -282,7 +291,7 @@ export async function createCard(renderer, surface) {
   letters.width = innerWidth < 800 ? 1536 : 3072;
   letters.height = Math.round(letters.width * SVG_H / SVG_W);
   letters.getContext('2d').drawImage(lettering, 0, 0, letters.width, letters.height);
-  if (engraving) drawEngraving(letters.getContext('2d'), letters.width / SVG_W, engraving); // гравировка закрашена как надписи
+  if (engraving?.text) drawEngraving(letters.getContext('2d'), letters.width / SVG_W, engraving); // гравировка закрашена как надписи
   const lettersTex = new THREE.CanvasTexture(letters);
   lettersTex.colorSpace = THREE.SRGBColorSpace;
   lettersTex.anisotropy = maxAniso;

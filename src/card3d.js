@@ -68,6 +68,9 @@ async function init() {
     text: promo, size: 22 * k,
     font: px => `500 ${px}px "YS Text", "Helvetica Neue", Arial, sans-serif`,
     cx: 343 / 2, cy: 287 * k, h: 30 * k, minW: 193 * k, pad: 7.5 * k, r: 3 * k,
+    // Круги иконок сервисов (в макете: ряд с x = 180.65, y = 26, круги ⌀48 с шагом 58): внутри без паттерна,
+    // шлифованный металл — глифы переливаются, как плашка промокода
+    polish: [24, 82, 140].map(x => ({ cx: (180.65 + x) * k, cy: (26 + 24) * k, r: 24 * k })),
   };
   await document.fonts.load(engraving.font(32)).catch(() => {}); // гравировка рисуется этим шрифтом
   const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 5, engraving });
