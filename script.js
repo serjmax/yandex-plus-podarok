@@ -12,6 +12,44 @@
   alignIntro();
   window.addEventListener('resize', alignIntro);
 
+  /* ---------- Подарок всегда в центре свободного места между текстом и кнопкой ---------- */
+  // Картинки и видео 1440×902; центр подарка на них — (723, 551). Подбираем масштаб и сдвиг так,
+  // чтобы подарок встал в центр места под бант, а картинка при этом закрывала весь экран.
+  // Те же значения — у видео и у снега на первом экране, поэтому переход не прыгает.
+  const SCENE = { w: 1440, h: 902, cx: 723, cy: 551 };
+  const GIFT_W = 480; // ширина подарка с концами ленты на картинке
+  const giftSpot = document.querySelector('.intro__bow');
+  let spotY = 0.55; // доля высоты экрана, запоминаем — после открытия стартового экрана уже нет
+  const layoutScene = () => {
+    // ширина — как у стартового экрана и страницы (без места под полосу прокрутки)
+    const onIntro = document.body.contains(intro);
+    const vw = onIntro ? intro.clientWidth : document.getElementById('page').clientWidth;
+    const vh = window.innerHeight;
+    if (onIntro) {
+      const r = giftSpot.getBoundingClientRect();
+      if (r.height) spotY = (r.top + r.height / 2) / vh;
+    }
+    const tx = vw / 2, ty = spotY * vh;
+    const cover = Math.max(vw / SCENE.w, vh / SCENE.h);
+    const centered = Math.max(cover,
+      tx / SCENE.cx, (vw - tx) / (SCENE.w - SCENE.cx),
+      ty / SCENE.cy, (vh - ty) / (SCENE.h - SCENE.cy));
+    // Ради точного центра картинку приходится увеличивать; но не так, чтобы подарок стал шире экрана
+    // (узкие вертикальные экраны) — тогда подарок встаёт максимально близко к центру
+    const k = Math.max(cover, Math.min(centered, vw * 0.92 / GIFT_W));
+    const w = SCENE.w * k, h = SCENE.h * k;
+    const x = Math.min(0, Math.max(vw - w, tx - SCENE.cx * k));
+    const y = Math.min(0, Math.max(vh - h, ty - SCENE.cy * k));
+    const st = document.documentElement.style;
+    st.setProperty('--scene-w', w.toFixed(1) + 'px');
+    st.setProperty('--scene-h', h.toFixed(1) + 'px');
+    st.setProperty('--scene-x', x.toFixed(1) + 'px');
+    st.setProperty('--scene-y', y.toFixed(1) + 'px');
+  };
+  layoutScene();
+  window.addEventListener('resize', () => requestAnimationFrame(layoutScene)); // после alignIntro
+  document.fonts?.ready.then(layoutScene); // после загрузки шрифтов текст меняет высоту — пересчитываем
+
   /* ---------- Видео развязывания + прелоудер ---------- */
   const REVEAL_AT = 3.0;      // секунда видео, на которой оно растворяется в картинку со снегом
   const video = document.getElementById('intro-video');
