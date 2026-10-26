@@ -60,31 +60,17 @@ async function init() {
 
   // Карточка целиком (металл, перелив, слой надписей) строится в card.js
   const look = () => ({ ...LANDING_LOOK, ink: tune.lc, metal: tune.mt, iridescence: tune.ir, sheen: tune.sh, roughness: tune.ro, pattern: tune.pa });
-  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 5 });
-
-  // Промокод на плашке внизу карточки (макет 906-14774). Код — из ссылки (script.js кладёт его в window.__promoCode),
-  // иначе тот же, что в блоке «Промокод». Плашка — полупрозрачный «оттиск» (чуть темнее металла), код — полный.
-  // Размеры — в единицах карточки 343×213 (в макете карта 526×326)
-  {
-    const promo = window.__promoCode || document.querySelector('#promo-code span')?.textContent.trim() || '';
-    const { canvas: letters, texture } = card.userData.lettering;
-    const lctx = letters.getContext('2d');
-    const u = letters.width / 343, k = 343 / 526;
-    const size = 22 * k * u;
-    await document.fonts.load(`500 ${size}px "YS Text"`).catch(() => {});
-    lctx.font = `500 ${size}px "YS Text", "Helvetica Neue", Arial, sans-serif`;
-    const pad = 7.5 * k * u, h = 30 * k * u, cy = 287 * k * u, cx = letters.width / 2;
-    const w = Math.max(193 * k * u, lctx.measureText(promo).width + pad * 2);
-    lctx.fillStyle = 'rgba(255, 255, 255, .2)';
-    lctx.beginPath();
-    lctx.roundRect(cx - w / 2, cy - h / 2, w, h, 3 * k * u);
-    lctx.fill();
-    lctx.fillStyle = '#fff';
-    lctx.textAlign = 'center';
-    lctx.textBaseline = 'middle';
-    lctx.fillText(promo, cx, cy + size * 0.04);
-    texture.needsUpdate = true;
-  }
+  // Промокод выгравирован на шлифованной плашке внизу карточки (макет 906-14774, карта 526×326 → 343×213).
+  // Код — из ссылки (script.js кладёт его в window.__promoCode), иначе тот же, что в блоке «Промокод»
+  const promo = window.__promoCode || document.querySelector('#promo-code span')?.textContent.trim() || '';
+  const k = 343 / 526;
+  const engraving = {
+    text: promo, size: 22 * k,
+    font: px => `500 ${px}px "YS Text", "Helvetica Neue", Arial, sans-serif`,
+    cx: 343 / 2, cy: 287 * k, h: 30 * k, minW: 193 * k, pad: 7.5 * k, r: 3 * k,
+  };
+  await document.fonts.load(engraving.font(32)).catch(() => {}); // гравировка рисуется этим шрифтом
+  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 5, engraving });
 
   // Панель ?tune: цвет надписей и перелив меняются мгновенно, остальное — пересборкой поверхности
   let surfaceTimer = 0;
@@ -99,7 +85,7 @@ async function init() {
       });
     });
     clearTimeout(surfaceTimer);
-    surfaceTimer = setTimeout(() => card.userData.setSurface(look()), 300);
+    surfaceTimer = setTimeout(() => card.userData.setSurface({ ...look(), engraving }), 300);
   };
   if (TUNE_PANEL && query.has('tune')) tunePanel(tune, applyAll);
   const box = new THREE.Box3().setFromObject(card);
