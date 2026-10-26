@@ -318,32 +318,25 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .promo__code img { width: 24px; height: 24px; transition: opacity .2s ease; }
 .promo__code:hover img { opacity: .6; }
 
-/* ----- Большая карточка: сервисы + приложение ----- */
+/* ----- Большой светлый блок: сервисы + две карточки с фото (макет 902-13280, 1304×1440) ----- */
 .block {
   position: relative;
   width: 1304px;
-  height: 1093px;
   margin-top: 32px;
-  padding-top: 48px;
+  padding: 65px 0 107px;
   border-radius: 80px;
   overflow: hidden;
-  /* Перелив по скроллу и курсору: светлая полоса градиента из макета (--mx/--my) и мягкое
-     светлое пятно (--cx/--cy) двигает script.js */
+  /* Перелив по скроллу и курсору: градиент из макета сдвигается (--mx/--my), блики — в ::before; всё двигает script.js */
   --cx: .5;
   --cy: .5;
   --mx: .3;
   --my: .3;
-  /* Тёмный градиент из макета (в долях блока) + фиолетовая вуаль 20%. Блики — в .block::before */
-  background:
-    linear-gradient(rgba(20, 3, 39, .2), rgba(20, 3, 39, .2)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='.5' y1='-.2022' x2='.178' y2='.82'%3E%3Cstop offset='0' stop-color='%232e2c35'/%3E%3Cstop offset='.53' stop-color='%2353505b'/%3E%3Cstop offset='.73' stop-color='%2344424d'/%3E%3Cstop offset='1' stop-color='%232e2c35'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") calc(var(--mx) * 100%) calc(var(--my) * 100%) / 160% 160% no-repeat,
-    #33313b;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.017' y1='-0.125' x2='-0.215' y2='0.838'%3E%3Cstop offset='0' stop-color='%23b2aec7'/%3E%3Cstop offset='0.36' stop-color='%23b2aec7'/%3E%3Cstop offset='1' stop-color='%23d9d8de'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") calc(var(--mx) * 100%) calc(var(--my) * 100%) / 160% 160% no-repeat, #c4c1d3;
   text-align: center;
 }
-
-.block__head { display: flex; flex-direction: column; align-items: center; gap: 20.4px; }
-/* Несколько диагональных бликов (как рефлекс на кнопках), все едут справа налево по мере скролла.
-   Слой шире блока, сдвиг --rx в пикселях задаёт script.js */
+.block__head { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+/* Несколько диагональных бликов, едут справа налево по мере скролла; между ними лёгкая сиреневая тень —
+   на светлом фоне иначе не видно. Слой шире блока, сдвиг --rx в пикселях задаёт script.js */
 .block::before {
   content: "";
   position: absolute;
@@ -351,22 +344,20 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   bottom: 0;
   left: -100%;
   width: 400%;
-  /* Широкие блики — около половины блока, мягкие края; период 1000 px */
   background: repeating-linear-gradient(240deg,
-    rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 175px,
-    rgba(255, 255, 255, .05) 330px,
-    rgba(255, 255, 255, .1) 500px,
-    rgba(255, 255, 255, .05) 670px,
-    rgba(255, 255, 255, 0) 825px, rgba(255, 255, 255, 0) 1000px);
+    rgba(140, 130, 172, .22) 0, rgba(140, 130, 172, .1) 175px,
+    rgba(255, 255, 255, .3) 330px,
+    rgba(255, 255, 255, .65) 500px,
+    rgba(255, 255, 255, .3) 670px,
+    rgba(140, 130, 172, .1) 825px, rgba(140, 130, 172, .22) 1000px);
   transform: translateX(var(--rx, 0px));
   pointer-events: none;
   z-index: 0;
 }
-.block__head, .services { position: relative; z-index: 1; }
-.block__head .h-display { color: #fff; }
-.block__head .lead { color: rgba(255, 255, 255, .7); }
+.block__head, .services, .features { position: relative; z-index: 1; }
 
-.services { display: flex; justify-content: center; gap: 64px; margin-top: 172px; }
+.services { display: flex; justify-content: center; gap: 62px; margin-top: 170px; }
+/* Тёмные карточки сервисов */
 .service {
   position: relative;
   flex: none;
@@ -377,12 +368,12 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   width: 350px;
   height: 250px;
   border-radius: 40px;
-  background: linear-gradient(222.4deg, #b2aec7 6.4%, #f0f0f0 97%, #b2aec7 105%);
-  /* Тень из макета появляется только при наведении */
-  box-shadow: 0 54px 72px -30px rgba(19, 14, 28, 0);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.172' y1='-0.402' x2='-0.472' y2='0.648'%3E%3Cstop offset='0' stop-color='%231b131e'/%3E%3Cstop offset='0.862' stop-color='%236c5976'/%3E%3Cstop offset='1' stop-color='%231b131e'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat, #3a2f41;
+  /* Светлая тень из макета появляется только при наведении */
+  box-shadow: 0 54px 72px -30px rgba(167, 162, 188, 0);
   transition: box-shadow .35s ease;
 }
-.service:hover { box-shadow: 0 54px 72px -30px rgba(19, 14, 28, .6); }
+.service:hover { box-shadow: 0 54px 72px -30px rgba(167, 162, 188, .43); }
 /* Иконки сервисов выступают над карточкой */
 .service__art { position: relative; flex: none; width: 100%; height: 193.34px; margin-bottom: -7.52px; }
 .service--kp .service__art { height: 200px; overflow: hidden; }
@@ -392,66 +383,26 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .service--kp .service__art img    { left: 67.67px; top: -.38px; width: 213.91px; height: 218.93px; }
 .service--books .service__art img { left: calc(50% + 4.41px); top: -15.04px; width: 247.11px; height: 224.3px; translate: -50% 0; }
 .service__text { flex: none; /* не сжимать — иначе текст и иконка уезжают вниз относительно макета */ display: flex; flex-direction: column; gap: 12.89px; width: 332.27px; height: 181.53px; padding: 34.37px 34.37px 17.19px; border-radius: 41.25px; }
-.service h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink-card); }
-.service p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
+.service h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: #fff; }
+.service p { font-size: 19.33px; line-height: 25.78px; color: rgba(255, 255, 255, .7); }
 
-.app {
-  position: absolute;
-  left: 94px;
-  top: 788px;
-  width: 1210px;
-  height: 326px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  text-align: left;
-  z-index: 1;
-}
-.app__text { display: flex; flex-direction: column; gap: 12px; width: 600px; }
-.app h3 { font-family: var(--display); font-weight: 500; font-size: 34.27px; line-height: .95; color: #fff; }
-.app p { width: 490px; font-size: 22.03px; line-height: 29.38px; color: rgba(255, 255, 255, .7); }
-/* Телефон в руке: рамка 816×418 с картинкой, как в макете; низ обрезает карточка */
-.app__phone { position: absolute; left: 390px; top: -110px; width: 816px; height: 418px; overflow: hidden; }
-.app__phone img { position: absolute; left: 74.9px; top: -32.5px; width: 945.25px; height: 1510.4px; }
+/* Две карточки с фото: фото 556×340, текст, кнопка — кнопки на одной высоте */
+.features { display: flex; justify-content: center; gap: 62px; margin-top: 56px; }
+.feature { display: flex; flex-direction: column; align-items: center; width: 556px; }
+.feature__photo { width: 100%; height: auto; aspect-ratio: 556 / 340; border-radius: 40px; object-fit: cover; }
+.feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-top: 32px; }
+.feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink); }
+.feature p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
+.feature .btn { width: 267px; margin-top: 32px; }
 
-/* ----- Приглашение + футер ----- */
-.invite { padding: 114px 0 0; }
-.invite__head { display: flex; flex-direction: column; gap: 12px; width: 676px; }
-.friends { position: relative; width: 438px; height: 285px; margin-top: 48px; }
-.userpic { position: absolute; border-radius: 100px; }
-.userpic__photo { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 100px; object-fit: cover; }
-.userpic__stroke { position: absolute; left: 50%; top: 50%; translate: -50% -50%; }
-.userpic--big { left: 140px; top: 101.92px; width: 164.47px; height: 164.47px; }
-.userpic--big .userpic__stroke { width: 192.73px; height: 192.73px; }
-.userpic--small { left: 10.73px; top: 14.02px; width: 117.64px; height: 117.64px; }
-.userpic--small .userpic__stroke { width: 137.85px; height: 137.85px; }
-.userpic--add {
-  left: 304px;
-  top: 18.3px;
-  width: 117.64px;
-  height: 117.64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Градиент кнопки «Скачать приложение», без движения: светлый край слева */
-  background: linear-gradient(226.3deg, #1b131e 6.7%, #6c5976 81.2%, #1b131e 138.3%); /* тёмный, как в макете */
-}
-.userpic--add img { width: 84.46px; height: 88.96px; }
-.friends .userpic { animation: bob 5s ease-in-out infinite; }
-.friends .userpic--big { animation-delay: -1.6s; }
-.friends .userpic--add { animation-delay: -3.2s; }
-@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
-.friends .userpic__stroke { animation: none; }
-.invite .btn { margin-top: 48px; }
-
+/* ----- Футер ----- */
 .footer {
   display: flex;
   flex-direction: column;
   gap: 32px;
   width: 960px;
-  margin-top: 64px;
+  margin-top: 42px;
+  margin-bottom: 42px;
   padding: 24px 32px;
   color: var(--ink); /* в макете белый на тёмном низе страницы; у нас фон светлый — берём цвет текста */
   text-align: left;
@@ -503,7 +454,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .promo__label { font-size: 18px; line-height: 22px; }
   .promo__code { font-size: 22px; }
 
-  .block { width: calc(100% - 24px); max-width: 560px; height: auto; margin-top: 0; padding: 40px 0 0; border-radius: 48px; }
+  .block { width: calc(100% - 24px); max-width: 560px; margin-top: 0; padding: 40px 0 48px; border-radius: 48px; }
   .block__head { gap: 12px; padding: 0 16px; }
   .services {
     justify-content: flex-start;
@@ -522,21 +473,14 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .service h3 { font-size: 26px; }
   .service p { font-size: 17px; line-height: 22px; }
 
-  .app { position: relative; left: auto; top: auto; width: 100%; height: auto; padding: 24px 20px 0; align-items: center; gap: 20px; text-align: center; }
-  .app__text { width: 100%; align-items: center; }
-  .app h3 { font-size: 28px; }
-  .app p { width: auto; max-width: 320px; font-size: 17px; line-height: 22px; }
-  .app__phone { position: relative; left: auto; top: auto; width: 100%; height: 300px; margin-top: 8px; }
-  .app__phone img { left: calc(50% - 300px); top: -10px; width: 600px; height: 958px; }
-
-  .invite { padding-top: 64px; }
-  .invite__head { width: 340px; }
-  .friends { width: 350px; height: 228px; margin-top: 36px; }
-  .friends .userpic { scale: .8; transform-origin: 0 0; }
-  .friends .userpic--big   { left: 112px; top: 81.5px; }
-  .friends .userpic--small { left: 8.6px; top: 11.2px; }
-  .friends .userpic--add   { left: 243.2px; top: 14.6px; }
-  .invite .btn { margin-top: 36px; }
+  .features { flex-direction: column; align-items: center; gap: 48px; margin-top: 8px; padding: 0 16px; }
+  .feature { width: 100%; max-width: 520px; }
+  .feature__photo { border-radius: 32px; }
+  .feature__text { width: 100%; min-height: 0; margin-top: 24px; gap: 10px; }
+  .feature h3 { font-size: 26px; }
+  .feature p { font-size: 17px; line-height: 22px; }
+  .feature p br, .feature h3 br { display: none; }
+  .feature .btn { width: 274px; margin-top: 24px; }
 
   .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px; gap: 20px; }
   .footer__links { gap: 4px 20px; font-weight: 400; }
