@@ -8,7 +8,7 @@ const PATTERN_W = 40, PATTERN_H = 40;       // pattern.svg tile
 const WIDTH = 85.6;                          // mm, ISO ID-1 card width
 const HEIGHT = WIDTH * SVG_H / SVG_W;
 const RADIUS = SVG_R * WIDTH / SVG_W;
-const THICKNESS = 0.8, BEVEL = 0.12;
+const THICKNESS = 0.8, BEVEL = 0.12;           // mm; defaults, the studio can change both
 
 async function svgImage(url, transform = text => text) {
   const text = transform(await (await fetch(url)).text());
@@ -157,8 +157,10 @@ function fill(t, data) {
   return t;
 }
 
-function geometry() {
-  const x = WIDTH / 2 - BEVEL, y = HEIGHT / 2 - BEVEL, r = RADIUS - BEVEL;
+// bevel — radius of the rounded edge; it can't exceed half the thickness, so it is clamped.
+function geometry(thickness = THICKNESS, bevel = BEVEL) {
+  bevel = Math.min(bevel, thickness / 2 - 0.01);
+  const x = WIDTH / 2 - bevel, y = HEIGHT / 2 - bevel, r = RADIUS - bevel;
   const shape = new THREE.Shape();
   shape.moveTo(-x + r, -y);
   shape.lineTo(x - r, -y); shape.absarc(x - r, -y + r, r, -Math.PI / 2, 0);
@@ -166,10 +168,10 @@ function geometry() {
   shape.lineTo(-x + r, y); shape.absarc(-x + r, y - r, r, Math.PI / 2, Math.PI);
   shape.lineTo(-x, -y + r); shape.absarc(-x + r, -y + r, r, Math.PI, Math.PI * 1.5);
   const g = new THREE.ExtrudeGeometry(shape, {
-    depth: THICKNESS - BEVEL * 2, bevelEnabled: true, bevelThickness: BEVEL, bevelSize: BEVEL,
-    bevelSegments: 4, curveSegments: 32,
+    depth: thickness - bevel * 2, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel,
+    bevelSegments: 10, curveSegments: 32,
   });
-  g.translate(0, 0, -(THICKNESS - BEVEL * 2) / 2);
+  g.translate(0, 0, -(thickness - bevel * 2) / 2);
   // Map the whole card face to 0..1 so the artwork covers it exactly.
   const pos = g.attributes.position, uv = g.attributes.uv;
   for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) / WIDTH + 0.5, pos.getY(i) / HEIGHT + 0.5);
@@ -184,10 +186,39 @@ function geometry() {
 
 // surface: { grain, grainSize, brush } — see buildSurface. The returned group has
 // userData.setSurface(surface) to rebuild the metal texture without rebuilding the card.
+// The card as it looks on the gift landing (yandex-plus-podarok-snow-video). Values were tuned in the
+// studio panel on 26.10; the landing should build the card with LANDING_LOOK and light it with LANDING_LIGHT.
+// Pearl metal with a faint iridescence, pastel tint along the diagonal, lettering as a separate
+// coloured layer over the face (so its colour changes instantly, without rebuilding textures).
+export const LANDING_LOOK = {
+  tint: ['#c9cbee', '#f6f2fa', '#efd6ea', '#c6c0dc'], // lilac-blue → white → pinkish → grey-lilac
+  blacken: 0,           // lettering is painted by the ink layer instead
+  pattern: 0.74,        // visibility of the plus pattern
+  metal: '#ffffff', roughness: 0.49, iridescence: 0.04, sheen: 0,
+  ink: '#211730',       // lettering colour
+  thickness: 0.7, edgeRadius: 0.35, // mm
+  grain: 0.54, grainSize: 0.04, brush: 0, // metal grain strength, grain size in mm, no brushed stripes
+};
+
+// Scene light for the card (three.js): ACES tone mapping, RoomEnvironment as the environment map,
+// a hemisphere light (0xffffff / 0x8c9185) with `ambient`, and two directional lights.
+export const LANDING_LIGHT = {
+  keyPower: 1.4, keyColor: '#ffd9ee', key: [-3, 5, 4],   // warm pinkish key
+  fillPower: 0.9, fillColor: '#c3c2ff', fill: [4, 2, -3], // cool lilac fill
+  ambient: 0.2, envPower: 0.71, exposure: 1.15,
+};
+
+// surface: { grain, grainSize, brush, pattern, thickness and edgeRadius (mm) } plus LANDING_LOOK. The returned group has
+// userData.setSurface(surface) to rebuild the metal texture and userData.setLook({ ink, iridescence })
+// and userData.setShape(thickness, edgeRadius) for instant tweaks; both keep the panel's material copies in sync.
 export async function createCard(renderer, surface) {
-  const [artwork, pattern] = await Promise.all([
-    svgImage('./assets/card3d/card.svg?v=3', text => text.replace(/<rect[^>]*\/>/, '')),
-    svgImage('./assets/card3d/pattern.svg?v=2'),
+  const look = { ...LANDING_LOOK, ...surface };
+  // assets — папка с card.svg и pattern.svg (на лендинге это ./assets/card3d/)
+  const asset = name => (look.assets ?? './assets/') + name;
+  const [artwork, pattern, lettering] = await Promise.all([
+    svgImage(asset('card.svg'), text => text.replace(/<rect[^>]*\/>/, '')),
+    svgImage(asset('pattern.svg')),
+    svgImage(asset('card.svg'), text => text.replace(/<rect[^>]*\/>/, '')),
   ]);
   const w = Math.min(innerWidth < 800 ? 2048 : 4096, renderer.capabilities.maxTextureSize);
   const h = Math.round(w * SVG_H / SVG_W);
@@ -197,24 +228,60 @@ export async function createCard(renderer, surface) {
   const metal = maps => {
     const rough = texture(maps.rough, false, maxAniso);
     return new THREE.MeshPhysicalMaterial({
-      color: 0xffffff, metalness: 1, roughness: 0.45, anisotropy: 0.35,
+      color: look.metal, metalness: 1, roughness: look.roughness, anisotropy: 0.35,
       map: texture(maps.color, true, maxAniso), roughnessMap: rough, metalnessMap: rough,
       normalMap: texture(maps.normal, false, maxAniso),
+      // Thin-film iridescence: the highlight shifts lilac / pink / blue with the viewing angle
+      iridescence: look.iridescence, iridescenceIOR: 1.3, iridescenceThicknessRange: [120, 480],
+      sheen: look.sheen, sheenColor: 0xe3c4ff, sheenRoughness: 0.45,
     });
   };
-  const face = metal(buildSurface(frontMasks, surface)), backFace = metal(buildSurface(backMasks, surface));
+  const face = metal(buildSurface(frontMasks, look)), backFace = metal(buildSurface(backMasks, look));
   // No anisotropy on the edge: its straight walls have degenerate UVs, and anisotropy there renders black.
-  const edge = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 1, roughness: 0.18 });
-  const mesh = new THREE.Mesh(geometry(), [face, edge, backFace]);
+  const edge = new THREE.MeshPhysicalMaterial({ color: look.metal, metalness: 1, roughness: 0.18 });
+  const mesh = new THREE.Mesh(geometry(look.thickness, look.edgeRadius), [face, edge, backFace]);
   mesh.name = 'Card';
+
+  // Lettering layer just above the face.
+  const letters = document.createElement('canvas');
+  letters.width = innerWidth < 800 ? 1536 : 3072;
+  letters.height = Math.round(letters.width * SVG_H / SVG_W);
+  letters.getContext('2d').drawImage(lettering, 0, 0, letters.width, letters.height);
+  const lettersTex = new THREE.CanvasTexture(letters);
+  lettersTex.colorSpace = THREE.SRGBColorSpace;
+  lettersTex.anisotropy = maxAniso;
+  const ink = new THREE.MeshPhysicalMaterial({
+    name: 'Ink', color: look.ink, map: lettersTex, transparent: true, depthWrite: false,
+    metalness: 0.15, roughness: 0.55, clearcoat: 0.4, clearcoatRoughness: 0.3,
+    polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+  });
+  const inkPlane = new THREE.Mesh(new THREE.PlaneGeometry(WIDTH / 1000, HEIGHT / 1000), ink);
+  inkPlane.name = 'Lettering';
+  const lift = thickness => thickness / 2000 + 0.00002; // half the thickness in metres, just above the face
+  inkPlane.position.z = lift(look.thickness ?? THICKNESS);
+  inkPlane.userData.keepMaterial = true; // the studio panel's material presets must not turn ink into metal
+
   const group = new THREE.Group();
-  group.add(mesh);
+  group.add(mesh, inkPlane);
+  // Слой надписей наружу: лендинг дорисовывает на нём персональный промокод (после — texture.needsUpdate = true)
+  group.userData.lettering = { canvas: letters, texture: lettersTex };
+  const metals = () => [face, edge, backFace, ...[mesh.userData.edited ?? []].flat()];
   // Textures are updated in place, so material copies made by the panel pick up the change too.
   group.userData.setSurface = next => {
+    const opts = { ...look, ...next };
     for (const [material, masks] of [[face, frontMasks], [backFace, backMasks]]) {
-      const maps = buildSurface(masks, next);
+      const maps = buildSurface(masks, opts);
       fill(material.map, maps.color); fill(material.roughnessMap, maps.rough); fill(material.normalMap, maps.normal);
     }
+  };
+  group.userData.setShape = (thickness, edgeRadius) => {
+    mesh.geometry.dispose();
+    mesh.geometry = geometry(thickness, edgeRadius);
+    inkPlane.position.z = lift(thickness);
+  };
+  group.userData.setLook = ({ ink: inkColor, iridescence }) => {
+    ink.color.set(inkColor);
+    for (const m of metals()) m.iridescence = iridescence;
   };
   return group;
 }

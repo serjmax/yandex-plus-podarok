@@ -4,31 +4,21 @@
 // Если WebGL недоступен, остаётся CSS-карточка (.gift-card).
 import * as THREE from 'three';
 import { RoomEnvironment } from '../vendor/RoomEnvironment.js';
-import { createCard } from './card.js';
+import { createCard, LANDING_LOOK, LANDING_LIGHT } from './card.js';
 
 const scene3d = document.getElementById('card-scene');
 const mount = document.getElementById('card3d');
 
-// Свет и материал: металл с перламутровым (сиреневым) переливом
-const LOOK = {
-  metalness: 1,
-  keyPower: 1.4, keyColor: '#ffd9ee', key: [-3, 5, 4],     // тёплый розоватый
-  fillPower: 0.9, fillColor: '#c3c2ff', fill: [4, 2, -3],   // холодный сиреневый
-  ambient: 0.2, envPower: 1.6, exposure: 1.15,
-  grain: 0.5, grainSize: 0.15, brush: 0.3,
-  blacken: 0, // надписи красятся отдельным слоем ниже
-  // Пастельные разводы по диагонали: сиренево-голубой → белый → розоватый → серо-сиреневый
-  tint: ['#c9cbee', '#f6f2fa', '#efd6ea', '#c6c0dc'],
-};
-// Настраиваемое (панель ?tune и параметры ссылки). Значения подобраны в панели 22.10.
+// Вид карточки и свет — из card-3d-playground (LANDING_LOOK / LANDING_LIGHT в card.js), там их и настраивать.
+// Панель ?tune сейчас выключена — включается флагом TUNE_PANEL ниже; её значения по умолчанию = LANDING_LOOK.
 const TUNE_PANEL = false;
 const TUNE_DEFAULTS = {
-  lc: '#211730', // цвет надписей
-  mt: '#d1d0d2', // оттенок металла
-  ir: 0.04,      // сила перелива (iridescence)
-  sh: 0,         // сиреневый отблеск по краям (sheen)
-  ro: 0.35,      // шероховатость: меньше — зеркальнее
-  pa: 0.49,      // заметность паттерна из плюсов
+  lc: LANDING_LOOK.ink,         // цвет надписей
+  mt: LANDING_LOOK.metal,       // оттенок металла
+  ir: LANDING_LOOK.iridescence, // сила перелива (iridescence)
+  sh: LANDING_LOOK.sheen,       // сиреневый отблеск по краям (sheen)
+  ro: LANDING_LOOK.roughness,   // шероховатость: меньше — зеркальнее
+  pa: LANDING_LOOK.pattern,     // заметность паттерна из плюсов
 };
 const tune = { ...TUNE_DEFAULTS };
 const query = new URLSearchParams(location.search);
@@ -46,7 +36,7 @@ async function init() {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = LOOK.exposure;
+  renderer.toneMappingExposure = LANDING_LIGHT.exposure;
   renderer.setClearColor(0x000000, 0);
   mount.appendChild(renderer.domElement);
 
@@ -54,48 +44,29 @@ async function init() {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const room = new RoomEnvironment();
   scene.environment = pmrem.fromScene(room, 0.04).texture;
-  scene.environmentIntensity = LOOK.envPower;
+  scene.environmentIntensity = LANDING_LIGHT.envPower;
   room.dispose();
 
-  const key = new THREE.DirectionalLight(LOOK.keyColor, LOOK.keyPower);
-  key.position.set(...LOOK.key);
-  const fill = new THREE.DirectionalLight(LOOK.fillColor, LOOK.fillPower);
-  fill.position.set(...LOOK.fill);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x8c9185, LOOK.ambient), key, fill);
+  const L = LANDING_LIGHT;
+  const key = new THREE.DirectionalLight(L.keyColor, L.keyPower);
+  key.position.set(...L.key);
+  const fill = new THREE.DirectionalLight(L.fillColor, L.fillPower);
+  fill.position.set(...L.fill);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8c9185, L.ambient), key, fill);
 
   const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
   const pivot = new THREE.Group();
   scene.add(pivot);
 
-  const card = await createCard(renderer, { ...LOOK, pattern: tune.pa });
-  const metals = [];
-  card.traverse(mesh => {
-    if (!mesh.isMesh) return;
-    for (const m of [mesh.material].flat()) {
-      m.metalness = LOOK.metalness;
-      // Тонкоплёночный перелив: цвет блика меняется с углом наклона — сиреневый, розовый, голубой
-      m.iridescenceIOR = 1.3;
-      m.iridescenceThicknessRange = [120, 480];
-      m.sheenColor = new THREE.Color('#e3c4ff');
-      m.sheenRoughness = 0.45;
-      metals.push(m);
-    }
-  });
+  // Карточка целиком (металл, перелив, слой надписей) строится в card.js
+  const look = () => ({ ...LANDING_LOOK, ink: tune.lc, metal: tune.mt, iridescence: tune.ir, sheen: tune.sh, roughness: tune.ro, pattern: tune.pa });
+  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/' });
 
-  // Надписи «12» и «месяцев» — отдельный слой поверх лицевой стороны, чтобы цвет менялся мгновенно
-  const WIDTH = 0.0856, HEIGHT = WIDTH * 213 / 343, FRONT = 0.0004; // метры, как в card.js
-  const svg = (await (await fetch('./assets/card3d/card.svg?v=3')).text()).replace(/<rect[^>]*\/>/, '');
-  const art = new Image();
-  art.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
-  await art.decode();
-  const letters = document.createElement('canvas');
-  letters.width = innerWidth < 800 ? 1536 : 3072;
-  letters.height = Math.round(letters.width * 213 / 343);
-  const lctx = letters.getContext('2d');
-  lctx.drawImage(art, 0, 0, letters.width, letters.height);
-  // Персональный промокод (script.js кладёт его в window.__promoCode) — тем же «оттиском», что и «12»,
-  // в свободной полосе под цифрами. Размеры — в единицах макета карточки 343×213
+  // Персональный промокод (script.js кладёт его в window.__promoCode) — на слое надписей, тем же «оттиском»,
+  // что и «12», в свободной полосе под цифрами. Размеры — в единицах макета карточки 343×213
   if (window.__promoCode) {
+    const { canvas: letters, texture } = card.userData.lettering;
+    const lctx = letters.getContext('2d');
     const u = letters.width / 343;
     const size = 13 * u;
     await document.fonts.load(`500 ${size}px "YS Text"`).catch(() => {});
@@ -107,36 +78,23 @@ async function init() {
     lctx.fillStyle = '#fff';
     // разрядка добавляется и после последней буквы — сдвигаем на половину, чтобы текст стоял ровно по центру
     lctx.fillText(window.__promoCode, letters.width / 2 + spacing / 2, 187 * u, 300 * u);
+    texture.needsUpdate = true;
   }
-  const lettersTex = new THREE.CanvasTexture(letters);
-  lettersTex.colorSpace = THREE.SRGBColorSpace;
-  lettersTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  const ink = new THREE.MeshPhysicalMaterial({
-    map: lettersTex, transparent: true, depthWrite: false,
-    metalness: 0.15, roughness: 0.55, clearcoat: 0.4, clearcoatRoughness: 0.3,
-    polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
-  });
-  const inkPlane = new THREE.Mesh(new THREE.PlaneGeometry(WIDTH, HEIGHT), ink);
-  inkPlane.position.z = FRONT + 0.00002;
-  card.add(inkPlane);
 
-  function applyTune() {
-    for (const m of metals) {
-      m.color.set(tune.mt);
-      m.roughness = tune.ro;
-      m.iridescence = tune.ir;
-      m.sheen = tune.sh;
-    }
-    ink.color.set(tune.lc);
-  }
-  applyTune();
-  // Паттерн запечён в текстуры — пересобираем их, когда ползунок остановился
-  let patternTimer = 0, patternNow = tune.pa;
+  // Панель ?tune: цвет надписей и перелив меняются мгновенно, остальное — пересборкой поверхности
+  let surfaceTimer = 0;
   const applyAll = () => {
-    applyTune();
-    if (tune.pa === patternNow) return;
-    clearTimeout(patternTimer);
-    patternTimer = setTimeout(() => { patternNow = tune.pa; card.userData.setSurface({ ...LOOK, pattern: tune.pa }); }, 300);
+    card.userData.setLook({ ink: tune.lc, iridescence: tune.ir });
+    card.traverse(m => {
+      if (!m.isMesh || m.name !== 'Card') return;
+      [m.material].flat().forEach((mat, i) => {
+        mat.color.set(tune.mt);
+        mat.sheen = tune.sh;
+        if (i !== 1) mat.roughness = tune.ro; // у ребра (1) своя гладкость
+      });
+    });
+    clearTimeout(surfaceTimer);
+    surfaceTimer = setTimeout(() => card.userData.setSurface(look()), 300);
   };
   if (TUNE_PANEL && query.has('tune')) tunePanel(tune, applyAll);
   const box = new THREE.Box3().setFromObject(card);
