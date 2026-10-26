@@ -210,7 +210,7 @@
     const SWEEPS = 3;
     const cur = { mx: 0, my: 0, cx: 0.5, cy: 0.5, rx: 0 }, tgt = { ...cur };
     let sx = 0, sy = 0, prog = 0, px = 0.5, py = 0.5, hover = false, raf = 0;
-    const TRAVEL = 1800; // на сколько пикселей уезжают блики справа налево за весь проход блока
+    const TRAVEL = 2400; // на сколько пикселей уезжают блики справа налево за весь проход блока
     const fromScroll = () => {
       const r = block.getBoundingClientRect(), vh = window.innerHeight;
       const p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
@@ -226,12 +226,13 @@
       tgt.my = clamp(sy + pull * (py - sy));
       tgt.cx = hover ? px : sx;               // без курсора пятно идёт вместе с полосой
       tgt.cy = hover ? py : sy;
-      tgt.rx = -prog * TRAVEL - (hover ? (px - 0.5) * 80 : 0); // блики всегда едут справа налево
+      // блики едут справа налево по скроллу и заметно следуют за курсором (по обеим осям, до ±375 px)
+      tgt.rx = -prog * TRAVEL - (hover ? (px - 0.5) * 500 + (py - 0.5) * 250 : 0);
       if (!raf) raf = requestAnimationFrame(step);
     };
     const step = () => {
       let moving = 0;
-      for (const k in cur) { cur[k] += (tgt[k] - cur[k]) * 0.12; moving += Math.abs(tgt[k] - cur[k]) / (k === 'rx' ? 1000 : 1); }
+      for (const k in cur) { cur[k] += (tgt[k] - cur[k]) * 0.08; // плавнее — блик «догоняет» курсор moving += Math.abs(tgt[k] - cur[k]) / (k === 'rx' ? 1000 : 1); }
       for (const k in cur) block.style.setProperty('--' + k, k === 'rx' ? cur[k].toFixed(1) + 'px' : cur[k].toFixed(4));
       raf = moving > 0.001 ? requestAnimationFrame(step) : 0;
     };
