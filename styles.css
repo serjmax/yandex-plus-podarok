@@ -167,8 +167,10 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 /* Открытие: логотип остаётся, текст и кнопка уходят, проигрывается анимация банта;
    в конце бант растворяется (is-revealed) и появляется страница с карточкой */
 .is-opening .intro { pointer-events: none; }
-.is-opening .intro__title,
-.is-opening .intro__text { opacity: 0; }
+/* Заголовок и подзаголовок остаются, пока идёт видео, и растворяются вместе с ним —
+   на их месте одновременно проявляется новый текст и появляется карточка */
+.is-revealed .intro__title,
+.is-revealed .intro__text { opacity: 0; transition-duration: .8s; }
 .is-opening .intro__btn { opacity: 0; transform: translateY(16px) scale(.96); }
 .is-revealed .intro::before { opacity: 0; }
 .is-revealed .intro__scene { opacity: 0; } /* видео растворяется в фон первого экрана */
@@ -298,9 +300,9 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
 /* Появление после развязывания банта */
 .page .gift__head, .page .card-scene, .page .promo { opacity: 0; }
-.is-revealed .page .gift__head { animation: fade-in .35s ease forwards; }
-.is-revealed .page .card-scene { animation: card-in 1.1s cubic-bezier(.2, .9, .25, 1.05) .45s forwards; }
-.is-revealed .page .promo { animation: rise .8s cubic-bezier(.2, .8, .2, 1) .75s forwards; }
+.is-revealed .page .gift__head { animation: fade-in .8s ease forwards; } /* та же длительность, что у растворения старого текста */
+.is-revealed .page .card-scene { animation: card-in 1.1s cubic-bezier(.2, .9, .25, 1.05) forwards; } /* вместе с новым текстом */
+.is-revealed .page .promo { animation: rise .8s cubic-bezier(.2, .8, .2, 1) .35s forwards; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 @keyframes card-in {
