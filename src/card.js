@@ -189,11 +189,11 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
       const bare = 0.45 + 0.3 * p + 0.1 * brushing * Math.abs(brush[y]) + grain * (0.2 + 0.3 * coarse[i]);
       // Шлифованные круги: глаже металла вокруг, но не зеркало, и металличность ниже — свой светлый тон.
       // Гравировка кода — почти зеркало и полный металл: переливается и бликует на свету
-      const polished = ((bare * (1 - q) + 0.4 * q) * (1 - c) + 0.12 * c) * (1 - g) + 0.2 * g;
+      const polished = ((bare * (1 - q) + 0.4 * q) * (1 - c) + 0.12 * c) * (1 - g) + 0.3 * g;
       rough.data[j + 1] = Math.max(0, Math.min(1, polished * (1 - black) + 0.6 * black)) * 255;
       rough.data[j + 2] = (1 - 0.5 * black) * (1 - 0.45 * q) * 255;
       rough.data[j + 3] = 255;
-      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.1 * c) * (1 - 0.55 * g) * (1 - blacken * black) * 255;
+      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.1 * c) * (1 - 0.78 * g) * (1 - blacken * black) * 255;
       if (stops) {
         // Положение вдоль диагонали 0..1 и плавная интерполяция между соседними цветами
         const t = Math.min(0.9999, (x / w + y / h) / 2) * (stops.length - 1), k = t | 0, f = t - k;
