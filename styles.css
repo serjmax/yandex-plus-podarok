@@ -281,6 +281,20 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   color: #210b41;
   white-space: nowrap;
 }
+/* Промокод на плоской запасной карточке — там же, где на 3D: под «12» */
+.gift-card__code {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 87.8%;
+  transform: translateY(-50%);
+  font-family: var(--text);
+  font-weight: 500;
+  font-size: 21em;
+  letter-spacing: .12em;
+  color: #210b41;
+  text-align: center;
+}
 .gift-card__glare {
   position: absolute;
   inset: 0;

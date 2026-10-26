@@ -91,7 +91,23 @@ async function init() {
   const letters = document.createElement('canvas');
   letters.width = innerWidth < 800 ? 1536 : 3072;
   letters.height = Math.round(letters.width * 213 / 343);
-  letters.getContext('2d').drawImage(art, 0, 0, letters.width, letters.height);
+  const lctx = letters.getContext('2d');
+  lctx.drawImage(art, 0, 0, letters.width, letters.height);
+  // Персональный промокод (script.js кладёт его в window.__promoCode) — тем же «оттиском», что и «12»,
+  // в свободной полосе под цифрами. Размеры — в единицах макета карточки 343×213
+  if (window.__promoCode) {
+    const u = letters.width / 343;
+    const size = 13 * u;
+    await document.fonts.load(`500 ${size}px "YS Text"`).catch(() => {});
+    lctx.font = `500 ${size}px "YS Text", "Helvetica Neue", Arial, sans-serif`;
+    const spacing = size * 0.12;
+    lctx.letterSpacing = `${spacing.toFixed(1)}px`;
+    lctx.textAlign = 'center';
+    lctx.textBaseline = 'middle';
+    lctx.fillStyle = '#fff';
+    // разрядка добавляется и после последней буквы — сдвигаем на половину, чтобы текст стоял ровно по центру
+    lctx.fillText(window.__promoCode, letters.width / 2 + spacing / 2, 187 * u, 300 * u);
+  }
   const lettersTex = new THREE.CanvasTexture(letters);
   lettersTex.colorSpace = THREE.SRGBColorSpace;
   lettersTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
