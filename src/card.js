@@ -154,11 +154,13 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate }, { grain, 
       // glTF convention: green = roughness, blue = metalness. Pattern is matte,
       // the blackened oxide is matte and only partly metallic.
       const bare = 0.45 + 0.3 * p + 0.1 * brushing * Math.abs(brush[y]) + grain * (0.2 + 0.3 * coarse[i]);
-      const polished = bare * (1 - q) + 0.3 * q; // шлифовка: гладко, но не зеркало — иначе на некоторых углах плашка чернеет и код не читается
+      // Шлифовка: глаже металла вокруг, но не зеркало, и металличность на плашке ниже — у неё свой светлый тон,
+      // поэтому на любом наклоне она не уходит в тёмное отражение и код читается
+      const polished = bare * (1 - q) + 0.4 * q;
       rough.data[j + 1] = Math.max(0, Math.min(1, polished * (1 - black) + 0.6 * black)) * 255;
-      rough.data[j + 2] = (1 - 0.5 * black) * 255;
+      rough.data[j + 2] = (1 - 0.5 * black) * (1 - 0.45 * q) * 255;
       rough.data[j + 3] = 255;
-      const shade = (1 - 0.04 * p) * (1 - 0.08 * q) * (1 - blacken * black) * 255;
+      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - blacken * black) * 255;
       if (stops) {
         // Положение вдоль диагонали 0..1 и плавная интерполяция между соседними цветами
         const t = Math.min(0.9999, (x / w + y / h) / 2) * (stops.length - 1), k = t | 0, f = t - k;
