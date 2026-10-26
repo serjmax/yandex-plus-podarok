@@ -96,7 +96,7 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
     drawEngraving(cctx, px, engraving);
     code = alphaOf(cctx, w, h);
     const [dc, dctx] = canvas(w, h);
-    dctx.filter = `blur(${px * 0.18}px)`; // стенки гравировки шире — контур букв ловит свет на любом угле
+    dctx.filter = `blur(${px * 0.1}px)`;
     dctx.drawImage(cc, 0, 0);
     codeDepth = alphaOf(dctx, w, h);
     const [zc, zctx] = canvas(w, h);
@@ -148,7 +148,7 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
       const q = plate ? plate[i] : 0;           // шлифованный круг: гладкий и чуть приподнят
       const c = code ? code[i] : 0, cd = codeDepth ? codeDepth[i] : 0; // гравировка кода: углублена и отполирована
       const metal = (1 - engrave[i]) * (1 - q) * (1 - c);
-      heightMap[i] = -0.15 * pattern * patternMask[i] - 0.6 * engrave[i] + 0.12 * q - 0.95 * cd + metal * (0.12 * brushing * brush[y]
+      heightMap[i] = -0.15 * pattern * patternMask[i] - 0.6 * engrave[i] + 0.12 * q - 0.45 * cd + metal * (0.12 * brushing * brush[y]
         + grainHeight * (coarse[i] + 0.5 * fine[i]) + 0.02 * grain * (rnd() - 0.5));
     }
 
@@ -176,7 +176,7 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
       rough.data[j + 1] = Math.max(0, Math.min(1, polished * (1 - black) + 0.6 * black)) * 255;
       rough.data[j + 2] = (1 - 0.5 * black) * (1 - 0.45 * q) * 255;
       rough.data[j + 3] = 255;
-      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.2 * c) * (1 - blacken * black) * 255;
+      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.1 * c) * (1 - blacken * black) * 255;
       if (stops) {
         // Положение вдоль диагонали 0..1 и плавная интерполяция между соседними цветами
         const t = Math.min(0.9999, (x / w + y / h) / 2) * (stops.length - 1), k = t | 0, f = t - k;
