@@ -72,6 +72,8 @@ async function init() {
     // Круги иконок сервисов (в макете: ряд с x = 180.65, y = 26, круги ⌀48 с шагом 58): внутри без паттерна,
     // шлифованный металл — глифы переливаются, как плашка промокода
     polish: [24, 82, 140].map(x => ({ cx: (180.65 + x) * k, cy: (26 + 24) * k, r: 24 * k })),
+    // Надписи и иконки — тоже гравировкой полированным металлом, как код (без тёмной краски)
+    lettering: true,
   };
   await document.fonts.load(engraving.font(32)).catch(() => {}); // гравировка рисуется этим шрифтом
   const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 5, engraving });
