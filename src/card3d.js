@@ -60,14 +60,15 @@ async function init() {
 
   // Карточка целиком (металл, перелив, слой надписей) строится в card.js
   const look = () => ({ ...LANDING_LOOK, ink: tune.lc, metal: tune.mt, iridescence: tune.ir, sheen: tune.sh, roughness: tune.ro, pattern: tune.pa });
-  // Промокод выгравирован на шлифованной плашке внизу карточки (макет 906-14774, карта 526×326 → 343×213).
+  // Промокод выгравирован прямо в металле внизу карточки: буквы углублены и отполированы, без плашки и краски
+  // (место — как у плашки в макете 906-14774, карта 526×326 → 343×213).
   // Код — из ссылки (script.js кладёт его в window.__promoCode), иначе тот же, что в блоке «Промокод»
   const promo = window.__promoCode || document.querySelector('#promo-code span')?.textContent.trim() || '';
   const k = 343 / 526;
   const engraving = {
     text: promo, size: 22 * k,
     font: px => `500 ${px}px "YS Text", "Helvetica Neue", Arial, sans-serif`,
-    cx: 343 / 2, cy: 287 * k, h: 30 * k, minW: 193 * k, pad: 7.5 * k, r: 3 * k,
+    cx: 343 / 2, cy: 287 * k,
     // Круги иконок сервисов (в макете: ряд с x = 180.65, y = 26, круги ⌀48 с шагом 58): внутри без паттерна,
     // шлифованный металл — глифы переливаются, как плашка промокода
     polish: [24, 82, 140].map(x => ({ cx: (180.65 + x) * k, cy: (26 + 24) * k, r: 24 * k })),

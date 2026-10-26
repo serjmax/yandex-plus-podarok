@@ -277,13 +277,11 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   left: 50%;
   top: 88%;
   transform: translate(-50%, -50%);
-  padding: 2em 7em;
-  border-radius: 4em;
-  background: rgba(33, 23, 48, .2);
   font-family: var(--text);
   font-weight: 500;
   font-size: 22em;
-  color: #211730;
+  color: rgba(33, 23, 48, .45);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .8); /* гравировка: светлая кромка под буквами */
   white-space: nowrap;
 }
 .gift-card__code:empty { display: none; }
