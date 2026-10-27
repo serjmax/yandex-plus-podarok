@@ -513,7 +513,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .feature h3 { font-size: 24px; }
   .feature p { font-size: 15px; line-height: 20px; }
   .feature p br, .feature h3 br { display: none; }
-  .bells { width: 760px; } /* на телефоне гирлянда уменьшена, чтобы колокольчики попадали в кадр */
+  .bells { width: 600px; } /* на телефоне гирлянда уменьшена, чтобы колокольчики попадали в кадр */
 
   .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px; gap: 20px; }
   .footer__links { gap: 4px 20px; font-weight: 400; }
