@@ -398,8 +398,9 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 /* Две карточки с фото: фото 556×340, текст, кнопка — кнопки на одной высоте */
 .features { display: flex; justify-content: center; gap: 62px; margin-top: 56px; }
 .feature { display: flex; flex-direction: column; align-items: center; width: 556px; }
-.feature picture { display: block; width: 100%; } /* AVIF с запасным WebP */
-.feature__photo { width: 100%; height: auto; aspect-ratio: 556 / 340; border-radius: 40px; object-fit: cover; }
+.feature picture { display: block; width: 100%; border-radius: 40px; overflow: hidden; isolation: isolate; } /* AVIF с запасным WebP; рамка обрезает увеличенное фото */
+.feature__photo { width: 100%; height: auto; aspect-ratio: 556 / 340; object-fit: cover; transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
+.feature:hover .feature__photo { transform: scale(1.05); } /* при наведении фото немного увеличивается внутри рамки */
 .feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-top: 32px; }
 .feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink); }
 .feature p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
@@ -485,7 +486,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
   .features { flex-direction: column; align-items: center; gap: 48px; margin-top: 8px; padding: 0 16px; }
   .feature { width: 100%; max-width: 520px; }
-  .feature__photo { border-radius: 32px; }
+  .feature picture { border-radius: 32px; }
   .feature__text { width: 100%; min-height: 0; margin-top: 24px; gap: 10px; }
   .feature h3 { font-size: 26px; }
   .feature p { font-size: 17px; line-height: 22px; }
