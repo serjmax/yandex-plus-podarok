@@ -26,10 +26,10 @@
   document.querySelector('.gift-card__code').textContent = document.querySelector('#promo-code span').textContent.trim();
 
   /* ---------- Бант заполняет место между текстом и кнопкой ---------- */
-  // Картинка 918×435 (2×), сам бант по высоте около 400 px; на низких экранах уменьшается, на узких — по ширине
+  // Картинка 782×442 (2×), бант занимает её по высоте почти целиком; на низких экранах уменьшается, на узких — по ширине
   const bowArea = document.querySelector('.intro__bow');
   const fitBow = () => {
-    const k = Math.min(1.5, (bowArea.clientHeight - 16) / 400, window.innerWidth / 560);
+    const k = Math.min(1.5, (bowArea.clientHeight - 16) / 430, window.innerWidth / 520);
     bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
   };
   fitBow();

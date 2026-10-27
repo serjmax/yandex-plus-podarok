@@ -134,8 +134,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 918px;
-  height: 435px;
+  width: 782px;
+  height: 442px;
   max-width: none;
   translate: -50% -50%;
   scale: var(--bs);
