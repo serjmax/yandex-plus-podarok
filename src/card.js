@@ -307,10 +307,8 @@ export async function createCard(renderer, surface) {
   const h = Math.round(w * SVG_H / SVG_W);
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
   const engraving = look.engraving?.text || look.engraving?.polish?.length || look.engraving?.iconsRegion ? look.engraving : null;
-  // plain — без сгенерированной текстуры: гладкий металл без паттерна, зерна и гравировки (для сравнения, ?plain)
-  const plain = !!look.plain;
-  const frontMasks = plain ? null : buildMasks(w, h, artwork, pattern, engraving);
-  const backMasks = plain ? null : buildMasks(1024, Math.round(1024 * SVG_H / SVG_W), null, null); // same metal, no artwork
+  const frontMasks = buildMasks(w, h, artwork, pattern, engraving);
+  const backMasks = buildMasks(1024, Math.round(1024 * SVG_H / SVG_W), null, null); // same metal, no artwork
   const metal = maps => {
     const rough = texture(maps.rough, false, maxAniso);
     return new THREE.MeshPhysicalMaterial({
@@ -322,13 +320,7 @@ export async function createCard(renderer, surface) {
       sheen: look.sheen, sheenColor: 0xe3c4ff, sheenRoughness: 0.45,
     });
   };
-  const plainMetal = () => new THREE.MeshPhysicalMaterial({
-    color: look.tint?.[1] ?? look.metal, metalness: 1, roughness: look.roughness,
-    iridescence: look.iridescence, iridescenceIOR: 1.3, iridescenceThicknessRange: [120, 480],
-    sheen: look.sheen, sheenColor: 0xe3c4ff, sheenRoughness: 0.45,
-  });
-  const face = plain ? plainMetal() : metal(await buildSurface(frontMasks, look));
-  const backFace = plain ? plainMetal() : metal(await buildSurface(backMasks, look));
+  const face = metal(await buildSurface(frontMasks, look)), backFace = metal(await buildSurface(backMasks, look));
   // No anisotropy on the edge: its straight walls have degenerate UVs, and anisotropy there renders black.
   const edge = new THREE.MeshPhysicalMaterial({ color: look.metal, metalness: 1, roughness: 0.18 });
   const mesh = new THREE.Mesh(geometry(look.thickness, look.edgeRadius), [face, edge, backFace]);
@@ -340,8 +332,7 @@ export async function createCard(renderer, surface) {
   letters.height = Math.round(letters.width * SVG_H / SVG_W);
   const lctx = letters.getContext('2d');
   lctx.drawImage(lettering, 0, 0, letters.width, letters.height);
-  if (plain && engraving?.text) drawEngraving(lctx, letters.width / SVG_W, engraving); // без гравировки код — краской
-  if (!plain && engraving?.iconsRegion) { // иконки выгравированы — краской их не покрываем
+  if (engraving?.iconsRegion) { // иконки выгравированы — краской их не покрываем
     const lu = letters.width / SVG_W, [rx, ry, rw, rh] = engraving.iconsRegion;
     lctx.clearRect(rx * lu, ry * lu, rw * lu, rh * lu);
   }
@@ -366,7 +357,6 @@ export async function createCard(renderer, surface) {
   const metals = () => [face, edge, backFace, ...[mesh.userData.edited ?? []].flat()];
   // Textures are updated in place, so material copies made by the panel pick up the change too.
   group.userData.setSurface = async next => {
-    if (plain) return;
     const opts = { ...look, ...next };
     for (const [material, masks] of [[face, frontMasks], [backFace, backMasks]]) {
       const maps = await buildSurface(masks, opts);
