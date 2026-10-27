@@ -128,26 +128,41 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .intro__title { margin-top: 36px; width: 852px; font-family: var(--display); font-size: 84px; line-height: .9; color: var(--ink); }
 .intro__text { margin-top: 24px; font-size: 24px; line-height: 28px; color: var(--ink-soft); }
 .intro__btn { flex: none; }
-/* По клику видео ещё догружается — кнопка мягко «дышит», пока не начнётся анимация */
-.intro__btn.is-waiting { animation: btn-wait 1s ease-in-out infinite alternate; pointer-events: none; }
-@keyframes btn-wait { to { opacity: .55; } }
-
-/* Место между текстом и кнопкой — там на картинке подарок */
-.intro__bow { position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; margin: 16px 0; }
-/* Сцена стартового экрана: картинка и видео одинаково заполняют экран (кадры совпадают с картинками) */
-.intro__scene { position: absolute; inset: 0; overflow: hidden; transition: opacity .8s ease; }
-/* Размер и сдвиг считает script.js (подарок — в центре места между текстом и кнопкой); без скрипта — просто cover */
-.intro__poster, .intro__video {
+/* Бант: место между текстом и кнопкой; масштаб --bs считает script.js (на низких и узких экранах меньше) */
+.intro__bow { --bs: 1; position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; margin: 16px 0; }
+.bow {
   position: absolute;
-  left: var(--scene-x, 0);
-  top: var(--scene-y, 0);
-  width: var(--scene-w, 100%);
-  height: var(--scene-h, 100%);
+  left: 50%;
+  top: 50%;
+  width: 918px;
+  height: 435px;
   max-width: none;
-  object-fit: cover;
+  translate: -50% -50%;
+  scale: var(--bs);
+  transition: opacity .6s ease, transform .7s cubic-bezier(.3, 0, .2, 1);
 }
-.intro__video { opacity: 0; }
-.is-playing .intro__video { opacity: 1; } /* показываем видео, только когда пошёл первый кадр — без мигания */
+/* По клику бант растворяется с лёгким увеличением */
+.is-opening .bow { opacity: 0; transform: scale(1.12); }
+
+/* Силуэты гирлянды с колокольчиками (макет: 1440 × 275 сверху экрана). На широких экранах растягиваются по ширине,
+   на узких — чуть уменьшены и по центру, чтобы колокольчики оставались видны */
+.bells {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: max(100%, 1440px);
+  height: auto;
+  max-width: none;
+  translate: -50% 0;
+  pointer-events: none;
+}
+.bells--intro { z-index: 0; transition: opacity .5s ease; }
+.is-revealed .bells--intro { opacity: 0; } /* на странице те же колокольчики (.bells--page) — переход незаметен */
+.intro__stage { z-index: 1; }
+.page { position: relative; }
+.bells--page { z-index: 0; }
+.page > :not(.bells) { position: relative; z-index: 1; }
+
 
 /* Прелоудер: фон страницы и тонкая полоса прогресса; исчезает, когда кадры загружены */
 .preloader {
@@ -166,16 +181,14 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
 .intro__logo, .intro__title, .intro__text, .intro__btn { transition: opacity .35s ease, transform .5s ease; }
 
-/* Открытие: логотип остаётся, текст и кнопка уходят, проигрывается анимация банта;
-   в конце бант растворяется (is-revealed) и появляется страница с карточкой */
+/* Открытие: логотип остаётся, кнопка уходит, бант растворяется (is-opening);
+   затем текст сменяется и появляется страница с карточкой (is-revealed) */
 .is-opening .intro { pointer-events: none; }
-/* Заголовок и подзаголовок остаются, пока идёт видео, и растворяются вместе с ним —
-   на их месте одновременно проявляется новый текст и появляется карточка */
+/* Заголовок и подзаголовок растворяются — на их месте проявляется новый текст и появляется карточка */
 .is-revealed .intro__title,
 .is-revealed .intro__text { opacity: 0; transition-duration: .4s; }
 .is-opening .intro__btn { opacity: 0; transform: translateY(16px) scale(.96); }
 .is-revealed .intro::before { opacity: 0; }
-.is-revealed .intro__scene { opacity: 0; } /* видео растворяется в фон первого экрана */
 
 /* =========================================================
    Основная страница (макет 1440)
@@ -187,21 +200,6 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   min-height: 100vh;
   overflow-x: hidden;
   overflow-x: clip;
-}
-/* Снег без подарка на весь первый экран; низ мягко переходит в фон страницы */
-.page { position: relative; z-index: 0; }
-.page__scene {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100vh;
-  z-index: -1;
-  background: url("assets/snow/end.webp") no-repeat;
-  background-position: var(--scene-x, 50%) var(--scene-y, 50%);
-  background-size: var(--scene-w, cover) var(--scene-h, );
-  -webkit-mask-image: linear-gradient(#000 calc(100% - 180px), transparent);
-  mask-image: linear-gradient(#000 calc(100% - 180px), transparent);
 }
 .hero { display: flex; flex-direction: column; align-items: center; text-align: center; }
 
@@ -215,7 +213,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   --cw: 525px;
   position: relative;
   width: var(--cw);
-  margin-top: 72px; /* больше воздуха вокруг карточки */
+  margin-top: 48px; /* макет 948-2211 */
   perspective: 1100px;
   touch-action: none;
   -webkit-user-select: none;
@@ -318,7 +316,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 }
 
 /* ----- Промокод ----- */
-.promo { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 406px; margin-top: 96px; position: relative; z-index: 3; }
+.promo { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 406px; margin-top: 48px; position: relative; z-index: 3; }
 .promo__info { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
 .promo__label { font-size: 21.3px; line-height: 24.84px; color: var(--ink-soft); }
 .promo__code { display: inline-flex; align-items: center; gap: 8px; height: 30px; font-weight: 500; font-size: 24px; line-height: 1.25; letter-spacing: -.18px; color: var(--ink); border-radius: 8px; }
@@ -397,13 +395,36 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
 /* Две карточки с фото: фото 556×340, текст, кнопка — кнопки на одной высоте */
 .features { display: flex; justify-content: center; gap: 62px; margin-top: 56px; }
-.feature { display: flex; flex-direction: column; align-items: center; width: 556px; }
-.feature picture { display: block; width: 100%; } /* AVIF с запасным WebP */
-.feature__photo { width: 100%; height: auto; aspect-ratio: 556 / 340; border-radius: 40px; object-fit: cover; }
-.feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-top: 32px; }
-.feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink); }
-.feature p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
-.feature .btn { width: 267px; margin-top: 32px; }
+/* Карточка 556×443: фото на всю карточку, снизу тёмный градиент, текст белым поверх (макет 948-2213) */
+.feature {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 556px;
+  height: 443px;
+  border-radius: 40px;
+  overflow: hidden;
+  background: #322a40;
+  isolation: isolate;
+}
+.feature picture { position: absolute; inset: 0; z-index: -2; }
+.feature__photo { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
+.feature::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 209px;
+  z-index: -1;
+  background: linear-gradient(rgba(29, 22, 42, 0), rgba(21, 16, 31, .8));
+}
+.feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-bottom: 33px; }
+.feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: #fff; }
+.feature p { font-size: 19.33px; line-height: 25.78px; color: rgba(255, 255, 255, .9); }
+.feature:hover .feature__photo { transform: scale(1.03); } /* вся карточка — ссылка */
 
 /* ----- Футер ----- */
 .footer {
@@ -423,6 +444,9 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .footer__copy { display: flex; gap: 12px; }
 .footer__mark { display: flex; align-items: center; gap: 3px; }
 .footer__mark img { width: 38.6px; height: 11.19px; }
+
+/* ----- Падающий снег (src/snow.js): поверх всего, кроме прелоудера, клики не перехватывает ----- */
+.snow { position: fixed; inset: 0; z-index: 15; width: 100%; height: 100%; pointer-events: none; }
 
 /* ----- Тост ----- */
 .toast {
@@ -459,8 +483,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
   .gift { padding: 24px 0 48px; }
   .gift__head { width: 340px; gap: 14px; margin-top: 28px; }
-  .card-scene { --cw: 343px; margin-top: 80px; }
-  .promo { width: 330px; gap: 20px; margin-top: 80px; }
+  .card-scene { --cw: 343px; margin-top: 48px; }
+  .promo { width: 330px; gap: 20px; margin-top: 48px; }
   .promo__label { font-size: 18px; line-height: 22px; }
   .promo__code { font-size: 22px; }
 
@@ -483,14 +507,13 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .service h3 { font-size: 26px; }
   .service p { font-size: 17px; line-height: 22px; }
 
-  .features { flex-direction: column; align-items: center; gap: 48px; margin-top: 8px; padding: 0 16px; }
-  .feature { width: 100%; max-width: 520px; }
-  .feature__photo { border-radius: 32px; }
-  .feature__text { width: 100%; min-height: 0; margin-top: 24px; gap: 10px; }
-  .feature h3 { font-size: 26px; }
-  .feature p { font-size: 17px; line-height: 22px; }
+  .features { flex-direction: column; align-items: center; gap: 24px; margin-top: 8px; padding: 0 16px; }
+  .feature { width: 100%; max-width: 520px; height: auto; aspect-ratio: 556 / 443; border-radius: 32px; }
+  .feature__text { width: auto; min-height: 0; padding: 0 24px; margin-bottom: 24px; gap: 8px; }
+  .feature h3 { font-size: 24px; }
+  .feature p { font-size: 15px; line-height: 20px; }
   .feature p br, .feature h3 br { display: none; }
-  .feature .btn { width: 274px; margin-top: 24px; }
+  .bells { width: 760px; } /* на телефоне гирлянда уменьшена, чтобы колокольчики попадали в кадр */
 
   .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px; gap: 20px; }
   .footer__links { gap: 4px 20px; font-weight: 400; }
