@@ -66,17 +66,10 @@
   /* ---------- Видео развязывания + прелоудер ---------- */
   const REVEAL_AT = 3.0;      // секунда видео, на которой оно растворяется в картинку со снегом
   const video = document.getElementById('intro-video');
-  const preloader = document.getElementById('preloader');
-  const fill = document.getElementById('preloader-fill');
-  const hidePreloader = () => preloader.classList.add('is-done');
 
   // Стартовый экран показываем, как только готова картинка с подарком и шрифты.
   // Видео, вторая картинка и 3D-карточка догружаются в фоне: по клику ждём видео (обычно оно уже готово),
   // перед появлением карточки — её саму (у неё есть 3 секунды, пока идёт видео)
-  const progress = p => {
-    fill.style.transform = `scaleX(${p})`;
-    preloader.setAttribute('aria-valuenow', String(Math.round(p * 100)));
-  };
   const loadImage = src => {
     const img = new Image();
     img.src = src;
@@ -99,12 +92,7 @@
     else window.addEventListener('card3d-ready', resolve, { once: true });
   });
 
-  progress(0.3);
-  Promise.all([loadImage('assets/snow/start.webp'), document.fonts?.ready]).then(() => {
-    progress(1);
-    setTimeout(hidePreloader, 120); // дать полосе дойти до конца
-  });
-  setTimeout(hidePreloader, 6000); // на очень медленной сети не держим пользователя дольше
+  // Сам прелоудер прячет встроенный скрипт в index.html — как только готова картинка с подарком
 
   let opening = false;
   const open = async () => {

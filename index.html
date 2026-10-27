@@ -23,7 +23,7 @@
   <section class="intro" id="intro" aria-label="Подарок">
     <!-- Сцена на весь экран: картинка с подарком, по клику поверх неё играет видео развязывания -->
     <div class="intro__scene" aria-hidden="true">
-      <img class="intro__poster" src="assets/snow/start.webp" alt="">
+      <img class="intro__poster" src="assets/snow/start.webp" alt="" fetchpriority="high">
       <video class="intro__video" id="intro-video" muted playsinline preload="none"></video>
     </div>
     <div class="intro__stage">
@@ -36,6 +36,21 @@
       <button class="btn btn--dark intro__btn" id="open-gift" type="button">Забрать подарок</button>
     </div>
   </section>
+
+  <!-- Прелоудер прячем, как только готовы картинка с подарком и шрифты, не дожидаясь скриптов -->
+  <script>
+    (function () {
+      var done = false, img = document.querySelector('.intro__poster');
+      var hide = function () {
+        if (done) return;
+        done = true;
+        document.getElementById('preloader-fill').style.transform = 'scaleX(1)';
+        setTimeout(function () { document.getElementById('preloader').classList.add('is-done'); }, 120);
+      };
+      Promise.all([img.decode().catch(function () {}), document.fonts ? document.fonts.ready : 0]).then(hide);
+      setTimeout(hide, 6000); // на очень медленной сети не держим пользователя дольше
+    })();
+  </script>
 
   <!-- ===== Основная страница ===== -->
   <main class="page" id="page">
@@ -136,7 +151,7 @@
 
   <div class="toast" id="toast" role="status">Промокод скопирован</div>
 
-  <script src="script.js?v=109"></script>
-  <script type="module" src="src/card3d.min.js?v=17"></script>
+  <script src="script.js?v=110"></script>
+  <script type="module" src="src/card3d.min.js?v=18" fetchpriority="low"></script>
 </body>
 </html>

@@ -245,7 +245,10 @@ function tunePanel(tune, apply) {
 
 // Прелоудер (script.js) ждёт этого сигнала — и при успехе, и при ошибке
 const ready = () => { window.__card3dReady = true; window.dispatchEvent(new Event('card3d-ready')); };
-init().then(ready, error => { ready(); throw error; }).catch(error => {
+// Карточку строим, когда браузер освободился после показа стартового экрана: так она не мешает первой отрисовке,
+// а к появлению (через 3 с после клика) всё равно успевает
+const whenIdle = fn => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 300));
+new Promise(resolve => whenIdle(resolve)).then(init).then(ready, error => { ready(); throw error; }).catch(error => {
   console.warn('3D-карточка недоступна, показываю обычную:', error);
   mount.remove();
 });
