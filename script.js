@@ -197,7 +197,7 @@
     const SWEEPS = 3;
     const cur = { mx: 0, my: 0, cx: 0.5, cy: 0.5, rx: 0 }, tgt = { ...cur };
     let sx = 0, sy = 0, prog = 0, px = 0.5, py = 0.5, hover = false, raf = 0;
-    const TRAVEL = 3200; // на сколько пикселей уезжают блики справа налево за весь проход блока (= период бликов)
+    const TRAVEL = 2400; // на сколько пикселей уезжают блики справа налево за весь проход блока
     const fromScroll = () => {
       const r = block.getBoundingClientRect(), vh = window.innerHeight;
       const p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
