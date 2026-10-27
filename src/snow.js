@@ -15,8 +15,8 @@
   {
     const s = sprite.getContext('2d'), c = SPRITE / 2;
     const halo = s.createRadialGradient(c, c, 0, c, c, c);
-    halo.addColorStop(0, 'rgba(110, 98, 150, .35)');
-    halo.addColorStop(.62, 'rgba(110, 98, 150, .18)');
+    halo.addColorStop(0, 'rgba(105, 92, 150, .5)');
+    halo.addColorStop(.62, 'rgba(105, 92, 150, .28)');
     halo.addColorStop(1, 'rgba(110, 98, 150, 0)');
     s.fillStyle = halo;
     s.fillRect(0, 0, SPRITE, SPRITE);
@@ -37,21 +37,21 @@
     return {
       x: rand(0, w), y: y ?? rand(-h, h),
       z,
-      r: 1.1 + z * z * 4.2,                         // радиус спрайта, px
+      r: 1.5 + z * z * 4.8,                         // радиус спрайта, px
       vy: 16 + z * 72,                              // скорость падения, px/с
       amp: rand(6, 22) * (0.4 + z),                 // размах покачивания
       freq: rand(0.25, 0.8),
       phase: rand(0, Math.PI * 2),
-      alpha: 0.35 + z * 0.6,
+      alpha: 0.55 + z * 0.45,
       streak: z > 0.72 && Math.random() < 0.5,      // часть ближних — с лёгким смазом по движению
     };
   };
   const resize = () => {
     dpr = Math.min(devicePixelRatio || 1, 2);
-    w = innerWidth; h = innerHeight;
+    w = document.documentElement.clientWidth; h = innerHeight; // без полосы прокрутки — иначе холст растягивается
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.round(Math.min(320, Math.max(90, (w * h) / 6500)));
+    const count = Math.round(Math.min(520, Math.max(140, (w * h) / 3300))); // ~390 снежинок на 1440×900
     while (flakes.length < count) flakes.push(makeFlake());
     flakes.length = count;
   };
