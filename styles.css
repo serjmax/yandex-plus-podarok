@@ -424,7 +424,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-bottom: 33px; }
 .feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: #fff; }
 .feature p { font-size: 19.33px; line-height: 25.78px; color: rgba(255, 255, 255, .9); }
-.feature:hover .feature__photo { transform: scale(1.03); } /* вся карточка — ссылка */
+.feature:hover .feature__photo { transform: scale(1.05); } /* при наведении фото немного увеличивается внутри рамки; вся карточка — ссылка */
 
 /* ----- Футер ----- */
 .footer {
