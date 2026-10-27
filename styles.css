@@ -398,6 +398,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 /* Две карточки с фото: фото 556×340, текст, кнопка — кнопки на одной высоте */
 .features { display: flex; justify-content: center; gap: 62px; margin-top: 56px; }
 .feature { display: flex; flex-direction: column; align-items: center; width: 556px; }
+.feature picture { display: block; width: 100%; } /* AVIF с запасным WebP */
 .feature__photo { width: 100%; height: auto; aspect-ratio: 556 / 340; border-radius: 40px; object-fit: cover; }
 .feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-top: 32px; }
 .feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink); }
