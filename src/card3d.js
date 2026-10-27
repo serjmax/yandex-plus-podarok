@@ -77,7 +77,10 @@ async function init() {
     iconsRegion: [170 * k, 18 * k, 186 * k, 64 * k],
   };
   await document.fonts.load(engraving.font(32)).catch(() => {}); // гравировка рисуется этим шрифтом
-  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 5, engraving });
+  // ?plain — карточка без сгенерированной текстуры металла (для сравнения); время сборки — в консоли
+  const t0 = performance.now();
+  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 5, engraving, plain: query.has('plain') });
+  console.info(`card3d: карточка собрана за ${Math.round(performance.now() - t0)} мс${query.has('plain') ? ' (без текстуры)' : ''}`);
 
   // Панель ?tune: цвет надписей и перелив меняются мгновенно, остальное — пересборкой поверхности
   let surfaceTimer = 0;
