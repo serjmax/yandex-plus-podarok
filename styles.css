@@ -128,6 +128,9 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .intro__title { margin-top: 36px; width: 852px; font-family: var(--display); font-size: 84px; line-height: .9; color: var(--ink); }
 .intro__text { margin-top: 24px; font-size: 24px; line-height: 28px; color: var(--ink-soft); }
 .intro__btn { flex: none; }
+/* По клику видео ещё догружается — кнопка мягко «дышит», пока не начнётся анимация */
+.intro__btn.is-waiting { animation: btn-wait 1s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes btn-wait { to { opacity: .55; } }
 
 /* Место между текстом и кнопкой — там на картинке подарок */
 .intro__bow { position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; margin: 16px 0; }

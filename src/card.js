@@ -149,7 +149,17 @@ function valueNoise(w, h, cell, rnd) {
 function hexStops(list) {
   return list.map(hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255));
 }
-function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth }, { grain, grainSize, brush: brushing, blacken = 0.93, pattern = 1, tint = null }) {
+// Тяжёлые попиксельные циклы делим на куски: каждые ~12 мс отдаём главный поток браузеру,
+// чтобы страница (кнопки, анимации) не замирала, пока строится металл
+function slicer() {
+  let last = performance.now();
+  return async () => {
+    if (performance.now() - last < 12) return;
+    await new Promise(r => setTimeout(r, 0));
+    last = performance.now();
+  };
+}
+async function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth }, { grain, grainSize, brush: brushing, blacken = 0.93, pattern = 1, tint = null }) {
   const stops = tint && tint.length ? hexStops(tint) : null;
   const rnd = random(12), heightMap = new Float32Array(w * h), brush = new Float32Array(h);
   const cell = Math.max(1.5, grainSize / WIDTH * w);
@@ -157,7 +167,9 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
   for (let y = 0, v = 0; y < h; y++) brush[y] = v = v * 0.6 + (rnd() - 0.5);
   // Scaled by cell size so the slider controls slope (what the eye sees), not raw height.
   const grainHeight = grain * 0.05 * cell;
-  for (let y = 0; y < h; y++)
+  const yieldIfBusy = slicer();
+  for (let y = 0; y < h; y++) {
+    await yieldIfBusy();
     for (let x = 0; x < w; x++) {
       const i = y * w + x;
       // The blackened lettering is smooth: no grain or brushing inside it.
@@ -168,10 +180,12 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
       heightMap[i] = -0.15 * pattern * patternMask[i] - 0.6 * engrave[i] + 0.12 * q - 0.45 * cd - 0.9 * gd + metal * (0.12 * brushing * brush[y]
         + grainHeight * (coarse[i] + 0.5 * fine[i]) + 0.02 * grain * (rnd() - 0.5));
     }
+  }
 
   const color = new ImageData(w, h), rough = new ImageData(w, h), normal = new ImageData(w, h);
   const strength = 2.2;
-  for (let y = 0; y < h; y++)
+  for (let y = 0; y < h; y++) {
+    await yieldIfBusy();
     for (let x = 0; x < w; x++) {
       const i = y * w + x, j = i * 4;
       const l = heightMap[x > 0 ? i - 1 : i], r = heightMap[x < w - 1 ? i + 1 : i];
@@ -204,6 +218,7 @@ function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeD
       } else color.data[j] = color.data[j + 1] = color.data[j + 2] = shade;
       color.data[j + 3] = 255;
     }
+  }
   return { color, rough, normal };
 }
 
@@ -282,12 +297,13 @@ export async function createCard(renderer, surface) {
   // assets — папка с card.svg и pattern.svg (на лендинге это ./assets/card3d/);
   // assetsVersion — добавляется к адресам как ?v=…, чтобы после замены графики браузер не взял старую из кэша
   const asset = name => (look.assets ?? './assets/') + name + (look.assetsVersion ? `?v=${look.assetsVersion}` : '');
-  const [artwork, pattern, lettering] = await Promise.all([
+  const [artwork, pattern] = await Promise.all([
     svgImage(asset('card.svg'), text => text.replace(/<rect[^>]*\/>/, '')),
     svgImage(asset('pattern.svg')),
-    svgImage(asset('card.svg'), text => text.replace(/<rect[^>]*\/>/, '')),
   ]);
-  const w = Math.min(innerWidth < 800 ? 2048 : 4096, renderer.capabilities.maxTextureSize);
+  const lettering = artwork; // тот же card.svg — второй раз не загружаем
+  // Текстура металла 2048 px: на экране карточка не больше ~1500 физических пикселей, 4096 только замедляли старт
+  const w = Math.min(innerWidth < 800 ? 1536 : 2048, renderer.capabilities.maxTextureSize);
   const h = Math.round(w * SVG_H / SVG_W);
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
   const engraving = look.engraving?.text || look.engraving?.polish?.length || look.engraving?.iconsRegion ? look.engraving : null;
@@ -304,7 +320,7 @@ export async function createCard(renderer, surface) {
       sheen: look.sheen, sheenColor: 0xe3c4ff, sheenRoughness: 0.45,
     });
   };
-  const face = metal(buildSurface(frontMasks, look)), backFace = metal(buildSurface(backMasks, look));
+  const face = metal(await buildSurface(frontMasks, look)), backFace = metal(await buildSurface(backMasks, look));
   // No anisotropy on the edge: its straight walls have degenerate UVs, and anisotropy there renders black.
   const edge = new THREE.MeshPhysicalMaterial({ color: look.metal, metalness: 1, roughness: 0.18 });
   const mesh = new THREE.Mesh(geometry(look.thickness, look.edgeRadius), [face, edge, backFace]);
@@ -312,7 +328,7 @@ export async function createCard(renderer, surface) {
 
   // Lettering layer just above the face.
   const letters = document.createElement('canvas');
-  letters.width = innerWidth < 800 ? 1536 : 3072;
+  letters.width = innerWidth < 800 ? 1536 : 2048;
   letters.height = Math.round(letters.width * SVG_H / SVG_W);
   const lctx = letters.getContext('2d');
   lctx.drawImage(lettering, 0, 0, letters.width, letters.height);
@@ -340,10 +356,10 @@ export async function createCard(renderer, surface) {
   group.userData.lettering = { canvas: letters, texture: lettersTex };
   const metals = () => [face, edge, backFace, ...[mesh.userData.edited ?? []].flat()];
   // Textures are updated in place, so material copies made by the panel pick up the change too.
-  group.userData.setSurface = next => {
+  group.userData.setSurface = async next => {
     const opts = { ...look, ...next };
     for (const [material, masks] of [[face, frontMasks], [backFace, backMasks]]) {
-      const maps = buildSurface(masks, opts);
+      const maps = await buildSurface(masks, opts);
       fill(material.map, maps.color); fill(material.roughnessMap, maps.rough); fill(material.normalMap, maps.normal);
     }
   };

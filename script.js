@@ -70,59 +70,58 @@
   const fill = document.getElementById('preloader-fill');
   const hidePreloader = () => preloader.classList.add('is-done');
 
-  // Прогресс: видео — основная часть, картинки и 3D-карточка — по чуть-чуть
-  const parts = { video: 0, start: 0, end: 0, card: 0 };
-  const WEIGHT = { video: 0.7, start: 0.1, end: 0.1, card: 0.1 };
-  const progress = () => {
-    const p = Object.keys(parts).reduce((sum, k) => sum + parts[k] * WEIGHT[k], 0);
+  // Стартовый экран показываем, как только готова картинка с подарком и шрифты.
+  // Видео, вторая картинка и 3D-карточка догружаются в фоне: по клику ждём видео (обычно оно уже готово),
+  // перед появлением карточки — её саму (у неё есть 3 секунды, пока идёт видео)
+  const progress = p => {
     fill.style.transform = `scaleX(${p})`;
     preloader.setAttribute('aria-valuenow', String(Math.round(p * 100)));
   };
-  const loadImage = (key, src) => {
+  const loadImage = src => {
     const img = new Image();
     img.src = src;
-    return img.decode().catch(() => {}).then(() => { parts[key] = 1; progress(); });
+    return img.decode().catch(() => {});
   };
-  // Видео скачиваем целиком заранее (с прогрессом), чтобы по клику оно играло без подгрузки
+  // Видео скачиваем целиком заранее, чтобы по клику оно играло без подгрузки
   const VIDEO_SRC = 'assets/snow/unbox.mp4?v=1';
-  const loadVideo = async () => {
+  const videoReady = (async () => {
     try {
-      const res = await fetch(VIDEO_SRC);
-      const total = +res.headers.get('content-length') || 0;
-      const reader = res.body.getReader();
-      const chunks = [];
-      let got = 0;
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        got += value.length;
-        if (total) { parts.video = got / total; progress(); }
-      }
-      video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+      const blob = await fetch(VIDEO_SRC).then(r => r.blob());
+      video.src = URL.createObjectURL(blob);
     } catch {
       video.src = VIDEO_SRC; // не вышло — пусть браузер грузит сам
     }
     video.load();
-    parts.video = 1; progress();
-  };
+  })();
+  loadImage('assets/snow/end.webp'); // снег без подарка — понадобится через 3 секунды после клика
   const cardReady = new Promise(resolve => {
     if (window.__card3dReady) resolve();
     else window.addEventListener('card3d-ready', resolve, { once: true });
-  }).then(() => { parts.card = 1; progress(); });
+  });
 
-  Promise.all([loadVideo(), loadImage('start', 'assets/snow/start.webp'), loadImage('end', 'assets/snow/end.webp'), cardReady])
-    .then(() => setTimeout(hidePreloader, 150)); // дать полосе дойти до конца
-  setTimeout(hidePreloader, 10000); // на очень медленной сети не держим пользователя дольше
+  progress(0.3);
+  Promise.all([loadImage('assets/snow/start.webp'), document.fonts?.ready]).then(() => {
+    progress(1);
+    setTimeout(hidePreloader, 120); // дать полосе дойти до конца
+  });
+  setTimeout(hidePreloader, 6000); // на очень медленной сети не держим пользователя дольше
 
-  const open = () => {
-    if (body.classList.contains('is-opening')) return;
+  let opening = false;
+  const open = async () => {
+    if (opening) return;
+    opening = true;
+    // Видео ещё догружается (очень быстрый клик) — кнопка показывает ожидание, потом всё идёт как обычно
+    openBtn.classList.add('is-waiting');
+    await videoReady;
+    openBtn.classList.remove('is-waiting');
     window.scrollTo(0, 0);
     body.classList.add('is-opening');
     let revealed = false;
-    const reveal = () => {
+    const reveal = async () => {
       if (revealed) return;
       revealed = true;
+      // Карточка ещё собирается — ждём её (не дольше 4 с), иначе она появилась бы плоской
+      await Promise.race([cardReady, new Promise(r => setTimeout(r, 4000))]);
       // Видео растворяется в снег без подарка, поверх появляется карточка — как раньше
       body.classList.add('is-revealed');
       setTimeout(() => {
