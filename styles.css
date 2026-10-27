@@ -213,7 +213,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   --cw: 525px;
   position: relative;
   width: var(--cw);
-  margin-top: 48px; /* макет 948-2211 */
+  margin-top: 72px; /* больше воздуха вокруг карточки — как в main */
   perspective: 1100px;
   touch-action: none;
   -webkit-user-select: none;
@@ -316,7 +316,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 }
 
 /* ----- Промокод ----- */
-.promo { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 406px; margin-top: 48px; position: relative; z-index: 3; }
+.promo { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 406px; margin-top: 96px; position: relative; z-index: 3; }
 .promo__info { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
 .promo__label { font-size: 21.3px; line-height: 24.84px; color: var(--ink-soft); }
 .promo__code { display: inline-flex; align-items: center; gap: 8px; height: 30px; font-weight: 500; font-size: 24px; line-height: 1.25; letter-spacing: -.18px; color: var(--ink); border-radius: 8px; }
@@ -483,8 +483,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
   .gift { padding: 24px 0 48px; }
   .gift__head { width: 340px; gap: 14px; margin-top: 28px; }
-  .card-scene { --cw: 343px; margin-top: 48px; }
-  .promo { width: 330px; gap: 20px; margin-top: 48px; }
+  .card-scene { --cw: 343px; margin-top: 80px; }
+  .promo { width: 330px; gap: 20px; margin-top: 80px; }
   .promo__label { font-size: 18px; line-height: 22px; }
   .promo__code { font-size: 22px; }
 
