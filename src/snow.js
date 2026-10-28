@@ -42,7 +42,7 @@
     w = document.documentElement.clientWidth; h = innerHeight; // без полосы прокрутки — иначе холст растягивается
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.round(Math.min(520, Math.max(140, (w * h) / 3300))); // ~390 снежинок на 1440×900
+    const count = Math.round(Math.min(780, Math.max(210, (w * h) / 2200))); // ~590 снежинок на 1440×900
     while (flakes.length < count) flakes.push(makeFlake());
     flakes.length = count;
   };
