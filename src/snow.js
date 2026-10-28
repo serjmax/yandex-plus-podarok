@@ -24,7 +24,8 @@
   let w = 0, h = 0, dpr = 1, flakes = [];
   const rand = (a, b) => a + Math.random() * (b - a);
   const makeFlake = (y) => {
-    const z = Math.random() ** 1.6;                 // больше дальних, меньше ближних
+    let z = Math.random() ** 1.6;                   // больше дальних, меньше ближних
+    while (z < 0.25 && Math.random() < 0.5) z = Math.random() ** 1.6; // самых мелких — вдвое меньше
     const big = z > 0.55 && Math.random() < 0.14;  // редкие крупные хлопья среди ближних
     return {
       x: rand(0, w), y: y ?? rand(-h, h),
@@ -43,7 +44,7 @@
     w = document.documentElement.clientWidth; h = innerHeight; // без полосы прокрутки — иначе холст растягивается
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.round(Math.min(1100, Math.max(300, (w * h) / 1550))); // ~840 снежинок на 1440×900
+    const count = Math.round(Math.min(870, Math.max(240, (w * h) / 1960))); // ~660 снежинок на 1440×900: мелких вдвое меньше, остальных — как было
     while (flakes.length < count) flakes.push(makeFlake());
     flakes.length = count;
   };
