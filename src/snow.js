@@ -25,16 +25,17 @@
   const rand = (a, b) => a + Math.random() * (b - a);
   const makeFlake = (y) => {
     const z = Math.random() ** 1.6;                 // больше дальних, меньше ближних
+    const big = z > 0.55 && Math.random() < 0.14;  // редкие крупные хлопья среди ближних
     return {
       x: rand(0, w), y: y ?? rand(-h, h),
       z,
-      r: 1.5 + z * z * 4.8,                         // радиус спрайта, px
+      r: big ? rand(7, 11) : 1.5 + z * z * 4.8,     // радиус спрайта, px
       vy: 16 + z * 72,                              // скорость падения, px/с
       amp: rand(6, 22) * (0.4 + z),                 // размах покачивания
       freq: rand(0.25, 0.8),
       phase: rand(0, Math.PI * 2),
       alpha: 0.55 + z * 0.45,
-      streak: z > 0.72 && Math.random() < 0.5,      // часть ближних — с лёгким смазом по движению
+      streak: !big && z > 0.72 && Math.random() < 0.5,      // часть ближних — с лёгким смазом по движению
     };
   };
   const resize = () => {
@@ -42,7 +43,7 @@
     w = document.documentElement.clientWidth; h = innerHeight; // без полосы прокрутки — иначе холст растягивается
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.round(Math.min(780, Math.max(210, (w * h) / 2200))); // ~590 снежинок на 1440×900
+    const count = Math.round(Math.min(1100, Math.max(300, (w * h) / 1550))); // ~840 снежинок на 1440×900
     while (flakes.length < count) flakes.push(makeFlake());
     flakes.length = count;
   };
