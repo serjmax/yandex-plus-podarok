@@ -10,37 +10,37 @@
   <link rel="preload" href="fonts/YS%20Display-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/YS%20Text-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/YS%20Text-Medium.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=119">
+  <link rel="stylesheet" href="styles.css?v=204">
 </head>
 <body class="is-locked">
 
-  <!-- ===== Прелоудер: ждём видео, обе картинки и 3D-карточку ===== -->
+  <!-- ===== Прелоудер: ждём картинку банта и шрифты ===== -->
   <div class="preloader" id="preloader" role="progressbar" aria-label="Загрузка" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
     <div class="preloader__bar"><div class="preloader__fill" id="preloader-fill"></div></div>
   </div>
 
   <!-- ===== Стартовый экран с бантом ===== -->
   <section class="intro" id="intro" aria-label="Подарок">
-    <!-- Сцена на весь экран: картинка с подарком, по клику поверх неё играет видео развязывания -->
-    <div class="intro__scene" aria-hidden="true">
-      <img class="intro__poster" src="assets/snow/start.webp" alt="" fetchpriority="high">
-      <video class="intro__video" id="intro-video" muted playsinline preload="none"></video>
-    </div>
+    <!-- Силуэты гирлянды с колокольчиками сверху — та же картинка и высота, что на экране с карточкой (макет 948-2211) -->
+    <img class="bells bells--intro" src="assets/bells/bells-page.svg?v=2" alt="" aria-hidden="true">
     <div class="intro__stage">
       <img class="intro__logo" src="assets/light/logo.svg?v=2" alt="Яндекс Плюс">
       <h1 class="intro__title">Новый год <br>с Яндекс Плюсом</h1>
       <p class="intro__text">Мы приготовили для вас подарок, <br>который уже можно открыть!</p>
 
-      <div class="intro__bow" aria-hidden="true"></div> <!-- место под подарок на картинке -->
+      <!-- Атласный бант (макет 956-3935, картинка 1564×884 с прозрачностью); по клику растворяется с лёгким увеличением -->
+      <div class="intro__bow" aria-hidden="true">
+        <img class="bow" src="assets/bells/bow-2.webp" alt="" fetchpriority="high">
+      </div>
 
-      <button class="btn btn--dark intro__btn" id="open-gift" type="button">Забрать подарок</button>
+      <button class="btn btn--dark intro__btn" id="open-gift" type="button">Открыть подарок</button>
     </div>
   </section>
 
-  <!-- Прелоудер прячем, как только готовы картинка с подарком и шрифты, не дожидаясь скриптов -->
+  <!-- Прелоудер прячем, как только готовы бант и шрифты, не дожидаясь скриптов -->
   <script>
     (function () {
-      var done = false, img = document.querySelector('.intro__poster');
+      var done = false, img = document.querySelector('.intro .bow');
       var hide = function () {
         if (done) return;
         done = true;
@@ -54,8 +54,8 @@
 
   <!-- ===== Основная страница ===== -->
   <main class="page" id="page">
-    <!-- Фон первого экрана: снег без подарка — в него переходит видео -->
-    <div class="page__scene" aria-hidden="true"></div>
+    <!-- Силуэты гирлянды над первым экраном страницы (макет 948-2211) -->
+    <img class="bells bells--page" src="assets/bells/bells-page.svg?v=2" alt="" aria-hidden="true">
     <section class="hero gift">
       <header class="logo"><img src="assets/light/logo.svg?v=2" alt="Яндекс Плюс" width="218" height="32"></header>
 
@@ -114,30 +114,28 @@
         </article>
       </div>
 
-      <!-- Две карточки с фото: приложение и приглашение близких -->
+      <!-- Две карточки с фото, текст поверх фото (макет 948-2213); кнопок нет — ссылкой служит вся карточка -->
       <div class="features">
-        <article class="feature">
+        <a class="feature" href="https://plus.yandex.ru/" target="_blank" rel="noopener">
           <picture>
-            <source srcset="assets/v5/photo-phone-3.avif" type="image/avif">
-            <img class="feature__photo" src="assets/v5/photo-phone-3.webp" alt="" width="556" height="340" loading="lazy" decoding="async">
+            <source srcset="assets/bells/photo-phone-2.avif" type="image/avif">
+            <img class="feature__photo" src="assets/bells/photo-phone-2.webp" alt="" width="556" height="443" loading="lazy" decoding="async">
           </picture>
           <div class="feature__text">
             <h3>Праздник в&nbsp;ваших руках</h3>
             <p>Кино, музыка и книги всегда рядом — <br>они подстраиваются под ваши интересы <br>в&nbsp;приложении Яндекс Плюс</p>
           </div>
-          <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Скачать приложение</a>
-        </article>
-        <article class="feature">
+        </a>
+        <a class="feature" href="https://plus.yandex.ru/" target="_blank" rel="noopener">
           <picture>
-            <source srcset="assets/v5/photo-family-3.avif" type="image/avif">
-            <img class="feature__photo" src="assets/v5/photo-family-3.webp" alt="" width="556" height="340" loading="lazy" decoding="async">
+            <source srcset="assets/bells/photo-family-2.avif" type="image/avif">
+            <img class="feature__photo" src="assets/bells/photo-family-2.webp" alt="" width="556" height="443" loading="lazy" decoding="async">
           </picture>
           <div class="feature__text">
             <h3>Новогоднее настроение <br>для вас и&nbsp;ваших близких</h3>
             <p>Пригласите в&nbsp;Плюс тех, кого любите</p>
           </div>
-          <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Пригласить</a>
-        </article>
+        </a>
       </div>
     </section>
 
@@ -155,9 +153,13 @@
     </footer>
   </main>
 
+  <!-- Падающий снег поверх всего (рисуется в canvas, src/snow.js) -->
+  <canvas class="snow" id="snow" aria-hidden="true"></canvas>
+
   <div class="toast" id="toast" role="status">Промокод скопирован</div>
 
-  <script src="script.js?v=110"></script>
+  <script src="script.js?v=201"></script>
+  <script src="src/snow.js?v=2" defer></script>
   <script type="module" src="src/card3d.min.js?v=18" fetchpriority="low"></script>
 </body>
 </html>
