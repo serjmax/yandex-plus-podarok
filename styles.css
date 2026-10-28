@@ -269,8 +269,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   will-change: transform;
 }
 .gift-card.is-tracking { transition: transform .08s linear; }
-.gift-card__pattern { position: absolute; inset: 0; background: url("assets/card3d/pattern.svg?v=2") 0 0 / 62.97em 62.97em repeat; opacity: .35; }
-/* Графика карточки (логотипы и «12 месяцев») — тот же card.svg, что у 3D: белое красим в цвет надписей */
+.gift-card__pattern { position: absolute; inset: 0; background: url("assets/card3d/pattern.svg?v=7") 0 0 / 100% 100% no-repeat; opacity: .35; }
+/* Графика карточки («12 месяцев» и ряд сервисов) — тот же card.svg, что у 3D: белое красим в цвет надписей */
 .gift-card__art { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(0) invert(9%) sepia(20%) saturate(2000%) hue-rotate(240deg); mix-blend-mode: multiply; }
 .gift-card__glare {
   position: absolute;

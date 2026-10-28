@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 
 const SVG_W = 343, SVG_H = 213, SVG_R = 24; // card.svg viewBox and corner radius
-const PATTERN_W = 40, PATTERN_H = 40;       // pattern.svg tile
+const PATTERN_W = 40, PATTERN_H = 40;       // pattern.svg tile (если pattern.svg размером с карточку — рисуется один раз)
 const WIDTH = 85.6;                          // mm, ISO ID-1 card width
 const HEIGHT = WIDTH * SVG_H / SVG_W;
 const RADIUS = SVG_R * WIDTH / SVG_W;
@@ -55,7 +55,8 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
   // Logo pattern mask, tiled over the whole card.
   const [pc, pctx] = canvas(w, h);
   pctx.filter = `blur(${px * 0.12}px)`;
-  for (let y = 0; y < SVG_H; y += PATTERN_H)
+  if (pattern && pattern.naturalWidth >= SVG_W) pctx.drawImage(pattern, 0, 0, w, h); // pattern.svg на всю карточку — не тайл
+  else for (let y = 0; y < SVG_H; y += PATTERN_H)
     for (let x = 0; x < SVG_W; x += PATTERN_W)
       if (pattern) pctx.drawImage(pattern, x * px, y * px, PATTERN_W * px, PATTERN_H * px);
   const patternMask = alphaOf(pctx, w, h);
