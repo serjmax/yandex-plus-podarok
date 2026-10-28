@@ -1,33 +1,24 @@
 // Падающий снег поверх страницы (canvas #snow).
 // Три «глубины»: дальние снежинки мелкие, тусклые и медленные, ближние — крупнее, ярче и быстрее.
 // Каждая покачивается по-своему, всё вместе сносит лёгкий меняющийся ветер; часть ближних чуть вытянута по ходу движения.
-// На светлом фоне белая снежинка теряется, поэтому у неё едва заметный сиреневый контур.
 (() => {
   const canvas = document.getElementById('snow');
   if (!canvas) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { canvas.remove(); return; }
   const ctx = canvas.getContext('2d');
 
-  // Спрайт снежинки: мягкий белый круг с тонким сиреневым ореолом (рисуем один раз, дальше только масштабируем)
+  // Спрайт снежинки: мягкий белый круг без ореола (рисуем один раз, дальше только масштабируем)
   const SPRITE = 64;
   const sprite = document.createElement('canvas');
   sprite.width = sprite.height = SPRITE;
   {
     const s = sprite.getContext('2d'), c = SPRITE / 2;
-    const halo = s.createRadialGradient(c, c, 0, c, c, c);
-    halo.addColorStop(0, 'rgba(105, 92, 150, .5)');
-    halo.addColorStop(.62, 'rgba(105, 92, 150, .28)');
-    halo.addColorStop(1, 'rgba(110, 98, 150, 0)');
-    s.fillStyle = halo;
-    s.fillRect(0, 0, SPRITE, SPRITE);
-    const core = s.createRadialGradient(c, c, 0, c, c, c * .62);
+    const core = s.createRadialGradient(c, c, 0, c, c, c * .62); // размер ядра — как был с ореолом
     core.addColorStop(0, 'rgba(255, 255, 255, 1)');
     core.addColorStop(.55, 'rgba(255, 255, 255, .95)');
     core.addColorStop(1, 'rgba(255, 255, 255, 0)');
     s.fillStyle = core;
-    s.beginPath();
-    s.arc(c, c, c * .62, 0, Math.PI * 2);
-    s.fill();
+    s.fillRect(0, 0, SPRITE, SPRITE);
   }
 
   let w = 0, h = 0, dpr = 1, flakes = [];
