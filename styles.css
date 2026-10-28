@@ -10,9 +10,9 @@
   --ink-soft: rgba(50, 42, 64, .9);    /* подзаголовки */
   --ink-card: #322a40;                 /* текст в карточках сервисов — как основной */
   /* Фон растянут на экран и прилеплен к нему (как в макете первого экрана) */
-  /* Фон из макета: светлая диагональ от левого верхнего угла, лавандовый правый верх.
-     Градиент задан в долях экрана (SVG с preserveAspectRatio=none), чтобы совпадать на любых пропорциях */
-  --backdrop-gradient: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='.5' y1='-.625' x2='-1.56' y2='1.14'%3E%3Cstop offset='0' stop-color='%23b2aec7'/%3E%3Cstop offset='.31' stop-color='%23f0f0f0'/%3E%3Cstop offset='1' stop-color='%23b2aec7'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  /* Фон из макета 980-9046: лавандовый правый верх, светлая полоса, лавандовый низ. Градиент в координатах макета 1440×902,
+     растянутых на экран (SVG с preserveAspectRatio=none), — совпадает с макетом на любых пропорциях */
+  --backdrop-gradient: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 902' preserveAspectRatio='none'%3E%3ClinearGradient id='g' gradientUnits='userSpaceOnUse' x1='1440' y1='-19' x2='1243.65' y2='1048.92'%3E%3Cstop offset='0' stop-color='%23d7d5e2'/%3E%3Cstop offset='.265' stop-color='%23f0f0f0'/%3E%3Cstop offset='1' stop-color='%23b2aec7'/%3E%3C/linearGradient%3E%3Crect width='1440' height='902' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
   --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E") 0 0 / 240px 240px repeat;
   --backdrop: var(--noise), var(--backdrop-gradient), #e6e5ec;
   --btn-dark: linear-gradient(240.7deg, #2b2232 2.5%, #6c5976 43.4%, #2b2232 110.9%);
