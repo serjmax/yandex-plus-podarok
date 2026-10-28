@@ -60,15 +60,9 @@ async function init() {
 
   // Карточка целиком (металл, перелив, слой надписей) строится в card.js
   const look = () => ({ ...LANDING_LOOK, ink: tune.lc, metal: tune.mt, iridescence: tune.ir, sheen: tune.sh, roughness: tune.ro, pattern: tune.pa });
-  // Промокод выгравирован прямо в металле внизу карточки: буквы углублены и отполированы, без плашки и краски
-  // (место — как у плашки в макете 906-14774, карта 526×326 → 343×213).
-  // Код — из ссылки (script.js кладёт его в window.__promoCode), иначе тот же, что в блоке «Промокод»
-  const promo = window.__promoCode || document.querySelector('#promo-code span')?.textContent.trim() || '';
+  // Промокода на карточке нет — он только в блоке «Промокод» под ней
   const k = 343 / 526;
   const engraving = {
-    text: promo, size: 22 * k,
-    font: px => `500 ${px}px "YS Text", "Helvetica Neue", Arial, sans-serif`,
-    cx: 343 / 2, cy: 287 * k,
     // Плашки логотипов сервисов (макет 972-6335: x = 329, ширина 168.56, высота 50.26, r 12.2, шаг 54.81): внутри без паттерна,
     // шлифованный металл — логотипы переливаются, как плашка промокода
     polish: [27, 81.81, 136.63, 191.44].map(y => ({ x: 329 * k, y: y * k, w: 168.56 * k, h: 50.26 * k, r: 12.2 * k })),
@@ -76,7 +70,6 @@ async function init() {
     // «12 месяцев» слева — обычной тёмной краской
     iconsRegion: [329 * k, 27 * k, 168.56 * k, 214.7 * k],
   };
-  await document.fonts.load(engraving.font(32)).catch(() => {}); // гравировка рисуется этим шрифтом
   const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 6, engraving });
 
   // Панель ?tune: цвет надписей и перелив меняются мгновенно, остальное — пересборкой поверхности

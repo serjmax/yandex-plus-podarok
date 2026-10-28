@@ -16,14 +16,9 @@
   // Потом здесь будет запрос к бэкенду по персональному токену. Берём только буквы, цифры и дефис.
   const linkCode = (new URLSearchParams(location.search).get('code') || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 24);
   if (linkCode.length >= 4) {
-    window.__promoCode = linkCode; // его же рисует на карточке src/card3d.js
     document.querySelector('#promo-code span').textContent = linkCode;
-    document.querySelector('.gift-card__code').textContent = linkCode;
     document.getElementById('card3d').setAttribute('aria-label', `Подарочная карта Яндекс Плюс на 12 месяцев, промокод ${linkCode}`);
   }
-
-  // Код на плоской запасной карточке — тот же, что в блоке «Промокод»
-  document.querySelector('.gift-card__code').textContent = document.querySelector('#promo-code span').textContent.trim();
 
   /* ---------- Бант заполняет место между текстом и кнопкой ---------- */
   // Картинка 782×442 (2×), бант занимает её по высоте почти целиком; на низких экранах уменьшается, на узких — по ширине

@@ -272,20 +272,6 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .gift-card__pattern { position: absolute; inset: 0; background: url("assets/card3d/pattern.svg?v=2") 0 0 / 62.97em 62.97em repeat; opacity: .35; }
 /* Графика карточки (логотипы и «12 месяцев») — тот же card.svg, что у 3D: белое красим в цвет надписей */
 .gift-card__art { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(0) invert(9%) sepia(20%) saturate(2000%) hue-rotate(240deg); mix-blend-mode: multiply; }
-/* Промокод на плоской запасной карточке — там же, где на 3D: под «12» */
-.gift-card__code {
-  position: absolute;
-  left: 50%;
-  top: 88%;
-  transform: translate(-50%, -50%);
-  font-family: var(--text);
-  font-weight: 500;
-  font-size: 22em;
-  color: rgba(33, 23, 48, .45);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, .8); /* гравировка: светлая кромка под буквами */
-  white-space: nowrap;
-}
-.gift-card__code:empty { display: none; }
 .gift-card__glare {
   position: absolute;
   inset: 0;
