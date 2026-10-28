@@ -39,7 +39,7 @@ function random(seed) {
 // engraving (необязательно), в единицах card.svg:
 //   { text, font: px => 'css font', size, cx, cy } — текст (промокод), выгравированный прямо в металле:
 //     буквы углублены, внутри — полированный, почти зеркальный металл, без краски; паттерн вокруг убран;
-//   polish: [{ cx, cy, r }] — шлифованные круги (например, под иконками): без паттерна и зерна, свой светлый тон;
+//   polish: [{ cx, cy, r } | { x, y, w, h, r }] — шлифованные круги или плашки (под иконками/логотипами): без паттерна и зерна, свой светлый тон;
 //   iconsRegion: [x, y, w, h] — часть card.svg в этой области (иконки) гравируется глубоко и темно полированным металлом, без краски.
 function drawEngraving(ctx, px, e) {
   ctx.save();
@@ -75,7 +75,7 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
   ectx.filter = `blur(${px * 0.12}px)`;
   ectx.drawImage(tc, 0, 0);
   const engrave = alphaOf(ectx, w, h);
-  // Шлифованные круги: без паттерна, чуть приподняты (по краю — тонкий блик)
+  // Шлифованные круги и плашки: без паттерна, чуть приподняты (по краю — тонкий блик)
   let plate = null;
   const polish = engraving?.polish ?? [];
   if (polish.length) {
@@ -84,7 +84,8 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
     qctx.fillStyle = '#fff';
     for (const c of polish) {
       qctx.beginPath();
-      qctx.arc(c.cx * px, c.cy * px, c.r * px, 0, Math.PI * 2);
+      if (c.w) qctx.roundRect(c.x * px, c.y * px, c.w * px, c.h * px, c.r * px); // плашка
+      else qctx.arc(c.cx * px, c.cy * px, c.r * px, 0, Math.PI * 2);
       qctx.fill();
     }
     plate = alphaOf(qctx, w, h);
