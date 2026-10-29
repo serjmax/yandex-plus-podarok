@@ -567,6 +567,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 }
 
 @media (max-width: 600px) {
+  .block { width: 100%; max-width: none; } /* на телефоне блок во всю ширину экрана, без отступов по краям */
   .bells { width: 100%; } /* мобильная гирлянда нарисована под ширину экрана телефона */
   .bells-shine {
     aspect-ratio: 393 / 207;
