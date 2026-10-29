@@ -126,7 +126,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .intro__logo { width: 217.95px; height: 32px; flex: none; }
 .intro__title { margin-top: 36px; width: 852px; font-family: var(--display); font-size: 68px; line-height: .9; color: var(--ink); } /* как заголовок следующего экрана (.gift__title) */
 .intro__text { margin-top: 24px; font-size: 24px; line-height: 28px; color: var(--ink-soft); }
-.intro__btn { flex: none; }
+.intro__btn { flex: none; position: relative; z-index: 1; } /* поверх банта: увеличенная картинка банта (с прозрачными полями) заходит на кнопку */
 /* Бант: место между текстом и кнопкой; масштаб --bs считает script.js (на низких и узких экранах меньше) */
 .intro__bow { --bs: 1; position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; }
 .bow {
@@ -139,6 +139,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   /* видимая часть банта в картинке выше центра на 14 px и правее на 9.5 px — сдвигаем: зазоры сверху и снизу равны, петли по центру */
   translate: calc(-50% - 9.5px * var(--bs)) calc(-50% + 14px * var(--bs));
   scale: var(--bs);
+  pointer-events: none; /* бант — картинка, клики проходят к кнопке */
   transition: opacity .6s ease, transform .7s cubic-bezier(.3, 0, .2, 1);
 }
 /* По клику бант растворяется с лёгким увеличением */
