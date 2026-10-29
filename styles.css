@@ -187,6 +187,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   animation: garland-shine 6s cubic-bezier(.45, .05, .55, .95) infinite;
   will-change: transform;
 }
+/* С мышью блик стоит под курсором (--sx — положение курсора по ширине гирлянды, 0…1, задаёт script.js) */
+.shine-follow .bells-shine::before { animation: none; transform: translateX(calc((var(--sx, .5) - 1.5) * 33.333%)); }
 @keyframes garland-shine {
   from { transform: translateX(-66.667%); }
   to   { transform: translateX(0); }
