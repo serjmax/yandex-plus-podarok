@@ -543,7 +543,10 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
     text-align: center;
   }
   .services::-webkit-scrollbar { display: none; }
-  .service { scroll-snap-align: start; }
+  /* при листании средние карточки встают по центру блока, первая — к левому краю, последняя — к правому */
+  .service { scroll-snap-align: center; }
+  .service:first-child { scroll-snap-align: start; }
+  .service:last-child { scroll-snap-align: end; }
 
   .block { margin-top: 48px; }
   .block__title { font-size: 36px; }
