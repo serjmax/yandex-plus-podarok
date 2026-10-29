@@ -163,7 +163,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .page > :not(.bells) { position: relative; z-index: 1; }
 .bells-pic { display: contents; } /* <picture> только выбирает картинку: на телефоне — своя гирлянда (макет 993-20188) */
 /* Перелив по гирляндам: поверх картинки тот же силуэт (маска), внутри по нему постоянно проходит мягкий
-   светлый блик с лёгким перламутром — розоватый, белый, голубоватый. Двигается только transform блика */
+   светлый блик с лёгким перламутром — розоватый, белый, голубоватый. Медленно идёт слева направо с момента загрузки;
+   двигается только transform блика */
 .bells-shine {
   aspect-ratio: 1440 / 430;
   overflow: hidden;
@@ -184,14 +185,14 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
     rgba(255, 255, 255, .85) 50%,
     rgba(205, 225, 255, .4) 54%,
     rgba(255, 255, 255, 0) 60%);
-  animation: garland-shine 6s cubic-bezier(.45, .05, .55, .95) infinite;
+  animation: garland-shine 14s linear infinite; /* медленно слева направо, без пауз */
   will-change: transform;
 }
-/* С мышью блик стоит под курсором (--sx — положение курсора по ширине гирлянды, 0…1, задаёт script.js) */
-.shine-follow .bells-shine::before { animation: none; transform: translateX(calc((var(--sx, .5) - 1.5) * 33.333%)); }
+/* Блик стоит в точке (1.5 + сдвиг) × ширину гирлянды: идёт от самого левого края (−10 %) до правого (110 %),
+   поэтому виден сразу после загрузки, без «пустого» начала */
 @keyframes garland-shine {
-  from { transform: translateX(-66.667%); }
-  to   { transform: translateX(0); }
+  from { transform: translateX(-53.333%); }
+  to   { transform: translateX(-13.333%); }
 }
 
 
