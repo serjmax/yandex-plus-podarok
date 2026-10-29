@@ -313,8 +313,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .block {
   position: relative;
   width: 1304px;
-  margin-top: 32px;
-  padding: 65px 0 107px;
+  margin-top: 80px;
+  padding: 65px 0;
   border-radius: 80px;
   overflow: hidden;
   /* Перелив по скроллу и курсору: градиент из макета сдвигается (--mx/--my), блики — в ::before; всё двигает script.js */
@@ -326,6 +326,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   text-align: center;
 }
 .block__head { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.block__title { font-size: 56px; } /* макет 1065-34155: заголовок в одну строку */
+.block__head .lead { max-width: 548px; }
 /* Несколько диагональных бликов, едут справа налево по мере скролла; между ними лёгкая сиреневая тень —
    на светлом фоне иначе не видно. Слой шире блока, сдвиг --rx в пикселях задаёт script.js */
 .block::before {
@@ -347,19 +349,19 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   pointer-events: none;
   z-index: 0;
 }
-.block__head, .services, .features { position: relative; z-index: 1; }
+.block__head, .services, .invite { position: relative; z-index: 1; }
 
-.services { display: flex; justify-content: center; gap: 62px; margin-top: 170px; }
-/* Тёмные карточки сервисов */
+.services { display: flex; justify-content: center; gap: 16px; margin-top: 160px; }
+/* Тёмные карточки сервисов 281.5×260 (макет 1065-34155): сверху выступает иконка, текст с отступом 120 от верха */
 .service {
   position: relative;
   flex: none;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
-  width: 350px;
-  height: 250px;
+  width: 281.5px;
+  height: 260px;
+  padding: 120px 20px 0;
   border-radius: 40px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.172' y1='-0.402' x2='-0.472' y2='0.648'%3E%3Cstop offset='0' stop-color='%231b131e'/%3E%3Cstop offset='0.862' stop-color='%236c5976'/%3E%3Cstop offset='1' stop-color='%231b131e'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat, #3a2f41;
   /* Светлая тень из макета появляется только при наведении */
@@ -367,28 +369,40 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   transition: box-shadow .35s ease;
 }
 .service:hover { box-shadow: 0 54px 72px -30px rgba(167, 162, 188, .43); }
-/* Иконки сервисов выступают над карточкой */
-.service__art { position: relative; flex: none; width: 100%; height: 193.34px; margin-bottom: -7.52px; }
-.service--kp .service__art { height: 200px; overflow: hidden; }
-.service--books .service__art { overflow: hidden; }
+/* Иконки сервисов выступают над карточкой: рамка 280×200 на 111 px выше её верха */
+.service__art { position: absolute; left: .8px; top: -111.4px; width: 280px; height: 200px; pointer-events: none; }
 .service__art img { position: absolute; }
-.service--music .service__art img { left: 30.86px; top: -22.56px; width: 260.84px; height: 237.85px; }
-.service--kp .service__art img    { left: 67.67px; top: -.38px; width: 213.91px; height: 218.93px; }
-.service--books .service__art img { left: calc(50% + 4.41px); top: -15.04px; width: 247.11px; height: 224.3px; translate: -50% 0; }
-.service__text { flex: none; /* не сжимать — иначе текст и иконка уезжают вниз относительно макета */ display: flex; flex-direction: column; gap: 12.89px; width: 332.27px; height: 181.53px; padding: 34.37px 34.37px 17.19px; border-radius: 41.25px; }
-.service h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: #fff; }
-.service p { font-size: 19.33px; line-height: 25.78px; color: rgba(255, 255, 255, .7); }
+.service--music .service__art img { left: -1.7px; top: -22.2px; width: 260.8px; height: 237.9px; }
+.service--kp .service__art img    { left: 34.9px; top: -9.9px; width: 203.5px; height: 208.3px; }
+.service--books .service__art img { left: 20.8px; top: -14px; width: 237.9px; height: 215.9px; }
+.service--app .service__art img   { left: 38.6px; top: -7.2px; width: 211.1px; height: 206.2px; }
+.service__text { position: relative; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.service h3 { font-family: var(--display); font-weight: 500; font-size: 28px; line-height: .95; color: #fff; }
+.service p { font-size: 16px; line-height: 1.2; color: rgba(255, 255, 255, .8); }
 
-/* Две карточки (макет 993-17500): картинка 556×296, под ней текст и кнопка — кнопки на одной высоте */
-.features { display: flex; justify-content: center; gap: 62px; margin-top: 56px; }
-.feature { display: flex; flex-direction: column; align-items: center; width: 556px; text-align: center; }
-.feature picture { display: block; width: 100%; border-radius: 40px; overflow: hidden; isolation: isolate; } /* AVIF с запасным WebP; рамка обрезает увеличенную картинку */
-.feature__photo { width: 100%; height: auto; aspect-ratio: 556 / 296; object-fit: cover; transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
-.feature:hover .feature__photo { transform: scale(1.05); } /* при наведении картинка немного увеличивается внутри рамки */
-.feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-top: 32px; }
-.feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink); }
-.feature p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
-.feature .btn { width: 267px; margin-top: 32px; }
+/* Приглашение (макет 1065-34155): тёмная карточка 1174×328, слева текст и светлая кнопка, справа аватары */
+.invite {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 1174px;
+  height: 328px;
+  margin: 56px auto 0;
+  padding: 40px;
+  border-radius: 40px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x1='1.172' y1='-0.402' x2='-0.472' y2='0.648'%3E%3Cstop offset='0' stop-color='%231b131e'/%3E%3Cstop offset='0.862' stop-color='%236c5976'/%3E%3Cstop offset='1' stop-color='%231b131e'/%3E%3C/linearGradient%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat, #3a2f41;
+  text-align: left;
+}
+.invite__text { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; width: 673px; }
+.invite h3 { font-family: var(--display); font-weight: 400; font-size: 55px; line-height: 1; color: #fff; }
+.invite p { font-size: 24px; line-height: 25.78px; color: rgba(255, 255, 255, .8); }
+.invite .btn { margin-top: 20px; }
+.invite__art { flex: none; width: 378.7px; height: 248px; }
+
+/* Поздравление (макет 1065-34153): между первым экраном и блоком, по 80 px до и после */
+.wishes { position: relative; z-index: 1; margin-top: 16px; padding: 0 80px; text-align: center; }
+.wishes__text { font-family: var(--display); font-size: 36px; line-height: 1.2; color: var(--ink); }
+.wishes__heart { display: inline-block; width: 33.5px; height: 31.8px; margin-left: 13.5px; vertical-align: -3px; }
 
 /* ----- Футер ----- */
 .footer {
@@ -466,19 +480,22 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
     text-align: center;
   }
   .services::-webkit-scrollbar { display: none; }
-  .service { width: 300px; height: 230px; scroll-snap-align: start; }
-  .service__text { width: 100%; height: auto; padding: 24px 24px 22px; }
-  .service h3 { font-size: 26px; }
-  .service p { font-size: 17px; line-height: 22px; }
+  .service { scroll-snap-align: start; }
 
-  .features { flex-direction: column; align-items: center; gap: 48px; margin-top: 8px; padding: 0 16px; }
-  .feature { width: 100%; max-width: 520px; }
-  .feature picture { border-radius: 32px; }
-  .feature__text { width: 100%; min-height: 0; margin-top: 24px; gap: 10px; }
-  .feature h3 { font-size: 26px; }
-  .feature p { font-size: 17px; line-height: 22px; }
-  .feature p br, .feature h3 br { display: none; }
-  .feature .btn { width: 274px; margin-top: 24px; }
+  .block { margin-top: 48px; }
+  .block__title { font-size: 44px; }
+  .block__head .lead { max-width: 320px; }
+  .invite { flex-direction: column; align-items: center; width: auto; height: auto; margin: 0 16px; padding: 24px 20px 32px; text-align: center; }
+  .invite__art { order: -1; width: 100%; max-width: 300px; height: auto; margin-bottom: 20px; }
+  .invite__text { align-items: center; width: auto; gap: 10px; }
+  .invite h3 { font-size: 30px; line-height: 1.05; }
+  .invite h3 br { display: none; }
+  .invite p { font-size: 17px; line-height: 22px; }
+  .invite .btn { margin-top: 14px; }
+  .wishes { margin-top: 0; padding: 0 20px; }
+  .wishes__text { font-size: 22px; line-height: 1.25; }
+  .wishes__br { display: none; }
+  .wishes__heart { width: 22px; height: 21px; margin-left: 8px; vertical-align: -2px; }
   .bells { width: 600px; } /* на телефоне гирлянда уменьшена, чтобы колокольчики попадали в кадр */
 
   .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px; gap: 20px; }
