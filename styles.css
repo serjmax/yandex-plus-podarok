@@ -124,7 +124,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   text-align: center;
 }
 .intro__logo { width: 217.95px; height: 32px; flex: none; }
-.intro__title { margin-top: 36px; width: 852px; font-family: var(--display); font-size: 84px; line-height: .9; color: var(--ink); }
+.intro__title { margin-top: 36px; width: 852px; font-family: var(--display); font-size: 68px; line-height: .9; color: var(--ink); } /* как заголовок следующего экрана (.gift__title) */
 .intro__text { margin-top: 24px; font-size: 24px; line-height: 28px; color: var(--ink-soft); }
 .intro__btn { flex: none; }
 /* Бант: место между текстом и кнопкой; масштаб --bs считает script.js (на низких и узких экранах меньше) */
