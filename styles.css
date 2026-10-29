@@ -136,8 +136,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   width: 782px;
   height: 442px;
   max-width: none;
-  /* видимая часть банта в картинке выше центра на 14 px — сдвигаем, чтобы зазоры сверху и снизу были равны */
-  translate: -50% calc(-50% + 14px * var(--bs));
+  /* видимая часть банта в картинке выше центра на 14 px и правее на 9.5 px — сдвигаем: зазоры сверху и снизу равны, петли по центру */
+  translate: calc(-50% - 9.5px * var(--bs)) calc(-50% + 14px * var(--bs));
   scale: var(--bs);
   transition: opacity .6s ease, transform .7s cubic-bezier(.3, 0, .2, 1);
 }
