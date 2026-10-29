@@ -161,6 +161,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .page { position: relative; }
 .bells--page { z-index: 0; }
 .page > :not(.bells) { position: relative; z-index: 1; }
+.bells-pic { display: contents; } /* <picture> только выбирает картинку: на телефоне — своя гирлянда (макет 993-20188) */
 
 
 /* Прелоудер: фон страницы и тонкая полоса прогресса; исчезает, когда кадры загружены */
@@ -485,6 +486,9 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .footer__bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 
+@media (max-width: 600px) {
+  .bells { width: 100%; } /* мобильная гирлянда нарисована под ширину экрана телефона */
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
