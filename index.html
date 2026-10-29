@@ -10,7 +10,7 @@
   <link rel="preload" href="fonts/YS%20Display-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/YS%20Text-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/YS%20Text-Medium.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=208">
+  <link rel="stylesheet" href="styles.css?v=209">
 </head>
 <body class="is-locked">
 
@@ -113,28 +113,30 @@
         </article>
       </div>
 
-      <!-- Две карточки с фото, текст поверх фото (макет 948-2213); кнопок нет — ссылкой служит вся карточка -->
+      <!-- Две карточки (макет 993-17500): картинка 556×296, под ней заголовок, текст и кнопка — кнопки на одной высоте -->
       <div class="features">
-        <a class="feature" href="https://plus.yandex.ru/" target="_blank" rel="noopener">
+        <article class="feature">
           <picture>
-            <source srcset="assets/bells/photo-phone-2.avif" type="image/avif">
-            <img class="feature__photo" src="assets/bells/photo-phone-2.webp" alt="" width="556" height="443" loading="lazy" decoding="async">
+            <source srcset="assets/cards/phone.avif" type="image/avif">
+            <img class="feature__photo" src="assets/cards/phone.webp" alt="" width="556" height="296" loading="lazy" decoding="async">
           </picture>
           <div class="feature__text">
             <h3>Праздник в&nbsp;ваших руках</h3>
             <p>Кино, музыка и книги всегда рядом — <br>они подстраиваются под ваши интересы <br>в&nbsp;приложении Яндекс Плюс</p>
           </div>
-        </a>
-        <a class="feature" href="https://plus.yandex.ru/" target="_blank" rel="noopener">
+          <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Скачать приложение</a>
+        </article>
+        <article class="feature">
           <picture>
-            <source srcset="assets/bells/photo-family-2.avif" type="image/avif">
-            <img class="feature__photo" src="assets/bells/photo-family-2.webp" alt="" width="556" height="443" loading="lazy" decoding="async">
+            <source srcset="assets/cards/family.avif" type="image/avif">
+            <img class="feature__photo" src="assets/cards/family.webp" alt="" width="556" height="296" loading="lazy" decoding="async">
           </picture>
           <div class="feature__text">
             <h3>Новогоднее настроение <br>для вас и&nbsp;ваших близких</h3>
             <p>Пригласите в&nbsp;Плюс тех, кого любите</p>
           </div>
-        </a>
+          <a class="btn btn--dark" href="https://plus.yandex.ru/" target="_blank" rel="noopener">Пригласить</a>
+        </article>
       </div>
     </section>
 

@@ -378,38 +378,16 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .service h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: #fff; }
 .service p { font-size: 19.33px; line-height: 25.78px; color: rgba(255, 255, 255, .7); }
 
-/* Две карточки с фото: фото 556×340, текст, кнопка — кнопки на одной высоте */
+/* Две карточки (макет 993-17500): картинка 556×296, под ней текст и кнопка — кнопки на одной высоте */
 .features { display: flex; justify-content: center; gap: 62px; margin-top: 56px; }
-/* Карточка 556×443: фото на всю карточку, снизу тёмный градиент, текст белым поверх (макет 948-2213) */
-.feature {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  width: 556px;
-  height: 443px;
-  border-radius: 40px;
-  overflow: hidden;
-  background: #322a40;
-  isolation: isolate;
-}
-.feature picture { position: absolute; inset: 0; z-index: -2; }
-.feature__photo { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
-.feature::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 209px;
-  z-index: -1;
-  background: linear-gradient(rgba(29, 22, 42, 0), rgba(21, 16, 31, .8));
-}
-.feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-bottom: 33px; }
-.feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: #fff; }
-.feature p { font-size: 19.33px; line-height: 25.78px; color: rgba(255, 255, 255, .9); }
-.feature:hover .feature__photo { transform: scale(1.05); } /* при наведении фото немного увеличивается внутри рамки; вся карточка — ссылка */
+.feature { display: flex; flex-direction: column; align-items: center; width: 556px; text-align: center; }
+.feature picture { display: block; width: 100%; border-radius: 40px; overflow: hidden; isolation: isolate; } /* AVIF с запасным WebP; рамка обрезает увеличенную картинку */
+.feature__photo { width: 100%; height: auto; aspect-ratio: 556 / 296; object-fit: cover; transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
+.feature:hover .feature__photo { transform: scale(1.05); } /* при наведении картинка немного увеличивается внутри рамки */
+.feature__text { display: flex; flex-direction: column; gap: 13px; width: 436px; min-height: 120px; margin-top: 32px; }
+.feature h3 { font-family: var(--display); font-weight: 500; font-size: 30.08px; line-height: .95; color: var(--ink); }
+.feature p { font-size: 19.33px; line-height: 25.78px; color: var(--ink-soft); }
+.feature .btn { width: 267px; margin-top: 32px; }
 
 /* ----- Футер ----- */
 .footer {
@@ -492,12 +470,14 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .service h3 { font-size: 26px; }
   .service p { font-size: 17px; line-height: 22px; }
 
-  .features { flex-direction: column; align-items: center; gap: 24px; margin-top: 8px; padding: 0 16px; }
-  .feature { width: 100%; max-width: 520px; height: auto; aspect-ratio: 556 / 443; border-radius: 32px; }
-  .feature__text { width: auto; min-height: 0; padding: 0 24px; margin-bottom: 24px; gap: 8px; }
-  .feature h3 { font-size: 24px; }
-  .feature p { font-size: 15px; line-height: 20px; }
+  .features { flex-direction: column; align-items: center; gap: 48px; margin-top: 8px; padding: 0 16px; }
+  .feature { width: 100%; max-width: 520px; }
+  .feature picture { border-radius: 32px; }
+  .feature__text { width: 100%; min-height: 0; margin-top: 24px; gap: 10px; }
+  .feature h3 { font-size: 26px; }
+  .feature p { font-size: 17px; line-height: 22px; }
   .feature p br, .feature h3 br { display: none; }
+  .feature .btn { width: 274px; margin-top: 24px; }
   .bells { width: 600px; } /* на телефоне гирлянда уменьшена, чтобы колокольчики попадали в кадр */
 
   .footer { width: calc(100% - 18px); max-width: 375px; margin-top: 48px; padding: 16px; gap: 20px; }
