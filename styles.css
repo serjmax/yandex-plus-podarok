@@ -191,6 +191,12 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 }
 /* С мышью блик стоит под курсором (--sx — положение курсора по ширине гирлянды, 0…1, задаёт script.js) */
 .shine-follow .bells-shine::before { animation: none; transform: translateX(calc((var(--sx, .5) - 1.5) * 33.333%)); }
+/* Сердечко: полоса шире (25–75 % слоя = 1,5 ширины сердечка), поэтому пробег длиннее — в начале и в конце цикла
+   блик целиком за краями сердечка, перезапуск незаметен */
+@keyframes heart-shine {
+  from { transform: translateX(-76%); }
+  to   { transform: translateX(9%); }
+}
 @keyframes garland-shine {
   from { transform: translateX(-66.667%); }
   to   { transform: translateX(0); }
@@ -463,7 +469,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
     rgba(255, 255, 255, .95) 52.5%,
     rgba(205, 225, 255, .5) 62.5%,
     rgba(255, 255, 255, 0) 75%);
-  animation: garland-shine 3s linear infinite; /* бесконечно слева направо, не зависит от курсора */
+  animation: heart-shine 3s linear infinite; /* бесконечно слева направо, не зависит от курсора */
   will-change: transform;
 }
 
