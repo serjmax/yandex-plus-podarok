@@ -188,7 +188,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   will-change: transform;
 }
 /* С мышью блик стоит под курсором (--sx — положение курсора по ширине гирлянды, 0…1, задаёт script.js) */
-.shine-follow .bells-shine::before { animation: none; transform: translateX(calc((var(--sx, .5) - 1.5) * 33.333%)); }
+.shine-follow .bells-shine::before,
+.shine-follow .heart-shine::before { animation: none; transform: translateX(calc((var(--sx, .5) - 1.5) * 33.333%)); }
 @keyframes garland-shine {
   from { transform: translateX(-66.667%); }
   to   { transform: translateX(0); }
@@ -435,6 +436,33 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .wishes { position: relative; z-index: 1; margin-top: 16px; padding: 0 80px; text-align: center; }
 .wishes__text { font-family: var(--display); font-size: 24px; line-height: 1.3; color: var(--ink); }
 .wishes__heart { display: inline-block; width: 24px; height: 22.7px; margin-left: 6.4px; vertical-align: -3px; }
+.wishes__heart { position: relative; }
+.wishes__heart img { display: block; width: 100%; height: 100%; }
+/* Блеск на сердечке — как на гирляндах: светлая полоса по силуэту (маска), с мышью идёт за курсором */
+.heart-shine {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask: url("assets/cards/heart.svg") 0 0 / 100% 100% no-repeat;
+  mask: url("assets/cards/heart.svg") 0 0 / 100% 100% no-repeat;
+}
+.heart-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 300%;
+  background: linear-gradient(105deg,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 214, 240, .45) 45%,
+    rgba(255, 255, 255, .95) 49%,
+    rgba(255, 255, 255, .95) 51%,
+    rgba(205, 225, 255, .5) 55%,
+    rgba(255, 255, 255, 0) 60%);
+  animation: garland-shine 6s cubic-bezier(.45, .05, .55, .95) infinite;
+  will-change: transform;
+}
 
 /* ----- Футер ----- */
 .footer {

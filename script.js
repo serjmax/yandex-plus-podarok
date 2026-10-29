@@ -211,23 +211,30 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 1800);
   });
-  /* ---------- Перелив гирлянд за курсором ---------- */
-  // Блик по гирляндам (.bells-shine) стоит там, где курсор, и плавно догоняет его.
+  /* ---------- Перелив гирлянд и сердечка за курсором ---------- */
+  // Блик по гирляндам (.bells-shine) стоит там, где курсор, и плавно догоняет его;
+  // по сердечку в поздравлении (.heart-shine) проходит так же, как курсор идёт по ширине экрана.
   // На телефонах и без мыши — прежний перелив сам по себе (CSS-анимация)
-  const shines = document.querySelectorAll('.bells-shine');
+  const shines = [...document.querySelectorAll('.bells-shine, .heart-shine')];
   if (shines.length && matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.documentElement.classList.add('shine-follow');
-    let target = 0.5, current = 0.5, shineRaf = 0;
+    const state = shines.map(el => ({ el, heart: el.classList.contains('heart-shine'), target: 0.5, current: 0.5 }));
+    let shineRaf = 0;
     const draw = () => {
-      current += (target - current) * 0.08;
-      shines.forEach(el => el.style.setProperty('--sx', current.toFixed(4)));
-      shineRaf = Math.abs(target - current) > 0.0005 ? requestAnimationFrame(draw) : 0;
+      let moving = false;
+      for (const s of state) {
+        s.current += (s.target - s.current) * 0.08;
+        s.el.style.setProperty('--sx', s.current.toFixed(4));
+        if (Math.abs(s.target - s.current) > 0.0005) moving = true;
+      }
+      shineRaf = moving ? requestAnimationFrame(draw) : 0;
     };
     addEventListener('pointermove', e => {
-      const r = shines[shines.length - 1].getBoundingClientRect(); // гирлянды на обоих экранах одного размера
-      target = (e.clientX - r.left) / r.width;
+      const bells = state.filter(s => !s.heart && s.el.isConnected);
+      const r = bells.length ? bells[bells.length - 1].el.getBoundingClientRect() : null; // гирлянды на обоих экранах одного размера
+      for (const s of state) s.target = s.heart ? e.clientX / innerWidth : r ? (e.clientX - r.left) / r.width : s.target;
       if (!shineRaf) shineRaf = requestAnimationFrame(draw);
     }, { passive: true });
-    shines.forEach(el => el.style.setProperty('--sx', current));
+    shines.forEach(el => el.style.setProperty('--sx', 0.5));
   }
 })();
