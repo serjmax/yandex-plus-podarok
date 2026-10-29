@@ -213,7 +213,7 @@
   });
   /* ---------- Перелив гирлянд и сердечка за курсором ---------- */
   // Блик по гирляндам (.bells-shine) стоит там, где курсор, и плавно догоняет его;
-  // по сердечку в поздравлении (.heart-shine) — пробег в 1,5 ширины сердечка на ширину экрана: у краёв экрана блик уходит с сердечка.
+  // по сердечку в поздравлении (.heart-shine) — пробег в 2 ширины сердечка на ширину экрана: у краёв экрана блик уходит с сердечка.
   // На телефонах и без мыши — прежний перелив сам по себе (CSS-анимация)
   const shines = [...document.querySelectorAll('.bells-shine, .heart-shine')];
   if (shines.length && matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -232,7 +232,7 @@
     addEventListener('pointermove', e => {
       const bells = state.filter(s => !s.heart && s.el.isConnected);
       const r = bells.length ? bells[bells.length - 1].el.getBoundingClientRect() : null; // гирлянды на обоих экранах одного размера
-      for (const s of state) s.target = s.heart ? 0.5 + (e.clientX / innerWidth - 0.5) * 1.5 : r ? (e.clientX - r.left) / r.width : s.target;
+      for (const s of state) s.target = s.heart ? 0.5 + (e.clientX / innerWidth - 0.5) * 2 : r ? (e.clientX - r.left) / r.width : s.target;
       if (!shineRaf) shineRaf = requestAnimationFrame(draw);
     }, { passive: true });
     shines.forEach(el => el.style.setProperty('--sx', 0.5));
