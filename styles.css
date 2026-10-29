@@ -453,14 +453,14 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   bottom: 0;
   left: 0;
   width: 300%;
-  /* полоса в 5 раз шире, чем была (центр тот же — 50 %) */
+  /* широкая полоса с центром на 50 % (в 2,5 раза шире, чем у гирлянд) */
   background: linear-gradient(105deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 214, 240, .45) 25%,
-    rgba(255, 255, 255, .95) 45%,
-    rgba(255, 255, 255, .95) 55%,
-    rgba(205, 225, 255, .5) 75%,
-    rgba(255, 255, 255, 0) 100%);
+    rgba(255, 255, 255, 0) 25%,
+    rgba(255, 214, 240, .45) 37.5%,
+    rgba(255, 255, 255, .95) 47.5%,
+    rgba(255, 255, 255, .95) 52.5%,
+    rgba(205, 225, 255, .5) 62.5%,
+    rgba(255, 255, 255, 0) 75%);
   animation: garland-shine 6s cubic-bezier(.45, .05, .55, .95) infinite;
   will-change: transform;
 }
