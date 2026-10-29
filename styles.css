@@ -162,6 +162,35 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .bells--page { z-index: 0; }
 .page > :not(.bells) { position: relative; z-index: 1; }
 .bells-pic { display: contents; } /* <picture> только выбирает картинку: на телефоне — своя гирлянда (макет 993-20188) */
+/* Перелив по гирляндам: поверх картинки тот же силуэт (маска), внутри по нему постоянно проходит мягкий
+   светлый блик с лёгким перламутром — розоватый, белый, голубоватый. Двигается только transform блика */
+.bells-shine {
+  aspect-ratio: 1440 / 430;
+  overflow: hidden;
+  -webkit-mask: url("assets/bells/garland.svg?v=2") 0 0 / 100% 100% no-repeat;
+  mask: url("assets/bells/garland.svg?v=2") 0 0 / 100% 100% no-repeat;
+}
+.bells-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 300%;
+  background: linear-gradient(105deg,
+    rgba(255, 255, 255, 0) 38%,
+    rgba(255, 214, 240, .35) 44%,
+    rgba(255, 255, 255, .8) 48.5%,
+    rgba(255, 255, 255, .85) 50%,
+    rgba(205, 225, 255, .4) 54%,
+    rgba(255, 255, 255, 0) 60%);
+  animation: garland-shine 6s cubic-bezier(.45, .05, .55, .95) infinite;
+  will-change: transform;
+}
+@keyframes garland-shine {
+  from { transform: translateX(-66.667%); }
+  to   { transform: translateX(0); }
+}
 
 
 /* Прелоудер: фон страницы и тонкая полоса прогресса; исчезает, когда кадры загружены */
@@ -488,6 +517,11 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
 @media (max-width: 600px) {
   .bells { width: 100%; } /* мобильная гирлянда нарисована под ширину экрана телефона */
+  .bells-shine {
+    aspect-ratio: 393 / 207;
+    -webkit-mask-image: url("assets/bells/garland-mobile.svg?v=1");
+    mask-image: url("assets/bells/garland-mobile.svg?v=1");
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
