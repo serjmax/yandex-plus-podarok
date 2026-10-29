@@ -232,7 +232,9 @@
     addEventListener('pointermove', e => {
       const bells = state.filter(s => !s.heart && s.el.isConnected);
       const r = bells.length ? bells[bells.length - 1].el.getBoundingClientRect() : null; // гирлянды на обоих экранах одного размера
-      for (const s of state) s.target = s.heart ? 0.5 + (e.clientX / innerWidth - 0.5) * 2 : r ? (e.clientX - r.left) / r.width : s.target;
+      // По вертикали блик тоже едет: вниз — вправо, вверх — влево, поэтому он отзывается на движение в любую сторону
+      const dy = e.clientY / innerHeight - 0.5;
+      for (const s of state) s.target = s.heart ? 0.5 + (e.clientX / innerWidth - 0.5 + dy) * 2 : r ? (e.clientX - r.left) / r.width + dy * 0.6 : s.target;
       if (!shineRaf) shineRaf = requestAnimationFrame(draw);
     }, { passive: true });
     shines.forEach(el => el.style.setProperty('--sx', 0.5));
