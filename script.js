@@ -23,8 +23,12 @@
   /* ---------- Бант заполняет место между текстом и кнопкой ---------- */
   // Картинка 782×442 (2×), бант занимает её по высоте почти целиком; на низких экранах уменьшается, на узких — по ширине
   const bowArea = document.querySelector('.intro__bow');
+  // Бант заполняет место между текстом и кнопкой: видимая часть картинки (без прозрачных полей —
+  // 357 из 442 px по высоте) встаёт с одинаковыми зазорами сверху и снизу при любой высоте экрана
+  const BOW_VISIBLE_H = 357;
   const fitBow = () => {
-    const k = Math.min(1.5, (bowArea.clientHeight - 16) / 430, window.innerWidth / 520);
+    const gap = window.innerWidth < 1000 ? 20 : 40;
+    const k = Math.min(2.4, (bowArea.clientHeight - 2 * gap) / BOW_VISIBLE_H, window.innerWidth / 520);
     bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
   };
   fitBow();

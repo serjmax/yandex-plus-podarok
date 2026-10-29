@@ -128,7 +128,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .intro__text { margin-top: 24px; font-size: 24px; line-height: 28px; color: var(--ink-soft); }
 .intro__btn { flex: none; }
 /* Бант: место между текстом и кнопкой; масштаб --bs считает script.js (на низких и узких экранах меньше) */
-.intro__bow { --bs: 1; position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; margin: 16px 0; }
+.intro__bow { --bs: 1; position: relative; flex: 1 1 auto; width: 100%; min-height: 140px; }
 .bow {
   position: absolute;
   left: 50%;
@@ -136,7 +136,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   width: 782px;
   height: 442px;
   max-width: none;
-  translate: -50% -50%;
+  /* видимая часть банта в картинке выше центра на 14 px — сдвигаем, чтобы зазоры сверху и снизу были равны */
+  translate: -50% calc(-50% + 14px * var(--bs));
   scale: var(--bs);
   transition: opacity .6s ease, transform .7s cubic-bezier(.3, 0, .2, 1);
 }
@@ -519,7 +520,6 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .intro__logo, .logo img { width: 163.5px; height: 24px; }
   .intro__title { margin-top: 28px; width: 360px; font-size: 40px; }
   .intro__text { margin-top: 14px; font-size: 18px; line-height: 22px; }
-  .intro__bow { margin: 12px 0; }
 
   .gift { padding: 24px 0 48px; }
   .gift__head { width: 340px; gap: 14px; margin-top: 28px; }
