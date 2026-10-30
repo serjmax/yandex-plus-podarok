@@ -551,6 +551,10 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .services::-webkit-scrollbar { display: none; }
   /* при листании средние карточки встают по центру блока, первая — к левому краю, последняя — к правому */
   .service { scroll-snap-align: center; }
+  /* Карточки сервисов на телефоне меньше: 220×220, текст с отступом 90, иконка в 0,7875 от десктопной (макет 1125-11572) */
+  .service { width: 220px; height: 220px; padding-top: 90px; }
+  .service__art { left: -.5px; top: -90.1px; transform: scale(.7875); transform-origin: 0 0; }
+  .service h3 { font-size: 24px; }
   .service:first-child { scroll-snap-align: start; }
   .service:last-child { scroll-snap-align: end; }
 
