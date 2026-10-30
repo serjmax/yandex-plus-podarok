@@ -30,7 +30,7 @@
     const gap = window.innerWidth < 1000 ? 20 : 40;
     // по ширине: сами петли банта (без ленты — она может уходить за край) занимают 395 px, оставляем по 16 px до краёв экрана
     const k = Math.min(2.4, (bowArea.clientHeight - 2 * gap) / BOW_VISIBLE_H, (window.innerWidth - 32) / 395);
-    bowArea.style.setProperty('--bs', Math.max(0.3, k).toFixed(3));
+    bowArea.style.setProperty('--bs', Math.max(0.3, k * 0.9).toFixed(3)); // на 10 % меньше, чем впритык к зазорам
   };
   fitBow();
   window.addEventListener('resize', fitBow);
