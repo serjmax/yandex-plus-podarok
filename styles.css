@@ -524,7 +524,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
   .intro__stage { padding: 24px 0 max(36px, env(safe-area-inset-bottom)); }
   .intro__logo, .logo img { width: 151.3px; height: 20px; }
-  .intro__title { margin-top: 56px; width: 353px; font-size: 31.5px; }
+  .intro__title { margin-top: 56px; width: 361px; font-size: 30.5px; } /* крупнее макета на 9 % — больше не влезает в три строки */
   .intro__text { margin-top: 16px; max-width: 333px; font-size: 16px; line-height: 1.3; }
 
   .gift { padding: 24px 0 48px; }
@@ -560,7 +560,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .service:last-child { scroll-snap-align: end; }
 
   .block { margin-top: 66px; }
-  .block__title { font-size: 36px; }
+  .block__title { font-size: 28px; }
   .block__head .lead { max-width: 361px; font-size: 16px; line-height: 1.3; }
   .invite { flex-direction: column; align-items: center; width: auto; height: auto; margin: 0 16px; padding: 24px 20px 32px; text-align: center; }
   .invite__art { order: -1; width: 100%; max-width: 300px; height: auto; margin-bottom: 31px; }
