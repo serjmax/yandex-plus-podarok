@@ -124,7 +124,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   text-align: center;
 }
 .intro__logo { width: 242px; height: 32px; flex: none; } /* ряд иконок сервисов (макет «Финал») */
-.intro__title { margin-top: 36px; width: 668px; font-family: var(--display); font-size: 48px; line-height: .9; color: var(--ink); } /* макет «Финал» 1170-10385 */
+.intro__title { margin-top: 36px; width: 752px; font-family: var(--display); font-size: 54px; line-height: .9; color: var(--ink); } /* макет «Финал» 1170-10385, на 12 % крупнее */
 .intro__text { margin-top: 24px; max-width: 508px; font-size: 22px; line-height: 1.3; color: var(--ink-soft); }
 .intro__btn { flex: none; position: relative; z-index: 1; } /* поверх банта: увеличенная картинка банта (с прозрачными полями) заходит на кнопку */
 /* Бант: место между текстом и кнопкой; масштаб --bs считает script.js (на низких и узких экранах меньше) */
@@ -524,7 +524,7 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
   .intro__stage { padding: 24px 0 max(36px, env(safe-area-inset-bottom)); }
   .intro__logo, .logo img { width: 151.3px; height: 20px; }
-  .intro__title { margin-top: 56px; width: 333px; font-size: 28px; }
+  .intro__title { margin-top: 56px; width: 353px; font-size: 31.5px; }
   .intro__text { margin-top: 16px; max-width: 333px; font-size: 16px; line-height: 1.3; }
 
   .gift { padding: 24px 0 48px; }
