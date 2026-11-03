@@ -44,8 +44,7 @@ function random(seed) {
 //   { text, font: px => 'css font', size, cx, cy } — текст (промокод), выгравированный прямо в металле:
 //     буквы углублены, внутри — полированный, почти зеркальный металл, без краски; паттерн вокруг убран;
 //   polish: [{ cx, cy, r } | { x, y, w, h, r }] — шлифованные круги или плашки (под иконками/логотипами): без паттерна и зерна, свой светлый тон;
-//   iconsRegion: [x, y, w, h] — часть card.svg в этой области (иконки) гравируется глубоко и темно полированным металлом, без краски;
-//   tones: [{ region: [x, y, w, h], dark }] — свой тон этой гравировки в области (0 — светлая, 0.78 — по умолчанию).
+//   iconsRegion: [x, y, w, h] — часть card.svg в этой области (иконки) гравируется глубоко и темно полированным металлом, без краски.
 function drawEngraving(ctx, px, e) {
   ctx.save();
   ctx.font = e.font(e.size * px);
@@ -112,16 +111,6 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
     iconDepth = alphaOf(dctx, w, h);
     for (let i = 0; i < icon.length; i++) { textMask[i] *= 1 - icon[i]; engrave[i] *= 1 - iconDepth[i]; }
   }
-  // Тон гравировки: по умолчанию глубокий тёмный (0.78); в областях engraving.tones = [{ region: [x, y, w, h], dark }]
-  // свой — например, логотипы светлее, чтобы не были чёрным пятном
-  let iconTone = null;
-  if (icon && engraving?.tones?.length) {
-    iconTone = new Float32Array(w * h).fill(0.78);
-    for (const t of engraving.tones) {
-      const [x0, y0, x1, y1] = [t.region[0], t.region[1], t.region[0] + t.region[2], t.region[1] + t.region[3]].map(v => Math.round(v * px));
-      for (let y = Math.max(0, y0); y < Math.min(h, y1); y++) iconTone.fill(t.dark, y * w + Math.max(0, x0), y * w + Math.min(w, x1));
-    }
-  }
   // Гравировка кода: сами буквы (полировка) и чуть смягчённая копия для глубины; паттерн вокруг букв убран с запасом
   let code = null, codeDepth = null;
   if (engraving?.text) {
@@ -138,7 +127,7 @@ function buildMasks(w, h, artwork, pattern, engraving = null) {
     const clear = alphaOf(zctx, w, h).map(a => Math.min(1, a * 4));
     for (let i = 0; i < patternMask.length; i++) patternMask[i] *= 1 - clear[i];
   }
-  return { w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth, iconTone };
+  return { w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth };
 }
 
 // Smooth value noise with roughly `cell` pixels between random grid points.
@@ -176,7 +165,7 @@ function slicer() {
     last = performance.now();
   };
 }
-async function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth, iconTone }, { grain, grainSize, brush: brushing, blacken = 0.93, pattern = 1, tint = null }) {
+async function buildSurface({ w, h, patternMask, textMask, engrave, plate, code, codeDepth, icon, iconDepth }, { grain, grainSize, brush: brushing, blacken = 0.93, pattern = 1, tint = null }) {
   const stops = tint && tint.length ? hexStops(tint) : null;
   const rnd = random(12), heightMap = new Float32Array(w * h), brush = new Float32Array(h);
   const cell = Math.max(1.5, grainSize / WIDTH * w);
@@ -224,7 +213,7 @@ async function buildSurface({ w, h, patternMask, textMask, engrave, plate, code,
       rough.data[j + 1] = Math.max(0, Math.min(1, polished * (1 - black) + 0.6 * black)) * 255;
       rough.data[j + 2] = (1 - 0.5 * black) * (1 - 0.45 * q) * 255;
       rough.data[j + 3] = 255;
-      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.1 * c) * (1 - (iconTone ? iconTone[i] : 0.78) * g) * (1 - blacken * black) * 255;
+      const shade = (1 - 0.04 * p) * (1 - 0.03 * q) * (1 - 0.1 * c) * (1 - 0.78 * g) * (1 - blacken * black) * 255;
       if (stops) {
         // Положение вдоль диагонали 0..1 и плавная интерполяция между соседними цветами
         const t = Math.min(0.9999, (x / w + y / h) / 2) * (stops.length - 1), k = t | 0, f = t - k;
