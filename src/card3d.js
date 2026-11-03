@@ -69,7 +69,7 @@ async function init() {
     polish: [{ cx: 197.5 * k, cy: 295.4 * k, r: 10 * k }],
     iconsRegion: [0, 0, 343, 213],
   };
-  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 8, engraving });
+  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 9, engraving });
 
   // Панель ?tune: цвет надписей и перелив меняются мгновенно, остальное — пересборкой поверхности
   let surfaceTimer = 0;

@@ -10,8 +10,12 @@ const HEIGHT = WIDTH * SVG_H / SVG_W;
 const RADIUS = SVG_R * WIDTH / SVG_W;
 const THICKNESS = 0.8, BEVEL = 0.12;           // mm; defaults, the studio can change both
 
+// Safari растеризует SVG-картинку в её собственном размере (width/height корня) и потом растягивает на холст —
+// на карточке 343×213 мелкая подпись выходила мыльной. Картинки во всю карточку поднимаем до размера текстуры.
+const svgAtTextureSize = text => text.replace(/<svg([^>]*?)\swidth="([\d.]+)"\s+height="([\d.]+)"/, (m, a, w, h) =>
+  +w >= SVG_W ? `<svg${a} width="2048" height="${Math.round(2048 * h / w)}"` : m);
 async function svgImage(url, transform = text => text) {
-  const text = transform(await (await fetch(url)).text());
+  const text = svgAtTextureSize(transform(await (await fetch(url)).text()));
   const image = new Image();
   image.src = URL.createObjectURL(new Blob([text], { type: 'image/svg+xml' }));
   await image.decode();
