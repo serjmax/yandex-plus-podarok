@@ -38,7 +38,7 @@ async function mountCard(cell) {
   // Знак плюса в подписи — шлифованный кружок; вся графика card.svg — тёмная гравировка полированным металлом
   const plusY = +cell.dataset.plusY;
   const engraving = { polish: [{ cx: 201.45 * k, cy: plusY * k, r: 9.35 * k }], iconsRegion: [0, 0, 343, 213] };
-  const card = await createCard(renderer, { ...LANDING_LOOK, assets: `./assets/card3d/lab/${cell.dataset.variant}/`, assetsVersion: 1, engraving });
+  const card = await createCard(renderer, { ...LANDING_LOOK, assets: `./assets/card3d/lab/${cell.dataset.variant}/`, assetsVersion: 2, engraving });
   const box = new THREE.Box3().setFromObject(card);
   const size = box.getSize(new THREE.Vector3());
   card.position.sub(box.getCenter(new THREE.Vector3()));
