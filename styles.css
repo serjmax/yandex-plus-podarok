@@ -220,14 +220,18 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 
 .intro__logo, .intro__title, .intro__text, .intro__btn { transition: opacity .35s ease, transform .5s ease; }
 
-/* Открытие: логотип остаётся, кнопка уходит, бант растворяется (is-opening);
-   затем текст сменяется и появляется страница с карточкой (is-revealed) */
+/* Открытие: логотип остаётся, текст, кнопка и бант уходят (is-opening);
+   затем первый экран скрывается и появляется страница с карточкой (is-revealed) */
 .is-opening .intro { pointer-events: none; }
-/* Заголовок и подзаголовок растворяются — на их месте проявляется новый текст и появляется карточка */
-.is-revealed .intro__title,
-.is-revealed .intro__text { opacity: 0; transition-duration: .4s; }
+/* Текст первого экрана гаснет сразу по нажатию, вместе с бантом — к появлению страницы его уже нет
+   (иначе в Safari, где анимации запаздывают, подзаголовок на миг ложился поверх карточки) */
+.is-opening .intro__title,
+.is-opening .intro__text { opacity: 0; transition-duration: .3s; }
 .is-opening .intro__btn { opacity: 0; transform: translateY(16px) scale(.96); }
 .is-revealed .intro::before { opacity: 0; }
+/* Когда появляется страница, слой первого экрана скрываем целиком и сразу: под ним тот же фон и та же гирлянда,
+   а второй ряд иконок (логотип интро) больше не накладывается на иконки страницы */
+.is-revealed .intro { visibility: hidden; }
 
 /* =========================================================
    Основная страница (макет 1440)
