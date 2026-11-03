@@ -68,10 +68,10 @@ async function init() {
     // Кружок знака плюса (⌀18.7 с x = 192.1, y = 290.3) шлифованный
     polish: [{ cx: 201.45 * k, cy: 299.65 * k, r: 9.35 * k }],
     iconsRegion: [0, 0, 343, 213],
-    // Логотипы сверху (в макете y 19–45, x 69–457) — гравировка светлее, чтобы не были тёмным пятном
-    tones: [{ region: [60 * k, 14 * k, 410 * k, 36 * k], dark: 0.55 }],
+    // Логотипы сверху (в макете y 19–45, x 69–457) — без цвета: только рельеф гравировки и полированный металл, который переливается
+    tones: [{ region: [60 * k, 14 * k, 410 * k, 36 * k], dark: 0 }],
   };
-  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 13, engraving });
+  const card = await createCard(renderer, { ...look(), assets: './assets/card3d/', assetsVersion: 14, engraving });
 
   // Панель ?tune: цвет надписей и перелив меняются мгновенно, остальное — пересборкой поверхности
   let surfaceTimer = 0;
