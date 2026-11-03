@@ -3,3 +3,6 @@
 # Запускать из корня сайта после правок в src/: sh tools/build-card.sh
 npx -y esbuild@0.24.0 src/card3d.js --bundle --format=esm --minify --target=es2020 \
   --alias:three=./vendor/three.module.js --legal-comments=eof --outfile=src/card3d.min.js
+# Страница сравнения вариантов карточки (cards.html)
+npx -y esbuild@0.24.0 src/cards-lab.js --bundle --format=esm --minify --target=es2020 \
+  --alias:three=./vendor/three.module.js --legal-comments=eof --outfile=src/cards-lab.min.js

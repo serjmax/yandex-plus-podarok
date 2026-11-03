@@ -3,3 +3,4 @@ vendor
 tools
 src/card.js
 src/card3d.js
+src/cards-lab.js
