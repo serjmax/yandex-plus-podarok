@@ -7,28 +7,44 @@
   <title>Варианты карточки — Яндекс Плюс</title>
   <link rel="stylesheet" href="styles.css?v=240">
   <style>
-    /* Страница сравнения: сетка 2×2, у каждой 3D-карты подпись с вариантом */
-    .lab { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 48px 24px 64px; text-align: center; }
+    /* Страница сравнения: слайдер — одна большая 3D-карта, стрелки, точки, свайп и клавиши ← → */
+    .lab { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 48px 24px 56px; text-align: center; }
     .lab h1 { font-family: var(--display); font-weight: 400; font-size: 48px; line-height: .95; color: var(--ink); }
     .lab__lead { margin: 16px auto 0; max-width: 640px; font-size: 18px; line-height: 1.35; color: var(--ink-soft); }
-    .lab__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; margin-top: 40px; }
-    .lab-card { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .lab-card__canvas { position: relative; width: 100%; aspect-ratio: 1.4 / 1; opacity: 0; transition: opacity .6s ease; }
+    .lab__slider { position: relative; margin-top: 24px; }
+    .lab__viewport { overflow: hidden; touch-action: pan-y; }
+    .lab__track { display: flex; transition: transform .55s cubic-bezier(.2, .8, .2, 1); }
+    .lab__track.is-dragging { transition: none; }
+    .lab-card { flex: 0 0 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 0; }
+    .lab-card__canvas { position: relative; width: min(100%, 860px); aspect-ratio: 1.4 / 1; opacity: 0; transition: opacity .6s ease; }
     .lab-card.is-ready .lab-card__canvas { opacity: 1; }
     .lab-card__canvas canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
-    .lab-card__name { font-family: var(--display); font-weight: 500; font-size: 22px; color: var(--ink); }
+    .lab-card__name { font-family: var(--display); font-weight: 500; font-size: 26px; color: var(--ink); }
     .lab-card__note { font-size: 16px; color: var(--ink-soft); }
+    .lab__arrow { position: absolute; top: calc(50% - 60px); width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center;
+      background: rgba(255, 255, 255, .7); box-shadow: 0 8px 24px -12px rgba(50, 42, 64, .5); color: var(--ink); font-size: 26px; line-height: 1; transition: background .2s, opacity .2s; }
+    .lab__arrow:hover { background: #fff; }
+    .lab__arrow:disabled { opacity: .3; cursor: default; }
+    .lab__arrow--prev { left: 0; }
+    .lab__arrow--next { right: 0; }
+    .lab__dots { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+    .lab__dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(50, 42, 64, .25); transition: background .2s, transform .2s; }
+    .lab__dot.is-active { background: var(--ink); transform: scale(1.2); }
     @media (max-width: 760px) {
       .lab h1 { font-size: 32px; }
-      .lab__grid { grid-template-columns: 1fr; }
+      .lab__arrow { width: 44px; height: 44px; font-size: 20px; top: calc(50% - 70px); }
+      .lab-card__name { font-size: 20px; }
     }
   </style>
 </head>
 <body>
   <main class="lab">
     <h1>Варианты карточки</h1>
-    <p class="lab__lead">Два макета, в каждом логотипы сервисов двумя способами: мягким паттерном, как плюсики, или тёмной гравировкой, как текст. Наведите курсор на карточку, чтобы повернуть её.</p>
-    <div class="lab__grid">
+    <p class="lab__lead">Два макета, в каждом логотипы сервисов двумя способами: мягким паттерном, как плюсики, или тёмной гравировкой, как текст. Листайте стрелками, точками, свайпом или клавишами ← →. Наведите курсор на карточку, чтобы повернуть её.</p>
+    <div class="lab__slider">
+      <button class="lab__arrow lab__arrow--prev" type="button" aria-label="Предыдущий вариант">←</button>
+      <button class="lab__arrow lab__arrow--next" type="button" aria-label="Следующий вариант">→</button>
+      <div class="lab__viewport"><div class="lab__track">
       <!-- data-plus-y — центр знака плюса в подписи по высоте (координаты макета 526×326) -->
       <figure class="lab-card" data-variant="a-pattern" data-plus-y="299.65">
         <div class="lab-card__canvas"></div>
@@ -46,8 +62,10 @@
         <div class="lab-card__canvas"></div>
         <figcaption><p class="lab-card__name">2Б. Подпись сверху — логотипы как текст</p><p class="lab-card__note">Макет 1309-29833, логотипы гравировкой</p></figcaption>
       </figure>
+      </div></div>
+      <div class="lab__dots" role="tablist"></div>
     </div>
   </main>
-  <script type="module" src="src/cards-lab.min.js?v=1"></script>
+  <script type="module" src="src/cards-lab.min.js?v=2"></script>
 </body>
 </html>

@@ -85,6 +85,46 @@ async function mountCard(cell) {
   cell.classList.add('is-ready');
 }
 
+/* ---------- Слайдер: стрелки, точки, свайп, клавиши ← → ---------- */
+// Невидимые слайды не рисуются: IntersectionObserver в mountCard учитывает обрезку .lab__viewport
+const track = document.querySelector('.lab__track');
+const slides = [...document.querySelectorAll('.lab-card')];
+const prev = document.querySelector('.lab__arrow--prev'), next = document.querySelector('.lab__arrow--next');
+const dots = document.querySelector('.lab__dots');
+let index = 0;
+slides.forEach((slide, i) => {
+  const dot = document.createElement('button');
+  dot.type = 'button'; dot.className = 'lab__dot'; dot.setAttribute('aria-label', slide.querySelector('.lab-card__name').textContent);
+  dot.addEventListener('click', () => go(i));
+  dots.appendChild(dot);
+});
+const go = i => {
+  index = Math.max(0, Math.min(slides.length - 1, i));
+  track.style.transform = `translateX(${-index * 100}%)`;
+  prev.disabled = index === 0; next.disabled = index === slides.length - 1;
+  [...dots.children].forEach((d, j) => d.classList.toggle('is-active', j === index));
+};
+prev.addEventListener('click', () => go(index - 1));
+next.addEventListener('click', () => go(index + 1));
+addEventListener('keydown', e => { if (e.key === 'ArrowLeft') go(index - 1); if (e.key === 'ArrowRight') go(index + 1); });
+// Свайп пальцем (мышью не тянем — мышь вращает карточку)
+let startX = 0, dx = 0, dragging = false;
+const viewport = document.querySelector('.lab__viewport');
+viewport.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dx = 0; dragging = true; track.classList.add('is-dragging'); }, { passive: true });
+viewport.addEventListener('touchmove', e => {
+  if (!dragging) return;
+  dx = e.touches[0].clientX - startX;
+  track.style.transform = `translateX(calc(${-index * 100}% + ${dx}px))`;
+}, { passive: true });
+const endSwipe = () => {
+  if (!dragging) return;
+  dragging = false; track.classList.remove('is-dragging');
+  go(Math.abs(dx) > viewport.clientWidth * 0.15 ? index + (dx < 0 ? 1 : -1) : index);
+};
+viewport.addEventListener('touchend', endSwipe);
+viewport.addEventListener('touchcancel', endSwipe);
+go(0);
+
 // Карты строим по очереди — так страница не подвисает на сборке текстур
 (async () => {
   for (const cell of document.querySelectorAll('.lab-card')) {
