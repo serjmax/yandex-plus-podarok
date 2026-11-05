@@ -4,7 +4,9 @@
 (() => {
   const canvas = document.getElementById('snow');
   if (!canvas) return;
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { canvas.remove(); return; }
+  // «Уменьшение движения» в системе (на телефонах включено часто): снег не убираем, а делаем спокойнее —
+  // медленнее, реже, без смаза и покачивания
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ctx = canvas.getContext('2d');
 
   // Спрайт снежинки: мягкий белый круг без ореола (рисуем один раз, дальше только масштабируем)
@@ -31,12 +33,12 @@
       x: rand(0, w), y: y ?? rand(-h, h),
       z,
       r: big ? rand(7, 11) : 1.5 + z * z * 4.8,     // радиус спрайта, px
-      vy: 16 + z * 72,                              // скорость падения, px/с
-      amp: rand(6, 22) * (0.4 + z),                 // размах покачивания
+      vy: (16 + z * 72) * (calm ? 0.45 : 1),                              // скорость падения, px/с
+      amp: rand(6, 22) * (0.4 + z) * (calm ? 0.3 : 1),                 // размах покачивания
       freq: rand(0.25, 0.8),
       phase: rand(0, Math.PI * 2),
       alpha: 0.55 + z * 0.45,
-      streak: !big && z > 0.72 && Math.random() < 0.5,      // часть ближних — с лёгким смазом по движению
+      streak: !calm && !big && z > 0.72 && Math.random() < 0.5,      // часть ближних — с лёгким смазом по движению
     };
   };
   const resize = () => {
@@ -44,7 +46,7 @@
     w = document.documentElement.clientWidth; h = innerHeight; // без полосы прокрутки — иначе холст растягивается
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.round(Math.min(870, Math.max(240, (w * h) / 1960))); // ~660 снежинок на 1440×900: мелких вдвое меньше, остальных — как было
+    const count = Math.round(Math.min(870, Math.max(240, (w * h) / 1960)) * (calm ? 0.6 : 1)); // ~660 снежинок на 1440×900: мелких вдвое меньше, остальных — как было
     while (flakes.length < count) flakes.push(makeFlake());
     flakes.length = count;
   };
@@ -56,7 +58,7 @@
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now; t += dt;
     // Ветер: медленно меняется по силе и направлению
-    const wind = Math.sin(t * 0.13) * 14 + Math.sin(t * 0.41 + 1.3) * 6;
+    const wind = (Math.sin(t * 0.13) * 14 + Math.sin(t * 0.41 + 1.3) * 6) * (calm ? 0.4 : 1);
     ctx.clearRect(0, 0, w, h);
     for (const f of flakes) {
       f.y += f.vy * dt;
