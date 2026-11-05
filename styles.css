@@ -169,8 +169,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
 .bells-shine {
   aspect-ratio: 1440 / 430;
   overflow: hidden;
-  -webkit-mask: url("assets/bells/garland.svg?v=2") 0 0 / 100% 100% no-repeat;
-  mask: url("assets/bells/garland.svg?v=2") 0 0 / 100% 100% no-repeat;
+  -webkit-mask: url("assets/bells/garland.svg?v=3") 0 0 / 100% 100% no-repeat;
+  mask: url("assets/bells/garland.svg?v=3") 0 0 / 100% 100% no-repeat;
 }
 .bells-shine::before {
   content: "";
@@ -589,8 +589,8 @@ a, button, .btn, .promo__code, .service, .card-scene, .footer__links a { cursor:
   .bells { width: 100%; } /* мобильная гирлянда нарисована под ширину экрана телефона */
   .bells-shine {
     aspect-ratio: 393 / 207;
-    -webkit-mask-image: url("assets/bells/garland-mobile.svg?v=1");
-    mask-image: url("assets/bells/garland-mobile.svg?v=1");
+    -webkit-mask-image: url("assets/bells/garland-mobile.svg?v=2");
+    mask-image: url("assets/bells/garland-mobile.svg?v=2");
   }
 }
 @media (prefers-reduced-motion: reduce) {
